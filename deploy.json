@@ -1,0 +1,27 @@
+{
+  "defaultStacks": [ "deploy" ],
+  "packages": {
+    "amiable": {
+      "type": "autoscaling",
+      "data": {
+        "publicReadAcl": false,
+        "secondsToWait": 900,
+        "port": 9000,
+        "healthcheckGrace": 20,
+        "bucket": "deploy-tools-dist",
+        "healthcheck_paths": ["/healthcheck"]
+      }
+    }
+  },
+  "recipes":{
+    "default": {
+      "depends" : ["artifactUpload", "deploy"]
+    },
+    "deploy": {
+      "actionsBeforeApp": ["amiable.deploy"]
+    },
+    "artifactUpload": {
+      "actionsBeforeApp": ["amiable.uploadArtifacts"]
+    }
+  }
+}
