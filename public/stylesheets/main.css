@@ -1,0 +1,14 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+#logo-container img {
+    vertical-align: middle;
+    margin-top: -5px;
+}
