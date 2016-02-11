@@ -1,0 +1,16 @@
+@(ami: AMI)
+
+@main("AMI") {
+
+    <div class="container">
+        <div class="row">
+            <h1 class="header green-text text-darken-3">AMI</h1>
+
+            <ul>
+                <li>@ami.arn</li>
+                <li>@ami.imageId</li>
+            </ul>
+        </div>
+    </div>
+
+}

@@ -4,6 +4,7 @@
 
 # Home page
 GET     /                           controllers.AMIable.index
+GET     /ami                        controllers.AMIable.ami(arn: String)
 GET     /healthcheck                controllers.Healthcheck.healthcheck
 
 # Map static resources from the /public folder to the /assets URL path
