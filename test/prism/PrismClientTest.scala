@@ -48,4 +48,16 @@ class PrismClientTest extends FreeSpec with Matchers with EitherValues with Mock
       }
     }
   }
+
+  "amisResponseJson" - {
+    "given a valid response" - {
+      val response = mock[WSResponse]
+      val json = Json.parse(JSON.validAmisResponse)
+      when(response.json).thenReturn(json)
+
+      "returns the JsValue" in {
+        amisResponseJson(response).right.value shouldEqual List(Json.parse(JSON.validAMI))
+      }
+    }
+  }
 }

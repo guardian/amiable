@@ -6,10 +6,18 @@
         <div class="row">
             <h1 class="header green-text text-darken-3">AMI</h1>
 
-            <ul>
-                <li>@ami.arn</li>
-                <li>@ami.imageId</li>
-            </ul>
+            <dl class="ami-details">
+                <dt>Name</dt>
+                <dd>@ami.name</dd>
+                <dt>Image ID</dt>
+                <dd>@ami.imageId</dd>
+                <dt>Description</dt>
+                <dd>@ami.description</dd>
+                <dt>Creation date</dt>
+                <dd>@ami.creationDate.getOrElse("Too old")</dd>
+                <dt>ARN</dt>
+                <dd>@ami.arn</dd>
+            </dl>
         </div>
     </div>
 

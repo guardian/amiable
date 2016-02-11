@@ -26,4 +26,13 @@ class AMIable extends Controller {
         Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
     }
   }
+
+  def amis = Action.async { implicit request =>
+    PrismClient.getAMIs().map {
+      case Right(amis) => Ok(views.html.amis(amis))
+      case Left(err) =>
+        Logger.error(err.errors.map(_.message).mkString(", "))
+        Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
+    }
+  }
 }

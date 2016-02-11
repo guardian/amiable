@@ -3,6 +3,8 @@ package models
 import org.joda.time.DateTime
 import play.api.libs.json._
 
+import scala.concurrent.Future
+
 case class AMI(
   arn: String,
   name: String,
@@ -40,5 +42,14 @@ object AMIableErrors {
   }
   def apply(errors: Seq[AMIableError]): AMIableErrors = {
     AMIableErrors(errors.toList)
+  }
+
+  def flip[T](attempts: List[Attempt[T]]): Attempt[List[T]] = {
+    attempts.filter(_.isLeft) match {
+      case Nil =>
+        Right(attempts.map(_.right.get))
+      case failures =>
+        Left(AMIableErrors(failures.map(_.left.get).flatMap(_.errors)))
+    }
   }
 }

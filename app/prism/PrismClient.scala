@@ -19,14 +19,36 @@ object PrismClient {
     }
   }
 
-  def amiResponseJson(response: WSResponse): Attempt[JsValue] = {
-    (response.json \ "data").toEither
-      .left.map { valErr =>
-      AMIableErrors(AMIableError(valErr.message, "Could not parse AMI response JSON", 500))
+  def getAMIs()(implicit config: AMIableConfig, ec: ExecutionContext): Future[Attempt[List[AMI]]] = {
+    config.wsClient.url(amisUrl(config.prismUrl)).get().map { response =>
+      for {
+        jsons <- amisResponseJson(response).right
+        amis <- AMIableErrors.flip(jsons.map(extractAMI)).right
+      } yield amis
     }
   }
 
-  def extractAMI(json: JsValue): Attempt[AMI] = {
+  private[prism] def amiResponseJson(response: WSResponse): Attempt[JsValue] = {
+    (response.json \ "data").toEither
+      .left.map { valErr =>
+        AMIableErrors(AMIableError(valErr.message, "Could not parse AMI response JSON", 500))
+      }
+  }
+
+  private[prism] def amisResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
+    (response.json \ "data" \ "images").validate[List[JsValue]] match {
+      case JsSuccess(ami, _) => Right(ami)
+      case JsError(pathErrors) => Left {
+        AMIableErrors(pathErrors.flatMap { case (_, errors) =>
+          errors.map { error =>
+            AMIableError(error.message, "Could not get AMI from response JSON", 500)
+          }
+        })
+      }
+    }
+  }
+
+  private[prism] def extractAMI(json: JsValue): Attempt[AMI] = {
     json.validate[AMI] match {
       case JsSuccess(ami, _) => Right(ami)
       case JsError(pathErrors) => Left {
@@ -39,8 +61,12 @@ object PrismClient {
     }
   }
 
-  def amiUrl(arn: String, prismUrl: String): String = {
+  private[prism] def amiUrl(arn: String, prismUrl: String): String = {
     val encodedArn = URLEncoder.encode(arn, "UTF-8")
     s"$prismUrl/images/$encodedArn"
+  }
+
+  private[prism] def amisUrl(prismUrl: String): String = {
+    s"$prismUrl/images"
   }
 }

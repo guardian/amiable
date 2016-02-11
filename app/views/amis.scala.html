@@ -1,0 +1,25 @@
+@(amis: List[AMI])
+
+@main("AMI") {
+
+    <div class="container">
+        <div class="row">
+            <h1 class="header green-text text-darken-3">AMI</h1>
+            @for(ami <- amis) {
+                <dl class="ami-details">
+                    <dt>Name</dt>
+                    <dd>@ami.name</dd>
+                    <dt>Image ID</dt>
+                    <dd>@ami.imageId</dd>
+                    <dt>Description</dt>
+                    <dd>@ami.description</dd>
+                    <dt>Creation date</dt>
+                    <dd>@ami.creationDate.getOrElse("Too old")</dd>
+                    <dt>ARN</dt>
+                    <dd>@ami.arn</dd>
+                </dl>
+            }
+        </div>
+    </div>
+
+}

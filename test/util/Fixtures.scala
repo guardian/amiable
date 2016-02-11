@@ -37,5 +37,7 @@ object Fixtures {
                      |}""".stripMargin
 
     val validAmiResponse = s"""{"data": $validAMI}"""
+
+    val validAmisResponse = s"""{"data": {"images": [$validAMI]}}"""
   }
 }

@@ -12,3 +12,7 @@ main {
     vertical-align: middle;
     margin-top: -5px;
 }
+
+dl.ami-details dt {
+    font-weight: bold;
+}
