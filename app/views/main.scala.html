@@ -1,15 +1,52 @@
 @(title: String)(content: Html)
 
 <!DOCTYPE html>
-
 <html lang="en">
     <head>
-        <title>@title</title>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+        <title>@title - AMIable</title>
+
+        <link href="/assets/materialize/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+        <link href="/assets/stylesheets/main.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+        <link rel="icon" href="/assets/images/favicon.ico"/>
     </head>
     <body>
-        @content
+        <header>
+            <nav class="amber lighten-1" role="navigation">
+                <div class="nav-wrapper container">
+                    <a id="logo-container" href="/" class="brand-logo black-text">
+                        <img src="/assets/images/amiable.png" alt="AMIable">
+                        AMIable
+                    </a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            @content
+        </main>
+
+        <footer class="page-footer amber lighten-1">
+            <div class="container">
+                <div class="row">
+                    <div class="col l9 s12">
+                        <h5 class="">The Guardian</h5>
+                        <p class="">AMIable is a part of the Guardian's infrastructure management toolset.</p>
+                    </div>
+                    <div class="col l3 s12">
+                        <h5 class="">Useful links</h5>
+                        <ul>
+                            <li><a class="" href="https://github.com/guardian/amiable">AMIable on GitHub</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="/assets/javascripts/jquery-2.1.4.min.js"></script>
+        <script src="/assets/materialize/js/materialize.js"></script>
+        <script src="/assets/javascripts/amiable.js"></script>
     </body>
 </html>

@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                           controllers.AMIable.index
 GET     /healthcheck                controllers.Healthcheck.healthcheck
 
 # Map static resources from the /public folder to the /assets URL path
