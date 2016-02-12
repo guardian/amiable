@@ -3,33 +3,47 @@ package prism
 import java.net.URLEncoder
 
 import config.AMIableConfig
-import models.{AMI, AMIableError, AMIableErrors, Attempt}
+import logic.JsonUtils
+import models._
 import play.api.Logger
-import play.api.libs.json.{Json, JsError, JsSuccess, JsValue}
+import play.api.libs.json._
 import play.api.libs.ws._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 object PrismClient {
-  def getAMI(arn : String)(implicit config: AMIableConfig, ec: ExecutionContext): Future[Attempt[AMI]] = {
-    config.wsClient.url(amiUrl(arn, config.prismUrl)).get().map { response =>
-      for {
-        json <- amiResponseJson(response).right
-        ami <- extractAMI(json).right
-      } yield ami
-    }
+  def getAMI(arn : String)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[AMI] = {
+    for {
+      response <- Attempt.Async.Right(config.wsClient.url(amiUrl(arn, config.prismUrl)).get())
+      json <- amiResponseJson(response)
+      ami <- extractAMI(json)
+    } yield ami
   }
 
-  def getAMIs()(implicit config: AMIableConfig, ec: ExecutionContext): Future[Attempt[List[AMI]]] = {
-    config.wsClient.url(amisUrl(config.prismUrl)).get().map { response =>
-      for {
-        jsons <- amisResponseJson(response).right
-        amis <- AMIableErrors.flip(jsons.map(extractAMI)).right
-      } yield amis
-    }
+  def getAMIs()(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[AMI]] = {
+    for {
+      response <- Attempt.Async.Right(config.wsClient.url(amisUrl(config.prismUrl)).get())
+      jsons <- amisResponseJson(response)
+      amis <- Attempt.sequence(jsons.map(extractAMI))
+    } yield amis
   }
 
-  private[prism] def amiResponseJson(response: WSResponse): Attempt[JsValue] = {
+  def getInstances(stack: String, stage: String, app: String)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
+    for {
+      response <- handleWsError(config.wsClient.url(instancesUrl(stack, stage, app, config.prismUrl)).get())
+      jsons <- instancesResponseJson(response)
+      instances <- Attempt.sequence(jsons.map(extractInstance))
+    } yield instances
+  }
+
+  private def handleWsError(fResponse: Future[WSResponse])(implicit ec: ExecutionContext): Attempt[WSResponse] = {
+    fResponse.onFailure {
+      case e: Exception => Logger.error("Failed to fetch WsResponse", e)
+    }
+    Attempt.Async.Right(fResponse)
+  }
+
+  private[prism] def amiResponseJson(response: WSResponse): Attempt[JsValue] = Attempt.fromEither {
     (response.json \ "data").toEither
       .left.map { valErr =>
         Logger.warn(valErr.message)
@@ -38,30 +52,26 @@ object PrismClient {
   }
 
   private[prism] def amisResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
-    (response.json \ "data" \ "images").validate[List[JsValue]] match {
-      case JsSuccess(ami, _) => Right(ami)
-      case JsError(pathErrors) => Left {
-        AMIableErrors(pathErrors.flatMap { case (_, errors) =>
-          errors.map { error =>
-            Logger.warn(error.message)
-            AMIableError(error.message, "Could not get AMI from response JSON", 500)
-          }
-        })
-      }
+    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON"){
+      (response.json \ "data" \ "images").validate[List[JsValue]]
     }
   }
 
   private[prism] def extractAMI(json: JsValue): Attempt[AMI] = {
-    json.validate[AMI] match {
-      case JsSuccess(ami, _) => Right(ami)
-      case JsError(pathErrors) => Left {
-        AMIableErrors(pathErrors.flatMap { case (_, errors) =>
-          errors.map { error =>
-            Logger.warn(s"${error.message}, ${Json.stringify(json)}")
-            AMIableError(error.message, "Could not get AMI from response JSON", 500)
-          }
-        })
-      }
+    JsonUtils.extractToAttempt[AMI]("Could not get AMI from response JSON") {
+      json.validate[AMI]
+    }
+  }
+
+  private[prism] def instancesResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
+    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON"){
+      (response.json \ "data" \ "instances").validate[List[JsValue]]
+    }
+  }
+
+  private[prism] def extractInstance(json: JsValue): Attempt[Instance] = {
+    JsonUtils.extractToAttempt[Instance]("Could not get Instance from response JSON") {
+      json.validate[Instance]
     }
   }
 
@@ -72,5 +82,9 @@ object PrismClient {
 
   private[prism] def amisUrl(prismUrl: String): String = {
     s"$prismUrl/images"
+  }
+
+  private[prism] def instancesUrl(stack: String, stage: String, app: String, prismUrl: String) = {
+    s"$prismUrl/instances?stack=$stack&stage=$stage&app=$app"
   }
 }
