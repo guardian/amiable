@@ -3,9 +3,10 @@ package prism
 import java.net.URLEncoder
 
 import config.AMIableConfig
-import models.{AMI, AMIableError, AMIableErrors, Attempt}
+import logic.JsonUtils
+import models._
 import play.api.Logger
-import play.api.libs.json.{Json, JsError, JsSuccess, JsValue}
+import play.api.libs.json._
 import play.api.libs.ws._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,6 +30,15 @@ object PrismClient {
     }
   }
 
+  def getInstances(stack: String, stage: String, app: String)(implicit config: AMIableConfig, ec: ExecutionContext): Future[Attempt[List[Instance]]] = {
+    config.wsClient.url(amisUrl(config.prismUrl)).get().map { response =>
+      for {
+        jsons <- instancesResponseJson(response).right
+        instances <- AMIableErrors.flip(jsons.map(extractInstance)).right
+      } yield instances
+    }
+  }
+
   private[prism] def amiResponseJson(response: WSResponse): Attempt[JsValue] = {
     (response.json \ "data").toEither
       .left.map { valErr =>
@@ -38,30 +48,26 @@ object PrismClient {
   }
 
   private[prism] def amisResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
-    (response.json \ "data" \ "images").validate[List[JsValue]] match {
-      case JsSuccess(ami, _) => Right(ami)
-      case JsError(pathErrors) => Left {
-        AMIableErrors(pathErrors.flatMap { case (_, errors) =>
-          errors.map { error =>
-            Logger.warn(error.message)
-            AMIableError(error.message, "Could not get AMI from response JSON", 500)
-          }
-        })
-      }
+    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON"){
+      (response.json \ "data" \ "images").validate[List[JsValue]]
     }
   }
 
   private[prism] def extractAMI(json: JsValue): Attempt[AMI] = {
-    json.validate[AMI] match {
-      case JsSuccess(ami, _) => Right(ami)
-      case JsError(pathErrors) => Left {
-        AMIableErrors(pathErrors.flatMap { case (_, errors) =>
-          errors.map { error =>
-            Logger.warn(s"${error.message}, ${Json.stringify(json)}")
-            AMIableError(error.message, "Could not get AMI from response JSON", 500)
-          }
-        })
-      }
+    JsonUtils.extractToAttempt[AMI]("Could not get AMI from response JSON") {
+      json.validate[AMI]
+    }
+  }
+
+  private[prism] def instancesResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
+    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON"){
+      (response.json \ "data" \ "images").validate[List[JsValue]]
+    }
+  }
+
+  private[prism] def extractInstance(json: JsValue): Attempt[Instance] = {
+    JsonUtils.extractToAttempt[Instance]("Could not get Instance from response JSON") {
+      json.validate[Instance]
     }
   }
 
@@ -72,5 +78,9 @@ object PrismClient {
 
   private[prism] def amisUrl(prismUrl: String): String = {
     s"$prismUrl/images"
+  }
+
+  private[prism] def instancesUrl(stack: String, stage: String, app: String, prismUrl: String) = {
+    s"$prismUrl?stack=$stack&stage=$stage&app=$app"
   }
 }

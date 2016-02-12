@@ -23,10 +23,33 @@ case class AMI(
   hypervisor: String,
   sriovNetSupport: Option[String]
 )
-
 object AMI {
   import datetime.DateUtils._
   implicit val jsonFormat = Json.format[AMI]
+}
+
+case class Instance(
+  arn: String,
+  name: String,
+  vendorState: String,
+  group: String,
+  dnsName: String,
+  ip: String,
+  createdAt: DateTime,
+  instanceName: String,
+  region: String,
+  vendor: String,
+  securityGroups: List[String],
+  tags: Map[String, String],
+  stack: String,
+  stage: String,
+  app: List[String],
+  mainclasses: List[String],
+  specification: Map[String, String]
+)
+object Instance {
+  import datetime.DateUtils._
+  implicit val jsonFormat = Json.format[Instance]
 }
 
 case class AMIableError(
