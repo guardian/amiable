@@ -1,6 +1,9 @@
 package models
 
+import org.joda.time.format.DateTimeFormatter
+
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 
 import scala.concurrent.Future
@@ -12,7 +15,7 @@ case class AMI(
   region: String,
   description: Option[String],
   tags: Map[String,String],
-  creationDate: Option[String],
+  creationDate: Option[DateTime],
   state: String,
   architecture: String,
   ownerId: String,
@@ -22,6 +25,7 @@ case class AMI(
 )
 
 object AMI {
+  import datetime.DateUtils._
   implicit val jsonFormat = Json.format[AMI]
 }
 
