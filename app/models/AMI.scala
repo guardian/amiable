@@ -7,10 +7,10 @@ import scala.concurrent.Future
 
 case class AMI(
   arn: String,
-  name: String,
+  name: Option[String],
   imageId: String,
   region: String,
-  description: String,
+  description: Option[String],
   tags: Map[String,String],
   creationDate: Option[String],
   state: String,
@@ -18,7 +18,7 @@ case class AMI(
   ownerId: String,
   virtualizationType: String,
   hypervisor: String,
-  sriovNetSupport: String
+  sriovNetSupport: Option[String]
 )
 
 object AMI {
