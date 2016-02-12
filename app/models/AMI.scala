@@ -46,7 +46,9 @@ case class Instance(
   app: List[String],
   mainclasses: List[String],
   specification: Map[String, String]
-)
+) {
+  val amiArn = specification.get("imageArn")
+}
 object Instance {
   import datetime.DateUtils._
   implicit val jsonFormat = Json.format[Instance]
@@ -69,14 +71,5 @@ object AMIableErrors {
   }
   def apply(errors: Seq[AMIableError]): AMIableErrors = {
     AMIableErrors(errors.toList)
-  }
-
-  def flip[T](attempts: List[Attempt[T]]): Attempt[List[T]] = {
-    attempts.filter(_.isLeft) match {
-      case Nil =>
-        Right(attempts.map(_.right.get))
-      case failures =>
-        Left(AMIableErrors(failures.map(_.left.get).flatMap(_.errors)))
-    }
   }
 }

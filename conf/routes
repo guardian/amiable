@@ -6,6 +6,8 @@
 GET     /                           controllers.AMIable.index
 GET     /ami                        controllers.AMIable.ami(arn: String)
 GET     /amis                       controllers.AMIable.amis
+GET     /instances                  controllers.AMIable.ssaInstances(stack: String, stage: String, app: String)
+GET     /instanceAMIs               controllers.AMIable.ssaInstanceAMIs(stack: String, stage: String, app: String)
 GET     /healthcheck                controllers.Healthcheck.healthcheck
 
 # Map static resources from the /public folder to the /assets URL path

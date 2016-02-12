@@ -1,0 +1,28 @@
+@(stack: String, stage: String, app: String, instances: List[Instance])
+
+@main("Instances") {
+    <div class="container">
+        <div class="row">
+            <h1 class="header green-text text-darken-3">Instances in use for @stack:@stage:@app</h1>
+            @for((instance, i) <- instances.zipWithIndex) {
+                @if((i % 3) == 0 && i > 0) {
+        </div>
+        <div class="row">
+                }
+                <div class="col m4">
+                    <dl class="ami-details">
+                        <dt>Name</dt>
+                        <dd>@instance.name</dd>
+                        <dt>Image ID</dt>
+                        <dd>@instance.amiArn</dd>
+                        <dt>Creation date</dt>
+                        <dd>@datetime.DateUtils.yearMonthDayTime.print(instance.createdAt)</dd>
+                        <dt>ARN</dt>
+                        <dd>@instance.arn</dd>
+                    </dl>
+                </div>
+            }
+        </div>
+    </div>
+
+}
