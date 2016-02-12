@@ -15,7 +15,7 @@ class PrismClientTest extends FreeSpec with Matchers with EitherValues with Mock
       val json = Json.parse(JSON.validAMI)
       val ami = extractAMI(json).right.value
       ami should have(
-        'name ("ami-name"),
+        'name (Some("ami-name")),
         'arn ("arn:aws:ec2:region::image/ami-example")
       )
     }
