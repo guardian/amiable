@@ -14,7 +14,7 @@
                 <dt>Description</dt>
                 <dd>@ami.description</dd>
                 <dt>Creation date</dt>
-                <dd>@ami.creationDate.getOrElse("Too old")</dd>
+                <dd>@ami.creationDate.fold("Too old")(datetime.DateUtils.yearMonthDayTime.print(_))</dd>
                 <dt>ARN</dt>
                 <dd>@ami.arn</dd>
             </dl>

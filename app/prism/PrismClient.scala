@@ -57,7 +57,7 @@ object PrismClient {
       case JsError(pathErrors) => Left {
         AMIableErrors(pathErrors.flatMap { case (_, errors) =>
           errors.map { error =>
-            Logger.warn(s"error.message, ${Json.stringify(json)}")
+            Logger.warn(s"${error.message}, ${Json.stringify(json)}")
             AMIableError(error.message, "Could not get AMI from response JSON", 500)
           }
         })
