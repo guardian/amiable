@@ -20,7 +20,9 @@ libraryDependencies ++= Seq(
   jdbc,
   cache,
   ws,
-  specs2 % Test
+  specs2 % Test,
+  "org.scalatest" %% "scalatest" % "2.2.6" % Test,
+  "org.mockito" % "mockito-core" % "1.10.19" % Test
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"

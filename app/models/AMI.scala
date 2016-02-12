@@ -1,0 +1,55 @@
+package models
+
+import org.joda.time.DateTime
+import play.api.libs.json._
+
+import scala.concurrent.Future
+
+case class AMI(
+  arn: String,
+  name: Option[String],
+  imageId: String,
+  region: String,
+  description: Option[String],
+  tags: Map[String,String],
+  creationDate: Option[String],
+  state: String,
+  architecture: String,
+  ownerId: String,
+  virtualizationType: String,
+  hypervisor: String,
+  sriovNetSupport: Option[String]
+)
+
+object AMI {
+  implicit val jsonFormat = Json.format[AMI]
+}
+
+case class AMIableError(
+  message: String,
+  friendlyMessage: String,
+  statusCode: Int,
+  context: Option[String] = None
+)
+
+
+case class AMIableErrors(errors: List[AMIableError]) {
+  def statusCode = errors.map(_.statusCode).max
+}
+object AMIableErrors {
+  def apply(error: AMIableError): AMIableErrors = {
+    AMIableErrors(List(error))
+  }
+  def apply(errors: Seq[AMIableError]): AMIableErrors = {
+    AMIableErrors(errors.toList)
+  }
+
+  def flip[T](attempts: List[Attempt[T]]): Attempt[List[T]] = {
+    attempts.filter(_.isLeft) match {
+      case Nil =>
+        Right(attempts.map(_.right.get))
+      case failures =>
+        Left(AMIableErrors(failures.map(_.left.get).flatMap(_.errors)))
+    }
+  }
+}
