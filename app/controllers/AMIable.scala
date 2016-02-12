@@ -1,6 +1,7 @@
 package controllers
 
 import config.AMIableConfig
+import models.{Attempt, AMI, AMIableErrors}
 import play.api._
 import play.api.mvc._
 import prism.PrismClient
@@ -19,20 +20,48 @@ class AMIable extends Controller {
   }
 
   def ami(arn: String) = Action.async { implicit request =>
-    PrismClient.getAMI(arn).map {
-      case Right(ami) => Ok(views.html.ami(ami))
-      case Left(err) =>
-        Logger.error(err.errors.map(_.message).mkString(", "))
-        Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
+    Attempt {
+      for {
+        ami <- PrismClient.getAMI(arn)
+      } yield Ok(views.html.ami(ami))
+    } { err =>
+      Logger.error(err.errors.map(_.message).mkString(", "))
+      Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
     }
   }
 
   def amis = Action.async { implicit request =>
-    PrismClient.getAMIs().map {
-      case Right(amis) => Ok(views.html.amis(amis))
-      case Left(err) =>
-        Logger.error(err.errors.map(_.message).mkString(", "))
-        Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
+    Attempt {
+      for {
+        amis <- PrismClient.getAMIs()
+      } yield Ok(views.html.amis(amis))
+    } { err =>
+      Logger.error(err.errors.map(_.message).mkString(", "))
+      Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
+    }
+  }
+
+  def ssaInstances(stack: String, stage: String, app: String) = Action.async { implicit request =>
+    Attempt {
+      for {
+        instances <- PrismClient.getInstances(stack, stage, app)
+      } yield Ok(views.html.instances(stack, stage, app, instances))
+    } { err =>
+      Logger.error(err.errors.map(_.message).mkString(", "))
+      Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
+    }
+  }
+
+  def ssaInstanceAMIs(stack: String, stage: String, app: String) = Action.async { implicit request =>
+    Attempt {
+      for {
+        instances <- PrismClient.getInstances(stack, stage, app)
+        amiArns = instances.flatMap(_.amiArn).distinct
+        amis <- Attempt.sequence(amiArns.map(PrismClient.getAMI))
+      } yield Ok(views.html.instanceAMIs(stack, stage, app, amis))
+    } { err =>
+      Logger.error(err.errors.map(_.message).mkString(", "))
+      Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
     }
   }
 }

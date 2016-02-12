@@ -1,19 +1,22 @@
 package prism
 
+import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{EitherValues, Matchers, FreeSpec}
-import PrismClient._
+import org.scalatest.{EitherValues, FreeSpec, Matchers, OptionValues}
 import play.api.libs.ws.WSResponse
+import prism.PrismClient._
+import util.AttemptValues
 import util.Fixtures._
 import play.api.libs.json._
-import org.mockito.Mockito._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
-class PrismClientTest extends FreeSpec with Matchers with EitherValues with MockitoSugar {
+class PrismClientTest extends FreeSpec with Matchers with EitherValues with AttemptValues with OptionValues with MockitoSugar {
   "extractAMI" - {
     "should return an AMI from correct json" in {
-      val json = Json.parse(JSON.validAMI)
-      val ami = extractAMI(json).right.value
+      val json = Json.parse(AMIs.validAMI)
+      val ami = extractAMI(json).awaitEither.right.value
       ami should have(
         'name (Some("ami-name")),
         'arn ("arn:aws:ec2:region::image/ami-example")
@@ -23,7 +26,7 @@ class PrismClientTest extends FreeSpec with Matchers with EitherValues with Mock
     "should return a failure given invalid json" in {
       val jsonStr = """{"testyinvalid":123}"""
       val json = Json.parse(jsonStr)
-      extractAMI(json).left.value
+      extractAMI(json).awaitEither.isLeft shouldBe true
     }
   }
 
@@ -40,11 +43,11 @@ class PrismClientTest extends FreeSpec with Matchers with EitherValues with Mock
   "amiResponseJson" - {
     "given a valid response" - {
       val response = mock[WSResponse]
-      val json = Json.parse(JSON.validAmiResponse)
+      val json = Json.parse(AMIs.validAmiResponse)
       when(response.json).thenReturn(json)
 
       "returns the JsValue" in {
-        amiResponseJson(response).right.value shouldEqual Json.parse(JSON.validAMI)
+        amiResponseJson(response).awaitEither.right.value shouldEqual Json.parse(AMIs.validAMI)
       }
     }
   }
@@ -52,12 +55,53 @@ class PrismClientTest extends FreeSpec with Matchers with EitherValues with Mock
   "amisResponseJson" - {
     "given a valid response" - {
       val response = mock[WSResponse]
-      val json = Json.parse(JSON.validAmisResponse)
+      val json = Json.parse(AMIs.validAmisResponse)
       when(response.json).thenReturn(json)
 
       "returns the JsValue" in {
-        amisResponseJson(response).right.value shouldEqual List(Json.parse(JSON.validAMI))
+        amisResponseJson(response).awaitEither.right.value shouldEqual List(Json.parse(AMIs.validAMI))
       }
+    }
+  }
+
+  "extractInstance" - {
+    "should return an Instance from correct json" in {
+      val json = Json.parse(Instances.validInstance)
+      val instance = extractInstance(json).awaitEither.right.value
+      instance should have(
+        'name ("instance-name"),
+        'arn ("arn:aws:ec2:region:0123456789:instance/i-id"),
+        'stack ("stack"),
+        'app (List("app")),
+        'stage ("STAGE")
+      )
+      instance.specification.get("imageId").value shouldEqual "ami-id"
+    }
+
+    "should return a failure given invalid json" in {
+      val jsonStr = """{"testyinvalid":123}"""
+      val json = Json.parse(jsonStr)
+      extractInstance(json).awaitEither.isLeft shouldBe true
+    }
+  }
+
+  "instancesUrl" - {
+    val root = "http://root"
+
+    "should contain the stack as a GET variable" in {
+      instancesUrl("stack", "stage", "app", root) should include("stack=stack")
+    }
+
+    "should contain the stage as a GET variable" in {
+      instancesUrl("stack", "stage", "app", root) should include("stage=stage")
+    }
+
+    "should contain the app as a GET variable" in {
+      instancesUrl("stack", "stage", "app", root) should include("app=app")
+    }
+
+    "uses the instances path" in {
+      instancesUrl("stack", "stage", "app", root) should startWith(s"$root/instances?")
     }
   }
 }
