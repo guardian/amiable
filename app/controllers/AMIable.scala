@@ -1,11 +1,12 @@
 package controllers
 
 import config.AMIableConfig
-import models.{Attempt, AMI, AMIableErrors}
+import models.Attempt
 import play.api._
-import play.api.mvc._
-import prism.PrismClient
 import play.api.libs.ws._
+import play.api.mvc._
+import prism.Prism
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
@@ -20,46 +21,44 @@ class AMIable extends Controller {
   }
 
   def ami(arn: String) = Action.async { implicit request =>
-    Attempt {
+    attempt {
       for {
-        ami <- PrismClient.getAMI(arn)
+        ami <- Prism.getAMI(arn)
       } yield Ok(views.html.ami(ami))
-    } { err =>
-      Logger.error(err.errors.map(_.message).mkString(", "))
-      Status(err.statusCode)(views.html.error(err))
     }
   }
 
   def amis = Action.async { implicit request =>
-    Attempt {
+    attempt {
       for {
-        amis <- PrismClient.getAMIs()
+        amis <- Prism.getAMIs()
       } yield Ok(views.html.amis(amis))
-    } { err =>
-      Logger.error(err.errors.map(_.message).mkString(", "))
-      Status(err.statusCode)(views.html.error(err))
     }
   }
 
   def ssaInstances(stack: Option[String], stage: Option[String], app: Option[String]) = Action.async { implicit request =>
-    Attempt {
+    attempt {
       for {
-        instances <- PrismClient.getInstances(stack, stage, app)
+        instances <- Prism.getInstances(stack, stage, app)
       } yield Ok(views.html.instances(stack, stage, app, instances))
-    } { err =>
-      Logger.error(err.errors.map(_.message).mkString(", "))
-      Status(err.statusCode)(views.html.error(err))
     }
   }
 
   def ssaInstanceAMIs(stack: Option[String], stage: Option[String], app: Option[String]) = Action.async { implicit request =>
-    Attempt {
+    attempt {
       for {
-        instances <- PrismClient.getInstances(stack, stage, app)
+        instances <- Prism.getInstances(stack, stage, app)
         amiArns = instances.flatMap(_.amiArn).distinct
-        amis <- Attempt.sequence(amiArns.map(PrismClient.getAMI))
+        amis <- Attempt.sequence(amiArns.map(Prism.getAMI))
       } yield Ok(views.html.instanceAMIs(stack, stage, app, amis))
-    } { err =>
+    }
+  }
+
+  /**
+    * `Attempt` with nicely formatted error handling using the error template
+    */
+  private def attempt[A](action: => Attempt[Result]) = {
+    Attempt(action) { err =>
       Logger.error(err.errors.map(_.message).mkString(", "))
       Status(err.statusCode)(views.html.error(err))
     }

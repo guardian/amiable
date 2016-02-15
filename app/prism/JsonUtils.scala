@@ -1,8 +1,10 @@
 package prism
 
-import models.{AMIableError, AMIableErrors, Attempt}
+import models._
 import play.api.Logger
 import play.api.libs.json._
+import play.api.libs.ws.WSResponse
+
 
 object JsonUtils {
   def jsResultToAttempt(errMessage: String)(jsResult: JsResult[List[JsValue]]): Attempt[List[JsValue]] = {
@@ -30,6 +32,38 @@ object JsonUtils {
           }
         })
       }
+    }
+  }
+
+  def amiResponseJson(response: WSResponse): Attempt[JsValue] = Attempt.fromEither {
+    (response.json \ "data").toEither
+      .left.map { valErr =>
+      Logger.warn(valErr.message)
+      AMIableErrors(AMIableError(valErr.message, "Could not parse AMI response JSON", 500))
+    }
+  }
+
+  def amisResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
+    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON"){
+      (response.json \ "data" \ "images").validate[List[JsValue]]
+    }
+  }
+
+  def extractAMI(json: JsValue): Attempt[AMI] = {
+    JsonUtils.extractToAttempt[AMI]("Could not get AMI from response JSON") {
+      json.validate[AMI]
+    }
+  }
+
+  def instancesResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
+    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON"){
+      (response.json \ "data" \ "instances").validate[List[JsValue]]
+    }
+  }
+
+  def extractInstance(json: JsValue): Attempt[Instance] = {
+    JsonUtils.extractToAttempt[Instance]("Could not get Instance from response JSON") {
+      json.validate[Instance]
     }
   }
 }
