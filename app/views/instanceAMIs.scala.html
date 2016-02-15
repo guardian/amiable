@@ -1,9 +1,11 @@
-@(stack: String, stage: String, app: String, amis: List[AMI])
+@(stack: Option[String], stage: Option[String], app: Option[String], amis: List[AMI])
+
+@import views.html.fragments.optWithLabel
 
 @main("Instance AMIs") {
     <div class="container">
         <div class="row">
-            <h1 class="header green-text text-darken-3">AMIs in use for @stack:@stage:@app</h1>
+            <h1 class="header green-text text-darken-3">AMIs in use for @optWithLabel(stack, "Stack") @optWithLabel(stage, "Stage") @optWithLabel(app, "App")</h1>
             @for((ami, i) <- amis.sortBy(_.creationDate.map(_.getMillis)).zipWithIndex) {
                 @if((i % 3) == 0 && i > 0) {
                 </div>

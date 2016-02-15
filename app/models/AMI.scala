@@ -41,8 +41,8 @@ case class Instance(
   vendor: String,
   securityGroups: List[String],
   tags: Map[String, String],
-  stack: String,
-  stage: String,
+  stack: Option[String],
+  stage: Option[String],
   app: List[String],
   mainclasses: List[String],
   specification: Map[String, String]

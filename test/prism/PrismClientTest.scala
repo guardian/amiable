@@ -89,19 +89,31 @@ class PrismClientTest extends FreeSpec with Matchers with EitherValues with Atte
     val root = "http://root"
 
     "should contain the stack as a GET variable" in {
-      instancesUrl("stack", "stage", "app", root) should include("stack=stack")
+      instancesUrl(Some("stack"), None, None, root) should include("stack=stack")
     }
 
     "should contain the stage as a GET variable" in {
-      instancesUrl("stack", "stage", "app", root) should include("stage=stage")
+      instancesUrl(None, Some("stage"), None, root) should include("stage=stage")
     }
 
     "should contain the app as a GET variable" in {
-      instancesUrl("stack", "stage", "app", root) should include("app=app")
+      instancesUrl(None, None, Some("app"), root) should include("app=app")
+    }
+
+    "should not contain an app parameter if no app is provided" in {
+      instancesUrl(Some("stack"), Some("stage"), None, root) shouldNot include("app=app")
+    }
+
+    "should not contain a stage parameter if no stage is provided" in {
+      instancesUrl(Some("stack"), None, Some("app"), root) shouldNot include("stage=stage")
+    }
+
+    "should not contain a stack parameter if no stack is provided" in {
+      instancesUrl(None, Some("stage"), Some("app"), root) shouldNot include("stack=stack")
     }
 
     "uses the instances path" in {
-      instancesUrl("stack", "stage", "app", root) should startWith(s"$root/instances?")
+      instancesUrl(None, None, None, root) should startWith(s"$root/instances?")
     }
   }
 }

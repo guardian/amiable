@@ -48,6 +48,10 @@ object Attempt {
   def fromEither[A](e: Either[AMIableErrors, A]): Attempt[A] =
     Attempt(Future.successful(e))
 
+  def fromFuture[A](future: Future[Either[AMIableErrors, A]])(recovery: PartialFunction[Throwable, Either[AMIableErrors, A]])(implicit ec: ExecutionContext): Attempt[A] = {
+    Attempt(future recover recovery)
+  }
+
   /**
     * Create an Attempt instance from a "good" value.
     */

@@ -26,7 +26,7 @@ class AMIable extends Controller {
       } yield Ok(views.html.ami(ami))
     } { err =>
       Logger.error(err.errors.map(_.message).mkString(", "))
-      Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
+      Status(err.statusCode)(views.html.error(err))
     }
   }
 
@@ -37,22 +37,22 @@ class AMIable extends Controller {
       } yield Ok(views.html.amis(amis))
     } { err =>
       Logger.error(err.errors.map(_.message).mkString(", "))
-      Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
+      Status(err.statusCode)(views.html.error(err))
     }
   }
 
-  def ssaInstances(stack: String, stage: String, app: String) = Action.async { implicit request =>
+  def ssaInstances(stack: Option[String], stage: Option[String], app: Option[String]) = Action.async { implicit request =>
     Attempt {
       for {
         instances <- PrismClient.getInstances(stack, stage, app)
       } yield Ok(views.html.instances(stack, stage, app, instances))
     } { err =>
       Logger.error(err.errors.map(_.message).mkString(", "))
-      Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
+      Status(err.statusCode)(views.html.error(err))
     }
   }
 
-  def ssaInstanceAMIs(stack: String, stage: String, app: String) = Action.async { implicit request =>
+  def ssaInstanceAMIs(stack: Option[String], stage: Option[String], app: Option[String]) = Action.async { implicit request =>
     Attempt {
       for {
         instances <- PrismClient.getInstances(stack, stage, app)
@@ -61,7 +61,7 @@ class AMIable extends Controller {
       } yield Ok(views.html.instanceAMIs(stack, stage, app, amis))
     } { err =>
       Logger.error(err.errors.map(_.message).mkString(", "))
-      Status(err.statusCode)(err.errors.map(_.friendlyMessage).mkString(", "))
+      Status(err.statusCode)(views.html.error(err))
     }
   }
 }

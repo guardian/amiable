@@ -1,4 +1,4 @@
-package logic
+package prism
 
 import models.{AMIableError, AMIableErrors, Attempt}
 import play.api.Logger
