@@ -19,7 +19,15 @@
                         <dt>Description</dt>
                         <dd>@ami.description.getOrElse("No description available")</dd>
                         <dt>Creation date</dt>
-                        <dd>@ami.creationDate.fold("Too old")(datetime.DateUtils.yearMonthDayTime.print(_))</dd>
+                        <dd>@ami.creationDate match {
+                            case Some(date) => {
+                                @datetime.DateUtils.readableDateTime.print(date) -
+                                <span class="@datetime.DateUtils.getAgeColour(date)">@datetime.DateUtils.daysAgo(date) days old</span>
+                            }
+                            case None => {
+                                Too old
+                            }
+                        }</dd>
                         <dt>ARN</dt>
                         <dd>@ami.arn</dd>
                     </dl>
