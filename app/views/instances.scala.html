@@ -15,12 +15,20 @@
                     <dl class="ami-details">
                         <dt>Name</dt>
                         <dd>@instance.name</dd>
+                        <dt>Account name</dt>
+                        <dd>@instance.meta.origin.accountName</dd>
                         <dt>Image ID</dt>
                         <dd>@instance.amiArn</dd>
                         <dt>Creation date</dt>
                         <dd>@datetime.DateUtils.yearMonthDayTime.print(instance.createdAt)</dd>
                         <dt>ARN</dt>
                         <dd>@instance.arn</dd>
+                        @if(instance.app.nonEmpty) {
+                            <dt>App</dt>
+                            <dd>
+                                @instance.app.mkString(", ")
+                            </dd>
+                        }
                     </dl>
                 </div>
             }

@@ -91,3 +91,15 @@ object Attempt {
     )
   }
 }
+
+case class AMIableErrors(errors: List[AMIableError]) {
+  def statusCode = errors.map(_.statusCode).max
+}
+object AMIableErrors {
+  def apply(error: AMIableError): AMIableErrors = {
+    AMIableErrors(List(error))
+  }
+  def apply(errors: Seq[AMIableError]): AMIableErrors = {
+    AMIableErrors(errors.toList)
+  }
+}

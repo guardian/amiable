@@ -7,6 +7,8 @@ import play.api.libs.ws.WSResponse
 
 
 object JsonUtils {
+  import Serialisation._
+
   def jsResultToAttempt(errMessage: String)(jsResult: JsResult[List[JsValue]]): Attempt[List[JsValue]] = {
     jsResult match {
       case JsSuccess(ami, _) => Attempt.Right(ami)

@@ -45,14 +45,23 @@ case class Instance(
   stage: Option[String],
   app: List[String],
   mainclasses: List[String],
-  specification: Map[String, String]
+  specification: Map[String, String],
+  meta: Meta
 ) {
   val amiArn = specification.get("imageArn")
 }
-object Instance {
-  import datetime.DateUtils._
-  implicit val jsonFormat = Json.format[Instance]
-}
+
+case class Meta(
+  href: String,
+  origin: Origin
+)
+
+case class Origin(
+  vendor: String,
+  accountName: String,
+  region: String,
+  accountNumber: String
+)
 
 case class AMIableError(
   message: String,
@@ -60,16 +69,3 @@ case class AMIableError(
   statusCode: Int,
   context: Option[String] = None
 )
-
-
-case class AMIableErrors(errors: List[AMIableError]) {
-  def statusCode = errors.map(_.statusCode).max
-}
-object AMIableErrors {
-  def apply(error: AMIableError): AMIableErrors = {
-    AMIableErrors(List(error))
-  }
-  def apply(errors: Seq[AMIableError]): AMIableErrors = {
-    AMIableErrors(errors.toList)
-  }
-}
