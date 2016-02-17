@@ -47,5 +47,31 @@ class UrlsTest extends FreeSpec with Matchers with EitherValues with AttemptValu
     "uses the instances path" in {
       instancesUrl(None, None, None, root) should startWith(s"$root/instances?")
     }
+
+    "ignores empty stage" in {
+      instancesUrl(Some(""), None, None, root) shouldNot include(s"stage=")
+    }
+
+    "ignores empty stack" in {
+      instancesUrl(Some(""), None, None, root) shouldNot include(s"stack=")
+    }
+
+    "ignores empty app" in {
+      instancesUrl(Some(""), None, None, root) shouldNot include(s"app=")
+    }
+  }
+
+  "emptyToNone" - {
+    "returns None for None" in {
+      emptyToNone(None) shouldEqual None
+    }
+
+    "returns None for empty string" in {
+      emptyToNone(Some("")) shouldEqual None
+    }
+
+    "returns Some for non-empty string" in {
+      emptyToNone(Some("abc")) shouldEqual Some("abc")
+    }
   }
 }

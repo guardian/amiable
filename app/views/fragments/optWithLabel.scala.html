@@ -1,6 +1,6 @@
 @(strOpt: Option[String], label: String)
 
-@strOpt.fold(Html("")){ str =>
+@strOpt.filter(_.nonEmpty).fold(Html("")){ str =>
     <span class="label">@label</span>
     <span class="value">@str</span>
 }
