@@ -15,6 +15,7 @@
                 @amiOrError match {
                     case Left(err) => {
                         <div class="ami-badge card-panel grey lighten-4 center-align">
+                            <img src="/assets/images/ami-error.png" alt="AMI" class="ami-icon">
                             @err
                         </div>
                     }
