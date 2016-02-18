@@ -16,3 +16,19 @@ main {
 dl.ami-details dt {
     font-weight: bold;
 }
+
+.ami-badge {
+    position: relative;
+}
+
+.ami-badge .ami-icon {
+    position: absolute;
+    top: -13px;
+    left: -14px;
+    width: 40px;
+}
+
+.ami-badge .ami-status {
+    width: 40px;
+    vertical-align: middle;
+}

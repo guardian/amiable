@@ -1,6 +1,6 @@
 @(stack: Option[String], stage: Option[String], app: Option[String], amis: List[AMI])
 
-@import views.html.fragments.optWithLabel
+@import views.html.fragments.{optWithLabel, formatAmi}
 
 @main("Instance AMIs") {
     <div class="container">
@@ -12,21 +12,9 @@
         <div class="row">
         }
             <div class="col m4">
-                <dl class="ami-details">
-                    <dt>Name</dt>
-                    <dd>@ami.name.getOrElse("No name available")</dd>
-                    <dt>Image ID</dt>
-                    <dd>@ami.imageId</dd>
-                    <dt>Description</dt>
-                    <dd>@ami.description.getOrElse("No description available")</dd>
-                    <dt>Creation date</dt>
-                    <dd>@ami.creationDate.fold("Too old")(datetime.DateUtils.yearMonthDayTime.print(_))</dd>
-                    <dt>ARN</dt>
-                    <dd>@ami.arn</dd>
-                </dl>
+                @formatAmi(ami)
             </div>
         }
         </div>
     </div>
-
 }

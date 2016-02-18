@@ -69,3 +69,8 @@ case class AMIableError(
   statusCode: Int,
   context: Option[String] = None
 )
+
+sealed trait Age
+object Fresh extends Age
+object Turning extends Age
+object Old extends Age
