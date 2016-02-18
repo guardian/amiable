@@ -45,6 +45,10 @@ object Attempt {
     }
   }
 
+  def sequenceFutures[A](response: List[Attempt[A]])(implicit ec: ExecutionContext): Attempt[List[Either[AMIableErrors, A]]] = {
+    Async.Right(Future.sequence(response.map(_.asFuture)))
+  }
+
   def fromEither[A](e: Either[AMIableErrors, A]): Attempt[A] =
     Attempt(Future.successful(e))
 
