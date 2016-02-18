@@ -70,7 +70,7 @@ case class AMIableError(
   context: Option[String] = None
 )
 
-trait Age
+sealed trait Age
 object Fresh extends Age
 object Turning extends Age
 object Old extends Age
