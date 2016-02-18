@@ -1,0 +1,60 @@
+@(ami: AMI, id: String = java.util.UUID.randomUUID.toString)
+
+@import datetime.DateUtils.{readableDateTime, getAgeColour, daysAgo}
+
+@defining(ami.creationDate.map(getAgeColour).getOrElse("red")) { colour =>
+    <div class="ami-badge card-panel @colour lighten-4 center-align">
+        <a class="modal-trigger black-text" href="#modal-@id">
+            <img src="/assets/images/ami.png" alt="AMI" class="ami-icon">
+            @ami.imageId
+        </a>
+    </div>
+}
+
+
+<div id="modal-@id" class="modal" xmlns="http://www.w3.org/1999/html">
+    <div class="modal-content">
+        <dl class="ami-details">
+            <dt>Image ID</dt>
+            <dd>@ami.imageId</dd>
+            <dt>Creation date</dt>
+            <dd>@ami.creationDate match {
+                case Some(date) => {
+                    @readableDateTime.print(date) -
+                    <span class="@getAgeColour(date)-text">
+                        @daysAgo(date) days old
+                    </span>
+                }
+                case None => {
+                    <span class="red-text">Very old (no creation date available)</span>
+                }
+            }</dd>
+            @ami.name.map { name =>
+                <dt>Name</dt>
+                <dd>@ami.name</dd>
+            }
+            @ami.description.map { description =>
+                <dt>Description</dt>
+                <dd>@ami.description</dd>
+            }
+            @if(ami.tags.nonEmpty) {
+                <dt>Tags</dt>
+                <dd>
+                @for( (key, value) <- ami.tags) {
+                    <span class="aws-tag">
+                        <div class="chip">@key: @value</div>
+                    </span>
+                }
+                </dd>
+            }
+            <dt>Region</dt>
+            <dd>@ami.region</dd>
+            <dt>Virtualization Type</dt>
+            <dd>@ami.virtualizationType</dd>
+            <dt>Architecture</dt>
+            <dd>@ami.architecture</dd>
+            <dt>ARN</dt>
+            <dd>@ami.arn</dd>
+        </dl>
+    </div>
+</div>
