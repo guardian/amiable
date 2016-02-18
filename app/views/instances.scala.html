@@ -1,9 +1,11 @@
-@(stack: String, stage: String, app: String, instances: List[Instance])
+@(stack: Option[String], stage: Option[String], app: Option[String], instances: List[Instance])
+
+@import views.html.fragments.optWithLabel
 
 @main("Instances") {
     <div class="container">
         <div class="row">
-            <h1 class="header green-text text-darken-3">Instances in use for @stack:@stage:@app</h1>
+            <h1 class="header green-text text-darken-3">Instances in use for @optWithLabel(stack, "Stack") @optWithLabel(stage, "Stage") @optWithLabel(app, "App")</h1>
             @for((instance, i) <- instances.zipWithIndex) {
                 @if((i % 3) == 0 && i > 0) {
         </div>
@@ -13,12 +15,20 @@
                     <dl class="ami-details">
                         <dt>Name</dt>
                         <dd>@instance.name</dd>
+                        <dt>Account name</dt>
+                        <dd>@instance.meta.origin.accountName</dd>
                         <dt>Image ID</dt>
                         <dd>@instance.amiArn</dd>
                         <dt>Creation date</dt>
                         <dd>@datetime.DateUtils.yearMonthDayTime.print(instance.createdAt)</dd>
                         <dt>ARN</dt>
                         <dd>@instance.arn</dd>
+                        @if(instance.app.nonEmpty) {
+                            <dt>App</dt>
+                            <dd>
+                                @instance.app.mkString(", ")
+                            </dd>
+                        }
                     </dl>
                 </div>
             }

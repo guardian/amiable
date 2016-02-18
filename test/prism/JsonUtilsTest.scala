@@ -4,15 +4,15 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{EitherValues, FreeSpec, Matchers, OptionValues}
 import play.api.libs.ws.WSResponse
-import prism.PrismClient._
 import util.AttemptValues
 import util.Fixtures._
 import play.api.libs.json._
+import prism.JsonUtils._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
-class PrismClientTest extends FreeSpec with Matchers with EitherValues with AttemptValues with OptionValues with MockitoSugar {
+class JsonUtilsTest extends FreeSpec with Matchers with EitherValues with AttemptValues with OptionValues with MockitoSugar {
   "extractAMI" - {
     "should return an AMI from correct json" in {
       val json = Json.parse(AMIs.validAMI)
@@ -27,16 +27,6 @@ class PrismClientTest extends FreeSpec with Matchers with EitherValues with Atte
       val jsonStr = """{"testyinvalid":123}"""
       val json = Json.parse(jsonStr)
       extractAMI(json).awaitEither.isLeft shouldBe true
-    }
-  }
-
-  "amiUrl" - {
-    "should generate this url" in {
-      amiUrl("ami-blah", "http://root") shouldEqual "http://root/images/ami-blah"
-    }
-
-    "should url encode the arn" in {
-      amiUrl("ami/blah", "") should include("ami%2Fblah")
     }
   }
 
@@ -71,9 +61,9 @@ class PrismClientTest extends FreeSpec with Matchers with EitherValues with Atte
       instance should have(
         'name ("instance-name"),
         'arn ("arn:aws:ec2:region:0123456789:instance/i-id"),
-        'stack ("stack"),
+        'stack (Some("stack")),
         'app (List("app")),
-        'stage ("STAGE")
+        'stage (Some("STAGE"))
       )
       instance.specification.get("imageId").value shouldEqual "ami-id"
     }
@@ -82,26 +72,6 @@ class PrismClientTest extends FreeSpec with Matchers with EitherValues with Atte
       val jsonStr = """{"testyinvalid":123}"""
       val json = Json.parse(jsonStr)
       extractInstance(json).awaitEither.isLeft shouldBe true
-    }
-  }
-
-  "instancesUrl" - {
-    val root = "http://root"
-
-    "should contain the stack as a GET variable" in {
-      instancesUrl("stack", "stage", "app", root) should include("stack=stack")
-    }
-
-    "should contain the stage as a GET variable" in {
-      instancesUrl("stack", "stage", "app", root) should include("stage=stage")
-    }
-
-    "should contain the app as a GET variable" in {
-      instancesUrl("stack", "stage", "app", root) should include("app=app")
-    }
-
-    "uses the instances path" in {
-      instancesUrl("stack", "stage", "app", root) should startWith(s"$root/instances?")
     }
   }
 }

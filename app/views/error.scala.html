@@ -1,0 +1,12 @@
+@(amiableErrors: AMIableErrors)
+
+@main("Error") {
+    <div class="container">
+        <div class="row">
+            <h1 class="header green-text text-darken-3">Error</h1>
+            @for(error <- amiableErrors.errors) {
+                <p>@error.friendlyMessage</p>
+            }
+        </div>
+    </div>
+}
