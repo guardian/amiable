@@ -1,4 +1,4 @@
-@(stack: Option[String], stage: Option[String], app: Option[String], amis: List[AMI])
+@(stack: Option[String], stage: Option[String], app: Option[String], amis: List[Either[String, AMI]])
 
 @import views.html.fragments.{optWithLabel, formatAmi}
 
@@ -6,13 +6,23 @@
     <div class="container">
         <div class="row">
             <h1 class="header green-text text-darken-3">AMIs in use for @optWithLabel(stack, "Stack") @optWithLabel(stage, "Stage") @optWithLabel(app, "App")</h1>
-            @for((ami, i) <- amis.sortBy(_.creationDate.map(_.getMillis)).zipWithIndex) {
+            @for((amiOrError, i) <- amis.zipWithIndex) {
                 @if((i % 3) == 0 && i > 0) {
                 </div>
         <div class="row">
         }
             <div class="col m4">
-                @formatAmi(ami)
+                @amiOrError match {
+                    case Left(err) => {
+                        <div class="ami-badge card-panel grey lighten-4 center-align">
+                            <img src="/assets/images/ami-error.png" alt="AMI" class="ami-icon">
+                            @err
+                        </div>
+                    }
+                    case Right(ami) => {
+                        @formatAmi(ami)
+                    }
+                }
             </div>
         }
         </div>
