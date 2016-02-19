@@ -1,11 +1,22 @@
 @(stack: Option[String], stage: Option[String], app: Option[String], instances: List[Instance])
 
-@import views.html.fragments.{optWithLabel, formatInstance}
+@import views.html.fragments.{formatInstance, heading}
 
 @main("Instances") {
+    @heading("Instances")
     <div class="container">
+        <p>
+            @stack.map { stack =>
+                <span class="chip">@stack</span>
+            }
+            @stage.map { stage =>
+                <span class="chip">@stage</span>
+            }
+            @app.map { app =>
+                <span class="chip">@app</span>
+            }
+        </p>
         <div class="row">
-            <h1 class="header green-text text-darken-3">Instances in use for @optWithLabel(stack, "Stack") @optWithLabel(stage, "Stage") @optWithLabel(app, "App")</h1>
             @for((instance, i) <- instances.zipWithIndex) {
                 @if((i % 3) == 0 && i > 0) {
         </div>

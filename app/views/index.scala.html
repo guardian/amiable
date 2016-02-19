@@ -1,49 +1,37 @@
 @()
 
+@import views.html.fragments.ssaAmiForm
+
 @main("Welcome to AMIable") {
+    <div class="hero grey lighten-3">
+        <div class="container">
+            <h1 class="hide">AMIable</h1>
+            <div class="row">
+                <div class="col m6">
+                    <p>TODO: Number of apps with old AMIs</p>
+                </div>
+                <div class="col m6">
+                    <p>TODO: SSAs with old AMIs</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <div class="row">
             <div class="col s12">
-                <h1 class="header green-text text-darken-3">AMIable</h1>
+                @ssaAmiForm()
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <h2>AMIs in use</h2>
-                <form action="/instanceAMIs" method="get" class="row">
-                    <div class="input-field col s4">
-                        <input type="text" name="stack" id="stack" placeholder="Stack" />
-                        <label for="stack">Stack</label>
-                    </div>
-                    <div class="input-field col s4">
-                        <input type="text" name="stage" id="stage" placeholder="Stage" />
-                        <label for="stage">Stage</label>
-                    </div>
-                    <div class="input-field col s4">
-                        <input type="text" name="app" id="app" placeholder="App" />
-                        <label for="app">App</label>
-                    </div>
-                    <button class="btn waves-effect waves-light" type="submit">
-                        Go
-                    </button>
-                </form>
-            </div>
-            <div class="col s12">
-                <h2>All AMIs</h2>
-
+            <div class="col m6">
                 <form action="/ami" method="get" class="row">
                     <div class="input-field col s12">
                         <input type="text" name="arn" id="arn" placeholder="AMI ARN" />
-                        <label for="arn">AMI ARN</label>
+                        <label for="arn">Lookup AMI</label>
+                        <button class="btn waves-effect waves-light right" type="submit">
+                            Lookup AMI
+                        </button>
                     </div>
-                    <button class="btn waves-effect waves-light" type="submit">
-                        Go
-                    </button>
                 </form>
-                <div class="row">
-                    <a href="/amis" class="waves-effect waves-light btn">All AMIs</a>
-                </div>
             </div>
         </div>
     </div>

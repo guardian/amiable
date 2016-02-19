@@ -1,14 +1,12 @@
 @(ami: AMI)
 
-@import views.html.fragments.formatAmi
+@import views.html.fragments.{formatAmi, heading}
 
 @main("AMI") {
-
+    @heading("AMI")
     <div class="container">
         <div class="row">
-            <h1 class="header green-text text-darken-3">AMI</h1>
-
-            @formatAmi(ami)
+            @formatAmi(ami, listDisplay = false)
         </div>
     </div>
 
