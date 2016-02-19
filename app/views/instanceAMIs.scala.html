@@ -1,11 +1,22 @@
 @(stack: Option[String], stage: Option[String], app: Option[String], amis: List[Either[String, AMI]])
 
-@import views.html.fragments.{optWithLabel, formatAmi}
+@import views.html.fragments.{ssaAmiForm, formatAmi, heading}
 
 @main("Instance AMIs") {
+    @heading("AMIs in use")
     <div class="container">
+        <p>
+            @stack.map { stack =>
+                <span class="chip">@stack</span>
+            }
+            @stage.map { stage =>
+                <span class="chip">@stage</span>
+            }
+            @app.map { app =>
+                <span class="chip">@app</span>
+            }
+        </p>
         <div class="row">
-            <h1 class="header green-text text-darken-3">AMIs in use for @optWithLabel(stack, "Stack") @optWithLabel(stage, "Stage") @optWithLabel(app, "App")</h1>
             @for((amiOrError, i) <- amis.zipWithIndex) {
                 @if((i % 3) == 0 && i > 0) {
                 </div>
@@ -14,8 +25,8 @@
             <div class="col m4">
                 @amiOrError match {
                     case Left(err) => {
-                        <div class="ami-badge card-panel grey lighten-4 center-align">
-                            <img src="/assets/images/ami-error.png" alt="AMI" class="ami-icon">
+                        <div class="ami-badge card-panel grey darken-3 center-align white-text">
+                            <img src="/assets/images/ami-error.png" alt="AMI" class="ami-icon z-depth-2">
                             @err
                         </div>
                     }
@@ -26,5 +37,6 @@
             </div>
         }
         </div>
+        @ssaAmiForm(stack, stage, app)
     </div>
 }

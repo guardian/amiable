@@ -1,19 +1,23 @@
-@(ami: AMI, id: String = java.util.UUID.randomUUID.toString)
+@(ami: AMI, listDisplay: Boolean = true, id: String = java.util.UUID.randomUUID.toString)
 
 @import datetime.DateUtils.{readableDateTime, getAgeColour, daysAgo}
 
 @defining(ami.creationDate.map(getAgeColour).getOrElse("red")) { colour =>
-    <div class="ami-badge card-panel @colour lighten-4 center-align">
-        <a class="modal-trigger black-text" href="#modal-@id">
-            <img src="/assets/images/ami.png" alt="AMI" class="ami-icon">
-            @ami.imageId
-        </a>
+    <div class="ami-badge card-panel @colour darken-3 center-align">
+        @if(listDisplay){
+            <a class="modal-trigger white-text" href="#modal-@id">
+        }
+                <img src="/assets/images/ami.png" alt="AMI" class="ami-icon z-depth-1">
+                @ami.imageId
+        @if(listDisplay){
+            </a>
+        }
     </div>
 }
 
 
-<div id="modal-@id" class="modal" xmlns="http://www.w3.org/1999/html">
-    <div class="modal-content">
+<div id="modal-@id" class="@if(listDisplay){modal}" xmlns="http://www.w3.org/1999/html">
+    <div class="@if(listDisplay){modal-content}">
         <dl class="ami-details">
             <dt>Image ID</dt>
             <dd>@ami.imageId</dd>
@@ -40,11 +44,16 @@
             @if(ami.tags.nonEmpty) {
                 <dt>Tags</dt>
                 <dd>
+                    <table class="tags">
+                        <tbody>
                 @for( (key, value) <- ami.tags) {
-                    <span class="aws-tag">
-                        <div class="chip">@key: @value</div>
-                    </span>
+                            <tr>
+                                <td>@key</td>
+                                <td>@value</td>
+                            </tr>
                 }
+                        </tbody>
+                    </table>
                 </dd>
             }
             <dt>Region</dt>

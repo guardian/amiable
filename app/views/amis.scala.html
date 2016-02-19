@@ -1,12 +1,11 @@
 @(amis: List[AMI])
 
-@import views.html.fragments.formatAmi
+@import views.html.fragments.{formatAmi, heading}
 
 @main("AMI") {
-
+    @heading("All AMIs")
     <div class="container">
         <div class="row">
-            <h1 class="header green-text text-darken-3">All AMIs</h1>
             @for((ami, i) <- amis.zipWithIndex) {
                 @if((i % 3) == 0 && i > 0) {
         </div>

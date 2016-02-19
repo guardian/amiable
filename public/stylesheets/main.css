@@ -8,6 +8,20 @@ main {
     flex: 1 0 auto;
 }
 
+nav {
+    background-color: #3661B0;
+}
+
+h1 {
+    color: #3661B0;
+}
+
+.heading, .hero {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin-bottom: 1em;
+}
+
 #logo-container img {
     vertical-align: middle;
     margin-top: -5px;
@@ -26,9 +40,14 @@ dl.ami-details dt {
     top: -13px;
     left: -14px;
     width: 40px;
+    border-radius: 4px;
 }
 
 .ami-badge .ami-status {
     width: 40px;
     vertical-align: middle;
+}
+
+table.tags td {
+    padding: 0px;
 }

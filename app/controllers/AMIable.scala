@@ -36,7 +36,8 @@ class AMIable extends Controller {
     }
   }
 
-  def ssaInstances(stack: Option[String], stage: Option[String], app: Option[String]) = Action.async { implicit request =>
+  def ssaInstances(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String]) = Action.async { implicit request =>
+    val (stack, stage, app) = (stackOpt.filter(_.nonEmpty), stageOpt.filter(_.nonEmpty), appOpt.filter(_.nonEmpty))
     attempt {
       for {
         instances <- Prism.getInstances(stack, stage, app)
@@ -44,7 +45,8 @@ class AMIable extends Controller {
     }
   }
 
-  def ssaInstanceAMIs(stack: Option[String], stage: Option[String], app: Option[String]) = Action.async { implicit request =>
+  def ssaInstanceAMIs(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String]) = Action.async { implicit request =>
+    val (stack, stage, app) = (stackOpt.filter(_.nonEmpty), stageOpt.filter(_.nonEmpty), appOpt.filter(_.nonEmpty))
     attempt {
       for {
         instances <- Prism.getInstances(stack, stage, app)
