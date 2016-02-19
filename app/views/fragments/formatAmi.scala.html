@@ -26,7 +26,7 @@
                 case Some(date) => {
                     @readableDateTime.print(date) -
                     <span class="@getAgeColour(date)-text">
-                        @daysAgo(date) days old
+                        @daysAgo(date) day@if(daysAgo(date) != 1){s} old
                     </span>
                 }
                 case None => {
