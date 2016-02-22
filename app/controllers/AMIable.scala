@@ -6,6 +6,7 @@ import play.api._
 import play.api.libs.ws._
 import play.api.mvc._
 import prism.Prism
+import prism.PrismLogic
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,8 +17,14 @@ class AMIable extends Controller {
   lazy implicit val playConfig: Configuration = play.api.Play.configuration
   lazy implicit val conf = AMIableConfig(playConfig.getString("prism.url").get, WS.client)
 
-  def index = Action {
-    Ok(views.html.index())
+  def index = Action.async { implicit request =>
+    attempt {
+      for {
+        prodInstances <- Prism.instancesWithAmis(stage = Some("PROD"))
+        oldInstances = PrismLogic.oldInstances(prodInstances)
+        oldStacks = PrismLogic.stacks(oldInstances)
+      } yield Ok(views.html.index(oldInstances, oldStacks))
+    }
   }
 
   def ami(arn: String) = Action.async { implicit request =>

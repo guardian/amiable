@@ -1,4 +1,4 @@
-@()
+@(oldInstances: List[Instance], oldStacks: List[String])
 
 @import views.html.fragments.ssaAmiForm
 
@@ -8,10 +8,20 @@
             <h1 class="hide">AMIable</h1>
             <div class="row">
                 <div class="col m6">
-                    <p>TODO: Number of apps with old AMIs</p>
+                    <p class="grey-text darken-1">
+                        Instances running on an out-of-date AMI
+                    </p>
+                    <div class="old-instance-count deep-purple-text">
+                        @oldInstances.size
+                    </div>
                 </div>
                 <div class="col m6">
-                    <p>TODO: SSAs with old AMIs</p>
+                    <p class="grey-text darken-1">
+                        Stacks running old AMIs
+                    </p>
+                    @for(stack <- oldStacks) {
+                        <div class="chip"><a href="/instanceAMIs?stack=@stack">@stack</a></div>
+                    }
                 </div>
             </div>
         </div>

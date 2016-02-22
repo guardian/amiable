@@ -8,6 +8,8 @@ import prism.Urls._
 import scala.concurrent.ExecutionContext
 
 object Prism {
+  import PrismLogic._
+
   def getAMI(arn : String)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[AMI] = {
     val url = amiUrl(arn, config.prismUrl)
     for {
@@ -26,12 +28,22 @@ object Prism {
     } yield amis
   }
 
-  def getInstances(stack: Option[String], stage: Option[String], app: Option[String])(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
+  def getInstances(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None)
+                  (implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
     val url = instancesUrl(stack, stage, app, config.prismUrl)
     for {
       response <- Http.response(config.wsClient.url(url).get(), "Unable to fetch instance", url)
       jsons <- instancesResponseJson(response)
       instances <- Attempt.sequence(jsons.map(extractInstance))
     } yield instances
+  }
+
+  def instancesWithAmis(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None)
+                       (implicit config: AMIableConfig, ec: ExecutionContext): Attempt[Map[Instance, Option[AMI]]] = {
+    for {
+      prodInstances <- getInstances(stack, stage, app)
+      amiAttempts = amiArns(prodInstances).map(getAMI)
+      amis <- Attempt.successfulAttempts(amiAttempts)
+    } yield instanceAmis(prodInstances, amis)
   }
 }
