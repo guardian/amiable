@@ -1,7 +1,7 @@
 package controllers
 
 import config.AMIableConfig
-import models.Attempt
+import models.{SSA, Attempt}
 import play.api._
 import play.api.libs.ws._
 import play.api.mvc._
@@ -20,7 +20,7 @@ class AMIable extends Controller {
   def index = Action.async { implicit request =>
     attempt {
       for {
-        prodInstances <- Prism.instancesWithAmis(stage = Some("PROD"))
+        prodInstances <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
         oldInstances = PrismLogic.oldInstances(prodInstances)
         oldStacks = PrismLogic.stacks(oldInstances)
       } yield Ok(views.html.index(oldInstances, oldStacks))
@@ -44,24 +44,24 @@ class AMIable extends Controller {
   }
 
   def ssaInstances(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String]) = Action.async { implicit request =>
-    val (stack, stage, app) = (stackOpt.filter(_.nonEmpty), stageOpt.filter(_.nonEmpty), appOpt.filter(_.nonEmpty))
+    val ssa = SSA.fromParams(stackOpt, stageOpt, appOpt)
     attempt {
       for {
-        instances <- Prism.getInstances(stack, stage, app)
-      } yield Ok(views.html.instances(stack, stage, app, instances))
+        instances <- Prism.getInstances(ssa)
+      } yield Ok(views.html.instances(ssa.stack, ssa.stage, ssa.app, instances))
     }
   }
 
   def ssaInstanceAMIs(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String]) = Action.async { implicit request =>
-    val (stack, stage, app) = (stackOpt.filter(_.nonEmpty), stageOpt.filter(_.nonEmpty), appOpt.filter(_.nonEmpty))
+    val ssa = SSA.fromParams(stackOpt, stageOpt, appOpt)
     attempt {
       for {
-        instances <- Prism.getInstances(stack, stage, app)
+        instances <- Prism.getInstances(ssa)
         amiArns = instances.flatMap(_.amiArn).distinct
         amiAttempts <- Attempt.sequenceFutures(amiArns.map(Prism.getAMI))
         amiOrError = amiAttempts.map(_.left.map(_.errors.map(_.friendlyMessage).mkString(", ")))
       } yield {
-        Ok(views.html.instanceAMIs(stack, stage, app, amiOrError))
+        Ok(views.html.instanceAMIs(ssa.stack, ssa.stage, ssa.app, amiOrError))
       }
     }
   }

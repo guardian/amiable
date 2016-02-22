@@ -2,6 +2,8 @@ package prism
 
 import java.net.URLEncoder
 
+import models.SSA
+
 
 object Urls {
   def amiUrl(arn: String, prismUrl: String): String = {
@@ -15,9 +17,9 @@ object Urls {
 
   private[prism] def emptyToNone(strOpt: Option[String]) = strOpt.filter(_.nonEmpty)
 
-  def instancesUrl(stack: Option[String], stage: Option[String], app: Option[String], prismUrl: String) = {
+  def instancesUrl(ssa: SSA, prismUrl: String) = {
     val getVars = for {
-      (name, strOpt) <- List("stack" -> emptyToNone(stack), "stage" -> emptyToNone(stage), "app" -> emptyToNone(app))
+      (name, strOpt) <- List("stack" -> ssa.stack, "stage" -> ssa.stage, "app" -> ssa.app)
       getVar <- strOpt.map(str =>  s"$name=${URLEncoder.encode(str, "UTF-8")}")
     } yield getVar
     s"$prismUrl/instances?${getVars.mkString("&")}"

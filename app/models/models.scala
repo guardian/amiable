@@ -63,6 +63,19 @@ case class Origin(
   accountNumber: String
 )
 
+case class SSA (
+  stack: Option[String] = None,
+  stage: Option[String] = None,
+  app: Option[String] = None
+)
+object SSA {
+  /**
+    * Filters empty strings to None, such as those provided by request parameters.
+    */
+  def fromParams(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None): SSA =
+    SSA(stack.filter(_.nonEmpty), stage.filter(_.nonEmpty), app.filter(_.nonEmpty))
+}
+
 case class AMIableError(
   message: String,
   friendlyMessage: String,
