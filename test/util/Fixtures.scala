@@ -1,8 +1,16 @@
 package util
 
-import play.api.libs.json.{JsObject, JsValue}
+import models.{AMI, Instance, Meta, Origin}
+import org.joda.time.DateTime
 
 object Fixtures {
+  def emptyAmi: AMI =
+    AMI("", None, "", "", None, Map.empty, None, "", "", "", "", "",  None)
+  def emptyInstance(arn: String): Instance =
+    Instance(arn, "", "", "", "", "", DateTime.now, "", "", "", Nil, Map.empty, None, None, Nil, Nil, Map.empty, Meta("", Origin("", "", "", "")))
+  def instanceWithAmiArn(arn: String, amiArnOpt: Option[String]): Instance =
+    amiArnOpt.fold(emptyInstance(arn))(amiArn => emptyInstance(arn).copy(specification = Map("imageArn" -> amiArn)))
+
   object AMIs {
     val validAMI = """{
                      |  "arn": "arn:aws:ec2:region::image/ami-example",

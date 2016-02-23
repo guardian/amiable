@@ -1,54 +1,52 @@
 package prism
 
-import models.{AMI, Instance}
 import org.joda.time.DateTime
-import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FreeSpec, Matchers}
 
 
-class PrismLogicTest extends FreeSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class PrismLogicTest extends FreeSpec with Matchers {
   import prism.PrismLogic._
-
-  val (i1, i2, i3, i4, i5) = (mock[Instance], mock[Instance], mock[Instance], mock[Instance], mock[Instance])
-  val (a1, a2, a3, a4, a5) = (mock[AMI], mock[AMI], mock[AMI], mock[AMI], mock[AMI])
+  import util.Fixtures._
 
   "oldInstances" - {
-    when(a1.creationDate).thenReturn(Some(DateTime.now.minusDays(1)))
-    when(a2.creationDate).thenReturn(Some(DateTime.now.minusDays(40)))
+    val i1 = emptyInstance("i1")
+    val i2 = emptyInstance("i2")
+    val youngAmi = emptyAmi.copy(creationDate = Some(DateTime.now.minusDays(1)))
+    val oldAmi = emptyAmi.copy(creationDate = Some(DateTime.now.minusDays(40)))
+    val instances = List(i1 -> Some(youngAmi), i2 -> Some(oldAmi))
 
     "returns old instances" in {
-      oldInstances(Map(i1 -> Some(a1), i2 -> Some(a2))) should contain(i2)
+      oldInstances(instances) should contain(i2)
     }
 
     "excludes young instances" in {
-      oldInstances(Map(i1 -> Some(a1), i2 -> Some(a2))) shouldNot contain(i1)
+      oldInstances(instances) shouldNot contain(i1)
     }
   }
 
   "stacks" - {
     "dedupes stacks" in {
-      when(i1.stack).thenReturn(Some("stack"))
-      when(i2.stack).thenReturn(Some("stack"))
+      val i1 = emptyInstance("i1").copy(stack = Some("stack"))
+      val i2 = emptyInstance("i2").copy(stack = Some("stack"))
       stacks(List(i1, i2)) shouldEqual List("stack")
     }
 
     "returns the correct stacks for these instances" in {
-      when(i1.stack).thenReturn(Some("stack1"))
-      when(i2.stack).thenReturn(Some("stack2"))
-      when(i3.stack).thenReturn(Some("stack2"))
-      when(i4.stack).thenReturn(Some("stack3"))
-      when(i5.stack).thenReturn(None)
+      val i1 = emptyInstance("i1").copy(stack = Some("stack1"))
+      val i2 = emptyInstance("i2").copy(stack = Some("stack2"))
+      val i3 = emptyInstance("i3").copy(stack = Some("stack2"))
+      val i4 = emptyInstance("i4").copy(stack = Some("stack3"))
+      val i5 = emptyInstance("i5").copy(stack = None)
       stacks(List(i1, i2, i3, i4, i5)) shouldEqual List("stack1", "stack2", "stack3")
     }
   }
 
   "amiArns" - {
-    when(i1.amiArn).thenReturn(Some("arn-1"))
-    when(i2.amiArn).thenReturn(Some("arn-1"))
-    when(i3.amiArn).thenReturn(Some("arn-2"))
-    when(i4.amiArn).thenReturn(Some("arn-3"))
-    when(i5.amiArn).thenReturn(None)
+    val i1 = instanceWithAmiArn("i1", Some("arn-1"))
+    val i2 = instanceWithAmiArn("i2", Some("arn-1"))
+    val i3 = instanceWithAmiArn("i3", Some("arn-2"))
+    val i4 = instanceWithAmiArn("i4", Some("arn-3"))
+    val i5 = instanceWithAmiArn("i5", None)
 
     "dedupes ARNs" in {
       amiArns(List(i1, i2)) shouldEqual List("arn-1")
@@ -60,31 +58,61 @@ class PrismLogicTest extends FreeSpec with Matchers with MockitoSugar with OneIn
   }
 
   "instanceAmis" - {
-    when(a1.arn).thenReturn("arn-1")
-    when(i1.amiArn).thenReturn(Some("arn-1"))
-    when(i2.amiArn).thenReturn(Some("arn-1"))
+    val a1 = emptyAmi.copy(arn = "arn-1")
+    val i1 = instanceWithAmiArn("i1", Some("arn-1"))
+    val i2 = instanceWithAmiArn("i2", Some("arn-1"))
 
     "associates an instance with its AMI" in {
-      instanceAmis(List(i1), List(a1)) shouldEqual Map(i1 -> Some(a1))
+      instanceAmis(List(i1), List(a1)) shouldEqual List(i1 -> Some(a1))
     }
 
     "associates instance with None if its AMI is not present" in {
-      instanceAmis(List(i1), Nil) shouldEqual Map(i1 -> None)
+      instanceAmis(List(i1), Nil) shouldEqual List(i1 -> None)
     }
 
     "associates multiple instances with a shared AMI" in {
-      instanceAmis(List(i1, i2), List(a1)) shouldEqual Map(i1 -> Some(a1), i2 -> Some(a1))
+      instanceAmis(List(i1, i2), List(a1)) shouldEqual List(i1 -> Some(a1), i2 -> Some(a1))
+    }
+  }
+
+  "amiInstances" - {
+    val a1 = emptyAmi.copy(arn = "arn-1")
+    val a2 = emptyAmi.copy(arn = "arn-2")
+    val a3 = emptyAmi.copy(arn = "arn-not-used")
+    val i1 = instanceWithAmiArn("i1", Some("arn-1"))
+    val i2 = instanceWithAmiArn("i2", Some("arn-2"))
+    val i3 = instanceWithAmiArn("i3", Some("arn-1"))
+    val i4 = instanceWithAmiArn("i4", None)
+
+    "associates an ami with its instances" in {
+      amiInstances(List(a1), List(i1)) shouldEqual List(a1 -> List(i1))
+    }
+
+    "associates ami with Nil if no instances use it" in {
+      amiInstances(List(a3), List(i1, i2, i3, i4)) shouldEqual List(a3 -> Nil)
+    }
+
+    "associates ami with Nil if no instances are available" in {
+      amiInstances(List(a1), Nil) shouldEqual List(a1 -> Nil)
+    }
+
+    "associates an AMI with multiple instances that are based on it" in {
+      amiInstances(List(a1), List(i1, i3)) shouldEqual List(a1 -> List(i1, i3))
+    }
+
+    "associates various instances correctly" in {
+      amiInstances(List(a1, a2, a3), List(i1, i2, i3, i4)) shouldEqual List(a1 -> List(i1, i3), a2 -> List(i2), a3 -> Nil)
     }
   }
 
   "amiIsOld" - {
     "returns false for a fresh AMI" in {
-      when(a1.creationDate).thenReturn(Some(DateTime.now.minusDays(1)))
+      val a1 = emptyAmi.copy(creationDate = Some(DateTime.now.minusDays(1)))
       amiIsOld(a1) shouldEqual false
     }
 
     "returns true for an ageing AMI" in {
-      when(a1.creationDate).thenReturn(Some(DateTime.now.minusDays(40)))
+      val a1 = emptyAmi.copy(creationDate = Some(DateTime.now.minusDays(40)))
       amiIsOld(a1) shouldEqual true
     }
   }

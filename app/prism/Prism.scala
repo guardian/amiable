@@ -37,7 +37,7 @@ object Prism {
     } yield instances
   }
 
-  def instancesWithAmis(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[Map[Instance, Option[AMI]]] = {
+  def instancesWithAmis(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[(Instance, Option[AMI])]] = {
     for {
       prodInstances <- getInstances(stackStageApp)
       amiAttempts = amiArns(prodInstances).map(getAMI)

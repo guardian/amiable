@@ -22,7 +22,9 @@ case class AMI(
   virtualizationType: String,
   hypervisor: String,
   sriovNetSupport: Option[String]
-)
+) {
+  override def toString: String = s"AMI<$arn>"
+}
 object AMI {
   import datetime.DateUtils._
   implicit val jsonFormat = Json.format[AMI]
@@ -49,6 +51,8 @@ case class Instance(
   meta: Meta
 ) {
   val amiArn = specification.get("imageArn")
+
+  override def toString: String = s"Instance<$arn>"
 }
 
 case class Meta(

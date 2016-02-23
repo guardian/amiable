@@ -4,8 +4,8 @@ import datetime.DateUtils
 import models._
 
 object PrismLogic {
-  def oldInstances(instanceAmis: Map[Instance, Option[AMI]]): List[Instance] = {
-    instanceAmis.toList
+  def oldInstances(instanceAmis: List[(Instance, Option[AMI])]): List[Instance] = {
+    instanceAmis
       .filter { case (_, amiOpt) => amiOpt.exists(amiIsOld) }
       .map(_._1)
   }
@@ -23,12 +23,23 @@ object PrismLogic {
   /**
     * Associates instances with their AMI
     */
-  def instanceAmis(instances: List[Instance], amis: List[AMI]): Map[Instance, Option[AMI]] = {
+  def instanceAmis(instances: List[Instance], amis: List[AMI]): List[(Instance, Option[AMI])] = {
     instances.map { instance =>
       instance -> instance.amiArn.flatMap { amiArn =>
         amis.find(_.arn == amiArn)
       }
-    }.toMap
+    }
+  }
+
+  /**
+    * Associates AMIs with instances that use them
+    */
+  def amiInstances(amis: List[AMI], instances: List[Instance]): List[(AMI, List[Instance])] = {
+    amis.map { ami =>
+      ami -> instances.filter { instance =>
+        instance.amiArn.fold(false)(_ == ami.arn)
+      }
+    }
   }
 
   def amiIsOld(ami: AMI): Boolean = {
