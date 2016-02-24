@@ -35,6 +35,12 @@ case class Attempt[A] private (underlying: Future[Either[AMIableErrors, A]]) {
 }
 
 object Attempt {
+  /**
+    * As with `Future.sequence`, changes `List[Attempt[A]]` to `Attempt[List[A]]`.
+    *
+    * This implementation takes the first failure for simplicity, it's possible
+    * to collect all the failures when that's required.
+    */
   def sequence[A](responses: List[Attempt[A]])(implicit ec: ExecutionContext): Attempt[List[A]] = Attempt {
     Future.sequence(responses.map(_.underlying)).map { eithers =>
       eithers
@@ -45,6 +51,10 @@ object Attempt {
     }
   }
 
+  /**
+    * Sequence this attempt as a successful attempt that contains a list of potential
+    * failures. This is useful if failure is acceptable in part of the application.
+    */
   def sequenceFutures[A](response: List[Attempt[A]])(implicit ec: ExecutionContext): Attempt[List[Either[AMIableErrors, A]]] = {
     Async.Right(Future.sequence(response.map(_.asFuture)))
   }
@@ -52,8 +62,24 @@ object Attempt {
   def fromEither[A](e: Either[AMIableErrors, A]): Attempt[A] =
     Attempt(Future.successful(e))
 
+  /**
+    * Convert a plain `Future` value to an attempt by providing a recovery handler.
+    */
   def fromFuture[A](future: Future[Either[AMIableErrors, A]])(recovery: PartialFunction[Throwable, Either[AMIableErrors, A]])(implicit ec: ExecutionContext): Attempt[A] = {
     Attempt(future recover recovery)
+  }
+
+  /**
+    * Discard failures from a list of attempts.
+    *
+    * **Use with caution**.
+    */
+  def successfulAttempts[A](attempts: List[Attempt[A]])(implicit ec: ExecutionContext): Attempt[List[A]] = {
+    Attempt.Async.Right {
+      Future.sequence(attempts.map { attempt =>
+        attempt.fold(_ => None, a => Some(a))
+      }).map(_.flatten)
+    }
   }
 
   /**

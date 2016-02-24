@@ -22,6 +22,11 @@ h1 {
     margin-bottom: 1em;
 }
 
+.old-instance-count {
+    margin: 20px 0 5px 0;
+    font-size:10rem;
+}
+
 #logo-container img {
     vertical-align: middle;
     margin-top: -5px;
