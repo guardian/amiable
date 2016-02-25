@@ -42,6 +42,34 @@ object PrismLogic {
     }
   }
 
+  def instanceSSAs(instances: List[Instance]): List[SSA] = {
+    val allInstanceSSAs = for {
+      instance <- instances
+      ssa <- {
+        if (instance.app.isEmpty) List(SSA(instance.stack, instance.stage, None))
+        else instance.app.map(app => SSA(instance.stack, instance.stage, Some(app)))
+      }
+    } yield ssa
+    allInstanceSSAs.distinct
+  }
+
+  /**
+    * From a full list of AMIs and instances, return each unique
+    * SSA combination with all its associated AMIs.
+    */
+  def amiSSAs(amisWithInstances: List[(AMI, List[Instance])]): Map[SSA, List[AMI]] = {
+    val allSSACombos = for {
+      (ami, instances) <- amisWithInstances
+      ssa <- instanceSSAs(instances)
+    } yield ssa -> ami
+
+    allSSACombos
+      .groupBy { case (ssa, _) => ssa }
+      .map { case (ssa, ssaAmis) =>
+        ssa -> ssaAmis.map { case (_, ami) => ami }
+      }
+  }
+
   def amiIsOld(ami: AMI): Boolean = {
     ami.creationDate.flatMap { creationDate =>
       DateUtils.getAge(creationDate).map {

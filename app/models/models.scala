@@ -71,7 +71,9 @@ case class SSA (
   stack: Option[String] = None,
   stage: Option[String] = None,
   app: Option[String] = None
-)
+) {
+  override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}>"
+}
 object SSA {
   /**
     * Filters empty strings to None, such as those provided by request parameters.

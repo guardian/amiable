@@ -1,15 +1,17 @@
 package util
 
-import models.{AMI, Instance, Meta, Origin}
+import models._
 import org.joda.time.DateTime
 
 object Fixtures {
-  def emptyAmi: AMI =
-    AMI("", None, "", "", None, Map.empty, None, "", "", "", "", "",  None)
+  def emptyAmi(arn: String): AMI =
+    AMI(arn, None, "", "", None, Map.empty, None, "", "", "", "", "",  None)
   def emptyInstance(arn: String): Instance =
     Instance(arn, "", "", "", "", "", DateTime.now, "", "", "", Nil, Map.empty, None, None, Nil, Nil, Map.empty, Meta("", Origin("", "", "", "")))
   def instanceWithAmiArn(arn: String, amiArnOpt: Option[String]): Instance =
     amiArnOpt.fold(emptyInstance(arn))(amiArn => emptyInstance(arn).copy(specification = Map("imageArn" -> amiArn)))
+  def instanceWithSSA(arn: String, ssa: SSA): Instance =
+    emptyInstance(arn).copy(stack = ssa.stack, stage = ssa.stage, app = ssa.app.toList)
 
   object AMIs {
     val validAMI = """{
