@@ -58,10 +58,11 @@ class AMIable extends Controller {
       for {
         instances <- Prism.getInstances(ssa)
         amiArns = instances.flatMap(_.amiArn).distinct
-        amiAttempts <- Attempt.sequenceFutures(amiArns.map(Prism.getAMI))
-        amiOrError = amiAttempts.map(_.left.map(_.errors.map(_.friendlyMessage).mkString(", ")))
+        amis <- Attempt.successfulAttempts(amiArns.map(Prism.getAMI))
+        amisWithInstances = PrismLogic.amiInstances(amis, instances)
+        amiSSAs = PrismLogic.amiSSAs(amisWithInstances)
       } yield {
-        Ok(views.html.instanceAMIs(ssa.stack, ssa.stage, ssa.app, amiOrError))
+        Ok(views.html.instanceAMIs(ssa.stack, ssa.stage, ssa.app, PrismLogic.sortSSAAmisByAge(amiSSAs)))
       }
     }
   }

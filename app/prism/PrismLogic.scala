@@ -54,20 +54,31 @@ object PrismLogic {
   }
 
   /**
-    * From a full list of AMIs and instances, return each unique
-    * SSA combination with all its associated AMIs.
+    * T will either be an AMI, or an AMI attempt.
+    * From a full list of Ts and instances, return each unique
+    * SSA combination with all its associated Ts.
     */
-  def amiSSAs(amisWithInstances: List[(AMI, List[Instance])]): Map[SSA, List[AMI]] = {
+  def amiSSAs[T](amisWithInstances: List[(T, List[Instance])]): Map[SSA, List[T]] = {
     val allSSACombos = for {
-      (ami, instances) <- amisWithInstances
+      (t, instances) <- amisWithInstances
       ssa <- instanceSSAs(instances)
-    } yield ssa -> ami
+    } yield ssa -> t
 
     allSSACombos
       .groupBy { case (ssa, _) => ssa }
       .map { case (ssa, ssaAmis) =>
-        ssa -> ssaAmis.map { case (_, ami) => ami }
+        ssa -> ssaAmis.map { case (_, t) => t }
       }
+  }
+
+  def sortSSAAmisByAge(ssaAmis: Map[SSA, List[AMI]]): List[(SSA, List[AMI])] = {
+    ssaAmis.toList.sortBy { case (_, amis) =>
+      val creationDates = for {
+        ami <- amis
+        creationDate <- ami.creationDate
+      } yield creationDate.getMillis
+      creationDates.headOption.getOrElse(0L)
+    }
   }
 
   def amiIsOld(ami: AMI): Boolean = {
