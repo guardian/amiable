@@ -5,19 +5,41 @@
 @main("Instance AMIs") {
     @heading("AMIs in use")
     <div class="container">
-        <div class="ssa-amis">
-            @for((ssa, amis) <- amiSSAs) {
-                <div class="ssa-amis__item">
-                    <div class="card">
-                        <div class="card-content">
+        <div class="row">
+            <div class="ssa-amis">
+                @for((ssa, amis) <- amiSSAs) {
+                    @if(ssa.isEmpty) {
+                        @* show AMIs with empty SSAs in their own block (there are lots of them) *@
+            </div>
+        </div>
+
+        <div class="row">
+                        <h2>
                             @printSSA(ssa)
-                            @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
+                        </h2>
+            <div class="ssa-amis">
+                        @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
+                            <div class="ssa-amis__item">
                                 @formatAmi(ami)
-                            }
+                            </div>
+                        }
+        </div>
+        <div class="row">
+            <div class="ssa-amis">
+                    } else {
+                        <div class="ssa-amis__item">
+                            <div class="card">
+                                <div class="card-content">
+                                    @printSSA(ssa)
+                                    @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
+                                        @formatAmi(ami)
+                                    }
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            }
+                    }
+                }
+            </div>
         </div>
         @ssaAmiForm(stack, stage, app)
     </div>
