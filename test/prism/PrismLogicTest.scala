@@ -183,6 +183,27 @@ class PrismLogicTest extends FreeSpec with Matchers {
     }
   }
 
+  "sortSSAAmisByAge" - {
+    val ssa1 = SSA(Some("stack-1"))
+    val ssa2 = SSA(Some("stack-2"))
+    val ssaEmpty = SSA()
+    val oldAmi = emptyAmi("old").copy(creationDate = Some(DateTime.now.minusDays(40)))
+    val newAmi = emptyAmi("new").copy(creationDate = Some(DateTime.now.minusDays(1)))
+    val mediumAmi = emptyAmi("medium").copy(creationDate = Some(DateTime.now.minusDays(20)))
+
+    "puts an SSA group with an old AMI before one with a newer AMI" in {
+      sortSSAAmisByAge(Map(ssa1 -> List(oldAmi), ssa2 -> List(newAmi))).map(_._1) should contain inOrderOnly(ssa1, ssa2)
+    }
+
+    "sorts by oldest AMI (SSA with old AMI goes first, even if it has a new AMI as well)" in {
+      sortSSAAmisByAge(Map(ssa1 -> List(oldAmi, newAmi), ssa2 -> List(mediumAmi))).map(_._1) should contain inOrderOnly(ssa1, ssa2)
+    }
+
+    "empty SSA goes last even if it has the oldest AMIs" in {
+      sortSSAAmisByAge(Map(ssaEmpty -> List(oldAmi), ssa1 -> List(newAmi))).map(_._1) should contain inOrderOnly(ssa1, ssaEmpty)
+    }
+  }
+
   "amiIsOld" - {
     "returns false for a fresh AMI" in {
       val a1 = emptyAmi("a1").copy(creationDate = Some(DateTime.now.minusDays(1)))
