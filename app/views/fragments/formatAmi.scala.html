@@ -8,9 +8,13 @@
             <img src="/assets/images/ami.png" alt="AMI" class="ami-badge__icon">
         </div>
         <div class="ami-badge__description center-align">
-            <a class="modal-trigger" href="#modal-@id">
+            @if(listDisplay) {
+                <a class="modal-trigger" href="#modal-@id">
+            }
                 @ami.imageId
-            </a>
+            @if(listDisplay) {
+                </a>
+            }
         </div>
         <div class="ami-badge__age @colour white-text center-align">
             @ami.creationDate match {

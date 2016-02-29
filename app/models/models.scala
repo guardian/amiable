@@ -72,6 +72,7 @@ case class SSA (
   stage: Option[String] = None,
   app: Option[String] = None
 ) {
+  def isEmpty = stack.isEmpty && stage.isEmpty && app.isEmpty
   override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}>"
 }
 object SSA {

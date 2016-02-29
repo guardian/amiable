@@ -5,9 +5,9 @@
 @main("Instance AMIs") {
     @heading("AMIs in use")
     <div class="container">
-        <div class="row">
+        <div class="ssa-amis">
             @for((ssa, amis) <- amiSSAs) {
-                <div class="col m4">
+                <div class="ssa-amis__item">
                     <div class="card">
                         <div class="card-content">
                             @printSSA(ssa)

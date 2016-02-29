@@ -2,6 +2,7 @@ package prism
 
 import datetime.DateUtils
 import models._
+import org.joda.time.DateTime
 
 object PrismLogic {
   def oldInstances(instanceAmis: List[(Instance, Option[AMI])]): List[Instance] = {
@@ -71,13 +72,21 @@ object PrismLogic {
       }
   }
 
+  /**
+    * Put AMIs without an SSA last
+    */
   def sortSSAAmisByAge(ssaAmis: Map[SSA, List[AMI]]): List[(SSA, List[AMI])] = {
-    ssaAmis.toList.sortBy { case (_, amis) =>
-      val creationDates = for {
-        ami <- amis
-        creationDate <- ami.creationDate
-      } yield creationDate.getMillis
-      creationDates.headOption.getOrElse(0L)
+    ssaAmis.toList.sortBy { case (ssa, amis) =>
+      if (ssa.isEmpty) {
+        // put empty SSA last
+        DateTime.now.getMillis
+      } else {
+        val creationDates = for {
+          ami <- amis
+          creationDate <- ami.creationDate
+        } yield creationDate.getMillis
+        creationDates.headOption.getOrElse(0L)
+      }
     }
   }
 
