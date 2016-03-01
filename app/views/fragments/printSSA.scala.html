@@ -1,0 +1,15 @@
+@(ssa: SSA)
+
+@if(ssa.isEmpty) {
+    No stack/stage/app
+} else {
+    @ssa.stack.map { stack =>
+        <span class="chip">@stack</span>
+    }
+    @ssa.stage.map { stage =>
+        <span class="chip">@stage</span>
+    }
+    @ssa.app.map { app =>
+        <span class="chip">@app</span>
+    }
+}

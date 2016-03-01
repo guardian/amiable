@@ -28,9 +28,8 @@ object Prism {
     } yield amis
   }
 
-  def getInstances(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None)
-                  (implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
-    val url = instancesUrl(stack, stage, app, config.prismUrl)
+  def getInstances(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
+    val url = instancesUrl(stackStageApp, config.prismUrl)
     for {
       response <- Http.response(config.wsClient.url(url).get(), "Unable to fetch instance", url)
       jsons <- instancesResponseJson(response)
@@ -38,10 +37,9 @@ object Prism {
     } yield instances
   }
 
-  def instancesWithAmis(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None)
-                       (implicit config: AMIableConfig, ec: ExecutionContext): Attempt[Map[Instance, Option[AMI]]] = {
+  def instancesWithAmis(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[(Instance, Option[AMI])]] = {
     for {
-      prodInstances <- getInstances(stack, stage, app)
+      prodInstances <- getInstances(stackStageApp)
       amiAttempts = amiArns(prodInstances).map(getAMI)
       amis <- Attempt.successfulAttempts(amiAttempts)
     } yield instanceAmis(prodInstances, amis)

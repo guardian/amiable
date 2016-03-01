@@ -22,7 +22,9 @@ case class AMI(
   virtualizationType: String,
   hypervisor: String,
   sriovNetSupport: Option[String]
-)
+) {
+  override def toString: String = s"AMI<$arn>"
+}
 object AMI {
   import datetime.DateUtils._
   implicit val jsonFormat = Json.format[AMI]
@@ -49,6 +51,8 @@ case class Instance(
   meta: Meta
 ) {
   val amiArn = specification.get("imageArn")
+
+  override def toString: String = s"Instance<$arn>"
 }
 
 case class Meta(
@@ -62,6 +66,22 @@ case class Origin(
   region: String,
   accountNumber: String
 )
+
+case class SSA (
+  stack: Option[String] = None,
+  stage: Option[String] = None,
+  app: Option[String] = None
+) {
+  def isEmpty = stack.isEmpty && stage.isEmpty && app.isEmpty
+  override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}>"
+}
+object SSA {
+  /**
+    * Filters empty strings to None, such as those provided by request parameters.
+    */
+  def fromParams(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None): SSA =
+    SSA(stack.filter(_.nonEmpty), stage.filter(_.nonEmpty), app.filter(_.nonEmpty))
+}
 
 case class AMIableError(
   message: String,
