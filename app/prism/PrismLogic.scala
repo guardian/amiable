@@ -73,7 +73,8 @@ object PrismLogic {
   }
 
   /**
-    * Put AMIs without an SSA last
+    * SSAs are sorted by their oldest AMI, except for the empty SSA which
+    * always appears last.
     */
   def sortSSAAmisByAge(ssaAmis: Map[SSA, List[AMI]]): List[(SSA, List[AMI])] = {
     ssaAmis.toList.sortBy { case (ssa, amis) =>
