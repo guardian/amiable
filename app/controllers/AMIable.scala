@@ -62,7 +62,7 @@ class AMIable extends Controller {
         amisWithInstances = PrismLogic.amiInstances(amis, instances)
         amiSSAs = PrismLogic.amiSSAs(amisWithInstances)
       } yield {
-        Ok(views.html.instanceAMIs(ssa.stack, ssa.stage, ssa.app, PrismLogic.sortSSAAmisByAge(amiSSAs)))
+        Ok(views.html.instanceAMIs(ssa.stack, ssa.stage, ssa.app, amis, PrismLogic.sortSSAAmisByAge(amiSSAs)))
       }
     }
   }

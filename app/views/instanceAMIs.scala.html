@@ -1,11 +1,34 @@
-@(stack: Option[String], stage: Option[String], app: Option[String], amiSSAs: List[(SSA, scala.List[AMI])])
+@(stack: Option[String], stage: Option[String], app: Option[String], amis: List[AMI], amiSSAs: List[(SSA, scala.List[AMI])])
 
 @import views.html.fragments.{ssaAmiForm, formatAmi, heading, printSSA}
 
 @main("Instance AMIs") {
-    @heading("AMIs in use")
+    <div class="heading grey lighten-3">
+        <div class="container">
+            <div class="row">
+                <div class="col m7">
+                    <h1>AMIs in use</h1>
+                </div>
+                <div class="col m5 hide-on-small-only">
+                    <p class="right-align"><a href="#search">[edit search]</a></p>
+                    @printSSA(SSA(stack, stage, app), "*")
+                </div>
+            </div>
+
+        </div>
+    </div>
     <div class="container">
         <div class="row">
+            <div class="amis-list">
+                @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
+                    <div class="amis-list__item">
+                        @formatAmi(ami)
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <h2>AMI usage</h2>
             <div class="ssa-amis">
                 @for((ssa, amis) <- amiSSAs) {
                     @if(ssa.isEmpty) {
@@ -14,9 +37,7 @@
         </div>
 
         <div class="row">
-                        <h2>
-                            @printSSA(ssa)
-                        </h2>
+            @printSSA(ssa)
             <div class="ssa-amis">
                         @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
                             <div class="ssa-amis__item">
@@ -41,6 +62,7 @@
                 }
             </div>
         </div>
+        <a name="search"></a>
         @ssaAmiForm(stack, stage, app)
     </div>
 }

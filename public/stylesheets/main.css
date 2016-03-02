@@ -22,6 +22,10 @@ h1 {
     margin-bottom: 1em;
 }
 
+.heading-right {
+    padding-top: 30px;
+}
+
 .old-instance-count {
     margin: 20px 0 5px 0;
     font-size:10rem;
@@ -44,6 +48,14 @@ dl.ami-details dt {
 
 .ssa-amis__item {
     width: 100%;
+}
+
+.ssa-table__heading {
+    padding-top: 0;
+}
+
+.ssa-table__entry {
+    padding-bottom: 0;
 }
 
 @media only screen and (min-width: 601px) {
@@ -70,6 +82,38 @@ dl.ami-details dt {
 
     .ssa-amis:after {
         content: "";
+        flex: 0 0 32%;
+    }
+}
+
+.amis-list__item {
+    width: 100%;
+}
+
+@media only screen and (min-width: 601px) {
+    .amis-list {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+    }
+
+    .amis-list:after {
+        content: "";
+        flex: 0 0 49%;
+    }
+
+    .amis-list__item {
+        flex: 0 0 49%;
+    }
+}
+
+@media only screen and (min-width: 720px) {
+    .amis-list:after {
+        content: "";
+        flex: 0 0 32%;
+    }
+
+    .amis-list__item {
         flex: 0 0 32%;
     }
 }
