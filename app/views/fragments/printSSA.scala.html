@@ -1,15 +1,18 @@
-@(ssa: SSA)
+@(ssa: SSA, emptyChar: String = "-")
 
-@if(ssa.isEmpty) {
-    No stack/stage/app
-} else {
-    @ssa.stack.map { stack =>
-        <span class="chip">@stack</span>
-    }
-    @ssa.stage.map { stage =>
-        <span class="chip">@stage</span>
-    }
-    @ssa.app.map { app =>
-        <span class="chip">@app</span>
-    }
-}
+<table class="ssa-table">
+    <thead>
+        <tr>
+            <th class="ssa-table__heading">Stack</th>
+            <th class="ssa-table__heading">Stage</th>
+            <th class="ssa-table__heading">App</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="ssa-table__entry">@ssa.stack.getOrElse(emptyChar)</td>
+            <td class="ssa-table__entry">@ssa.stage.getOrElse(emptyChar)</td>
+            <td class="ssa-table__entry">@ssa.app.getOrElse(emptyChar)</td>
+        </tr>
+    </tbody>
+</table>
