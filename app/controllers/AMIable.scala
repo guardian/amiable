@@ -1,21 +1,20 @@
 package controllers
 
+import javax.inject.Inject
+
 import config.AMIableConfig
-import models.{SSA, Attempt}
+import models.{Attempt, SSA}
 import play.api._
 import play.api.libs.ws._
 import play.api.mvc._
-import prism.Prism
-import prism.PrismLogic
+import prism.{Prism, PrismLogic}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 
-class AMIable extends Controller {
+class AMIable @Inject()(ws: WSClient, playConfig: Configuration)(implicit exec: ExecutionContext) extends Controller {
 
-  implicit val app = play.api.Play.current
-  lazy implicit val playConfig: Configuration = play.api.Play.configuration
-  lazy implicit val conf = AMIableConfig(playConfig.getString("prism.url").get, WS.client)
+  lazy implicit val conf = AMIableConfig(playConfig.getString("prism.url").get, ws)
 
   def index = Action.async { implicit request =>
     attempt {
