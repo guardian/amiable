@@ -150,6 +150,14 @@ dl.ami-details dt {
     vertical-align: middle;
 }
 
+.ami-header {
+    background-color: #3661B0 !important;
+}
+
+.ami-header--title {
+    float: left;
+    padding: 12px;
+}
 
 table.tags td {
     padding: 0px;

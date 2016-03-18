@@ -1,6 +1,7 @@
-@(ami: AMI, listDisplay: Boolean = true, id: String = java.util.UUID.randomUUID.toString)
+@(ami: AMI, id: String = java.util.UUID.randomUUID.toString)
 
 @import datetime.DateUtils.{readableDateTime, getAgeColour, daysAgo}
+@import prism.Recommendations
 
 @defining(ami.creationDate.map(getAgeColour).getOrElse("red")) { colour =>
     <div class="ami-badge z-depth-1 grey lighten-3">
@@ -8,13 +9,9 @@
             <img src="/assets/images/ami.png" alt="AMI" class="ami-badge__icon">
         </div>
         <div class="ami-badge__description center-align">
-            @if(listDisplay) {
-                <a class="modal-trigger" href="#modal-@id">
-            }
+            <a class="modal-trigger" href="#modal-@id">
                 @ami.imageId
-            @if(listDisplay) {
-                </a>
-            }
+            </a>
         </div>
         <div class="ami-badge__age @colour white-text center-align">
             @ami.creationDate match {
@@ -31,8 +28,25 @@
 }
 
 
-<div id="modal-@id" class="@if(listDisplay){modal}" xmlns="http://www.w3.org/1999/html">
-    <div class="@if(listDisplay){modal-content}">
+<div id="modal-@id" class="modal" xmlns="http://www.w3.org/1999/html">
+    <div class="modal-footer ami-header white-text">
+        @ami.upgrade.map { upgrade =>
+        <div class="ami-header--title">
+            <i class="mdi-action-backup"></i>
+            Upgrade available
+        </div>
+        <a href="/ami?imageId=@upgrade.imageId" class="black-text modal-action waves-effect waves-white btn grey lighten-3">
+            @upgrade.imageId
+        </a>
+        }.getOrElse {
+            <div class="ami-header--title">
+                <i class="mdi-action-done"></i>
+                This is the latest available version of this AMI
+            </div>
+            <a href="#!" class="black-text modal-action modal-close waves-effect waves-white btn grey lighten-3">Close</a>
+        }
+    </div>
+    <div class="modal-content">
         <dl class="ami-details">
             <dt>Image ID</dt>
             <dd>@ami.imageId</dd>
@@ -77,6 +91,10 @@
             <dd>@ami.virtualizationType</dd>
             <dt>Architecture</dt>
             <dd>@ami.architecture</dd>
+            <dt>Storage type</dt>
+            <dd>@ami.rootDeviceType</dd>
+            <dt>Owner</dt>
+            <dd>@Recommendations.owner(ami)</dd>
             <dt>ARN</dt>
             <dd>@ami.arn</dd>
         </dl>

@@ -4,9 +4,7 @@
 
 # Home page
 GET     /                           controllers.AMIable.index
-GET     /ami                        controllers.AMIable.ami(arn: String)
-GET     /amis                       controllers.AMIable.amis
-GET     /instances                  controllers.AMIable.ssaInstances(stack: Option[String], stage: Option[String], app: Option[String])
+GET     /ami                        controllers.AMIable.ami(imageId: String)
 GET     /instanceAMIs               controllers.AMIable.ssaInstanceAMIs(stack: Option[String], stage: Option[String], app: Option[String])
 GET     /healthcheck                controllers.Healthcheck.healthcheck
 

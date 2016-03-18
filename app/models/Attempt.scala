@@ -124,6 +124,7 @@ object Attempt {
 
 case class AMIableErrors(errors: List[AMIableError]) {
   def statusCode = errors.map(_.statusCode).max
+  def logString = errors.map(_.message).mkString(", ")
 }
 object AMIableErrors {
   def apply(error: AMIableError): AMIableErrors = {

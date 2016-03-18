@@ -1,5 +1,6 @@
 package prism
 
+import org.joda.time.DateTime
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{EitherValues, FreeSpec, Matchers, OptionValues}
@@ -18,8 +19,33 @@ class JsonUtilsTest extends FreeSpec with Matchers with EitherValues with Attemp
       val json = Json.parse(AMIs.validAMI)
       val ami = extractAMI(json).awaitEither.right.value
       ami should have(
+        'arn ("arn:aws:ec2:region::image/ami-example"),
         'name (Some("ami-name")),
-        'arn ("arn:aws:ec2:region::image/ami-example")
+        'imageId ("ami-example"),
+        'region ("region"),
+        'description (Some("AMI description")),
+        'creationDate (Some(new DateTime(2016, 2, 11, 0, 0))),
+        'state ("available"),
+        'architecture ("x86_64"),
+        'ownerId ("0123456789"),
+        'virtualizationType ("hvm"),
+        'hypervisor ("xen"),
+        'rootDeviceType ("ebs"),
+        'sriovNetSupport (Some("simple")),
+        'upgrade (None)
+      )
+    }
+
+    "should extract tags from valid AMI JSON" in {
+      val json = Json.parse(AMIs.validAMI)
+      val ami = extractAMI(json).awaitEither.right.value
+      ami.tags shouldEqual Map(
+        "Name" -> "ami-name",
+        "SourceAMI" -> "ami-source",
+        "Build" -> "666",
+        "BuildName" -> "build-name",
+        "Branch" -> "branch-name",
+        "VCSRef" -> "commitref"
       )
     }
 
