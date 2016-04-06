@@ -28,7 +28,7 @@
 }
 
 
-<div id="modal-@id" class="modal" xmlns="http://www.w3.org/1999/html">
+<div id="modal-@id" class="modal ami-modal" xmlns="http://www.w3.org/1999/html">
     <div class="modal-footer ami-header white-text">
         @ami.upgrade.map { upgrade =>
         <div class="ami-header--title">
@@ -41,62 +41,94 @@
         }.getOrElse {
             <div class="ami-header--title">
                 <i class="mdi-action-done"></i>
-                This is the latest available version of this AMI
+                Latest version
             </div>
             <a href="#!" class="black-text modal-action modal-close waves-effect waves-white btn grey lighten-3">Close</a>
         }
     </div>
     <div class="modal-content">
-        <dl class="ami-details">
-            <dt>Image ID</dt>
-            <dd>@ami.imageId</dd>
-            <dt>Creation date</dt>
-            <dd>@ami.creationDate match {
-                case Some(date) => {
-                    @readableDateTime.print(date) -
-                    <span class="@getAgeColour(date)-text">
-                        @daysAgo(date) day@if(daysAgo(date) != 1){s} old
-                    </span>
-                }
-                case None => {
-                    <span class="red-text">Very old (no creation date available)</span>
-                }
-            }</dd>
+        <table class="ami-details bordered">
+            <tr>
+                <th>Image ID</th>
+                <td>@ami.imageId</td>
+            </tr>
+            <tr>
+                <th>Creation date</th>
+                <td>
+                    @ami.creationDate match {
+                        case Some(date) => {
+                            @readableDateTime.print(date) -
+                            <span class="@getAgeColour(date)-text">
+                                @daysAgo(date) day@if(daysAgo(date) != 1){s} old
+                            </span>
+                        }
+                        case None => {
+                            <span class="red-text">Very old (no creation date available)</span>
+                        }
+                    }
+                </td>
+            </tr>
             @ami.name.map { name =>
-                <dt>Name</dt>
-                <dd>@ami.name</dd>
+                <tr>
+                    <th>Name</th>
+                    <td>@ami.name</td>
+                </tr>
             }
             @ami.description.map { description =>
-                <dt>Description</dt>
-                <dd>@ami.description</dd>
+                <tr>
+                    <th>Description</th>
+                    <td>@ami.description</td>
+                </tr>
             }
             @if(ami.tags.nonEmpty) {
-                <dt>Tags</dt>
-                <dd>
-                    <table class="tags">
-                        <tbody>
-                @for( (key, value) <- ami.tags) {
-                            <tr>
-                                <td>@key</td>
-                                <td>@value</td>
-                            </tr>
-                }
-                        </tbody>
-                    </table>
-                </dd>
+                <tr>
+                    <th>Tags</th>
+                    <td>
+                        <table class="tags">
+                            <tbody>
+                            @for( (key, value) <- ami.tags) {
+                                <tr>
+                                    <th>@key</th>
+                                    <td>@value</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
             }
-            <dt>Region</dt>
-            <dd>@ami.region</dd>
-            <dt>Virtualization Type</dt>
-            <dd>@ami.virtualizationType</dd>
-            <dt>Architecture</dt>
-            <dd>@ami.architecture</dd>
-            <dt>Storage type</dt>
-            <dd>@ami.rootDeviceType</dd>
-            <dt>Owner</dt>
-            <dd>@Recommendations.owner(ami)</dd>
-            <dt>ARN</dt>
-            <dd>@ami.arn</dd>
-        </dl>
+            <tr>
+                <th>Region</th>
+                <td>@ami.region</td>
+            </tr>
+            <tr>
+                <th>Virtualization Type</th>
+                <td>@ami.virtualizationType</td>
+            </tr>
+            <tr>
+                <th>Architecture</th>
+                <td>@ami.architecture</td>
+            </tr>
+            <tr>
+                <th>Storage type</th>
+                <td>@ami.rootDeviceType</td>
+            </tr>
+            <tr>
+                <th>Owner</th>
+                <td>@Recommendations.owner(ami)</td>
+            </tr>
+            <tr>
+                <th>ARN</th>
+                <td>@ami.arn</td>
+            </tr>
+        </table>
     </div>
+    @ami.creationDate.map { date =>
+        <div class="modal-footer @getAgeColour(date) lighten-3 black-text">
+            <div class="ami-header--title">
+                This AMI is <b>@daysAgo(date)</b> day@if(daysAgo(date) != 1){s} old
+            </div>
+        </div>
+    }
+
 </div>
