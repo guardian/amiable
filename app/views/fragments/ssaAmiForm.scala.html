@@ -1,4 +1,4 @@
-@(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None)
+@(ssa: SSA)
 
 
 <div class="card">
@@ -6,15 +6,15 @@
         <span class="card-title">Lookup AMI usage</span>
         <form action="/instanceAMIs" method="get" class="row">
             <div class="input-field col m6">
-                <input type="text" name="stack" id="stack" placeholder="Stack" value="@stack.getOrElse("")" />
+                <input type="text" name="stack" id="stack" placeholder="Stack" value="@ssa.stack.getOrElse("")" />
                 <label for="stack">Filter AMIs by stack</label>
             </div>
             <div class="input-field col m6">
-                <input type="text" name="stage" id="stage" placeholder="Stage" value="@stage.getOrElse("")" />
+                <input type="text" name="stage" id="stage" placeholder="Stage" value="@ssa.stage.getOrElse("")" />
                 <label for="stage">Filter AMIs by stage</label>
             </div>
             <div class="input-field col m6">
-                <input type="text" name="app" id="app" placeholder="App" value="@app.getOrElse("")" />
+                <input type="text" name="app" id="app" placeholder="App" value="@ssa.app.getOrElse("")" />
                 <label for="app">Filter AMIs by app</label>
             </div>
             <div class="col m6">

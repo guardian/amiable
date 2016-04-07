@@ -36,8 +36,8 @@ h1 {
     margin-top: -5px;
 }
 
-dl.ami-details dt {
-    font-weight: bold;
+table.ami-details td, table.ami-details th {
+    padding: 5px;
 }
 
 .ssa-amis {
@@ -150,7 +150,25 @@ dl.ami-details dt {
     vertical-align: middle;
 }
 
+.ami-header {
+    background-color: #3661B0 !important;
+}
 
+.ami-header--title {
+    float: left;
+    padding: 12px;
+}
+
+table.tags th {
+    padding: 0px;
+}
 table.tags td {
     padding: 0px;
+}
+
+.modal.ami-modal {
+    border-radius: 0;
+}
+.modal.ami-modal .modal-footer {
+    border-radius: 0;
 }

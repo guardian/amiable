@@ -21,7 +21,9 @@ case class AMI(
   ownerId: String,
   virtualizationType: String,
   hypervisor: String,
-  sriovNetSupport: Option[String]
+  rootDeviceType: String,
+  sriovNetSupport: Option[String],
+  upgrade: Option[AMI] = None
 ) {
   override def toString: String = s"AMI<$arn>"
 }
@@ -81,6 +83,8 @@ object SSA {
     */
   def fromParams(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None): SSA =
     SSA(stack.filter(_.nonEmpty), stage.filter(_.nonEmpty), app.filter(_.nonEmpty))
+
+  def empty = SSA(None, None, None)
 }
 
 case class AMIableError(
