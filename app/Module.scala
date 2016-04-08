@@ -1,5 +1,5 @@
 import com.google.inject.AbstractModule
-import services.{Agents, CloudWatch}
+import services.{Agents, Metrics}
 
 
 /**
@@ -15,6 +15,6 @@ import services.{Agents, CloudWatch}
 class Module extends AbstractModule {
   override def configure() = {
     bind(classOf[Agents]).asEagerSingleton()
-    bind(classOf[CloudWatch]).asEagerSingleton()
+    bind(classOf[Metrics]).asEagerSingleton()
   }
 }

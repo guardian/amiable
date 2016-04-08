@@ -1,4 +1,4 @@
-@(oldInstances: List[Instance], oldStacks: List[String])
+@(oldInstances: List[Instance], oldStacks: List[String], oldCountData: List[(org.joda.time.DateTime, Double)])
 
 @import views.html.fragments.ssaAmiForm
 
@@ -7,13 +7,18 @@
         <div class="container">
             <h1 class="hide">AMIable</h1>
             <div class="row">
-                <div class="col m6">
+                <div class="col m6 ami-kpis__container">
                     <p class="grey-text darken-1">
                         Instances running on an out-of-date AMI
                     </p>
                     <div class="old-instance-count deep-purple-text">
                         @oldInstances.size
                     </div>
+                    @if(oldCountData.nonEmpty) {
+                        <div class="old-instance-count-chart__container">
+                            <canvas id="old-instances-chart" width="400" height="250"></canvas>
+                        </div>
+                    }
                 </div>
                 <div class="col m6">
                     <p class="grey-text darken-1">
@@ -45,4 +50,36 @@
             </div>
         </div>
     </div>
+}{
+    @if(oldCountData.nonEmpty) {
+        <script src="/assets/javascripts/Chart.Core.min.js"></script>
+        <script src="/assets/javascripts/Chart.Scatter.min.js"></script>
+        <script>
+            var tzOffsetSecs = new Date().getTimezoneOffset() * 60,
+                data = [
+                    {
+                        label: "History",
+                        data: [
+@for(((datetime, value), i) <- oldCountData.zipWithIndex) {
+@if(i != 0) {,}
+{x: new Date(@datetime.getMillis - tzOffsetSecs), y: @value}
+}
+                        ]
+                    }
+                ],
+                options = {
+                    bezierCurve: false,
+                    showTooltips: true,
+                    scaleShowHorizontalLines: true,
+                    scaleShowLabels: true,
+                    scaleTimeFormat: "H:MM",
+                    scaleDateTimeFormat: "mmm d, yyyy, HH:MM",
+                    responsive: true,
+                    scaleType: "date",
+                    useUtc: false // display in local time
+                },
+                ctx = document.getElementById("old-instances-chart").getContext("2d");
+            new Chart(ctx).Scatter(data, options);
+        </script>
+    }
 }

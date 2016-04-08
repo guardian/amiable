@@ -1,7 +1,8 @@
-package services
+package metrics
 
-import org.scalatest.{OptionValues, Matchers, FreeSpec}
-import collection.JavaConverters._
+import org.scalatest.{FreeSpec, Matchers, OptionValues}
+
+import scala.collection.JavaConverters._
 
 
 class CloudWatchTest extends FreeSpec with Matchers with OptionValues {

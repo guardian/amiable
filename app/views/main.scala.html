@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(scripts: Html = Html(""))
 
 <!DOCTYPE html>
 <html lang="en">
@@ -55,5 +55,6 @@
         <script src="/assets/javascripts/jquery-2.1.4.min.js"></script>
         <script src="/assets/materialize/js/materialize.js"></script>
         <script src="/assets/javascripts/amiable.js"></script>
+        @scripts
     </body>
 </html>
