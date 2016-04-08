@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   ws,
   "com.typesafe.akka" %% "akka-agent" % "2.4.2",
   "io.reactivex" %% "rxscala" % "0.26.0",
+  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.10.67",
   specs2 % Test,
   "org.scalatest" %% "scalatest" % "2.2.6" % Test,
   "org.mockito" % "mockito-core" % "1.10.19" % Test
