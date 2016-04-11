@@ -31,8 +31,8 @@ h1 {
 }
 
 .old-instance-count {
-    margin: 20px 0 5px 0;
-    font-size:10rem;
+    margin-top: -25px;
+    font-size:8rem;
 }
 
 .old-instance-count-chart__container {
