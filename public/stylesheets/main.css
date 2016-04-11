@@ -26,9 +26,18 @@ h1 {
     padding-top: 30px;
 }
 
+.ami-kpis__container {
+    width: 100%;
+}
+
 .old-instance-count {
     margin: 20px 0 5px 0;
     font-size:10rem;
+}
+
+.old-instance-count-chart__container {
+    padding: 0 15px 0 0;
+    max-width: 450px;
 }
 
 #logo-container img {

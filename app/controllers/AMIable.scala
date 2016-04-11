@@ -3,10 +3,11 @@ package controllers
 import javax.inject.Inject
 
 import config.AmiableConfigProvider
+import metrics.CloudWatch
 import models.{Attempt, SSA}
 import play.api._
 import play.api.mvc._
-import prism.{Recommendations, Prism, PrismLogic}
+import prism.{Prism, PrismLogic, Recommendations}
 import services.Agents
 
 import scala.concurrent.ExecutionContext
@@ -21,7 +22,7 @@ class AMIable @Inject()(amiableConfigProvider: AmiableConfigProvider, agents: Ag
         prodInstances <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
         oldInstances = PrismLogic.oldInstances(prodInstances)
         oldStacks = PrismLogic.stacks(oldInstances)
-      } yield Ok(views.html.index(oldInstances, oldStacks.sorted))
+      } yield Ok(views.html.index(oldInstances, oldStacks.sorted, agents.oldProdInstanceCountHistory))
     }
   }
 
