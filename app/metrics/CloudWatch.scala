@@ -15,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 object CloudWatch {
-  val client = {
+  lazy val client = {
     val credentialsProvider = new AWSCredentialsProviderChain(
       new InstanceProfileCredentialsProvider(),
       new ProfileCredentialsProvider("deployTools")
@@ -64,11 +64,9 @@ object CloudWatch {
   }
 
   def extractCountRequestData(result: GetMetricStatisticsResult): List[(DateTime, Double)] = {
-    val tmp = result.getDatapoints.asScala.toList.map { dp =>
+    result.getDatapoints.asScala.toList.map { dp =>
       new DateTime(dp.getTimestamp) -> dp.getMaximum.toDouble
     }.sortBy(_._1.getMillis)
-    tmp.foreach { case (dt, v) => println(dt) }
-    tmp
   }
 
   def getOldCountData(client: AmazonCloudWatchAsyncClient)(implicit executionContext: ExecutionContext): Future[List[(DateTime, Double)]] = {
