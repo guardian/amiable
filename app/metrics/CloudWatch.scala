@@ -1,6 +1,7 @@
 package metrics
 
 import aws.AwsAsyncHandler.awsToScala
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.auth.{AWSCredentialsProviderChain, InstanceProfileCredentialsProvider}
 import com.amazonaws.regions.{Region, Regions}
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClient
@@ -16,9 +17,8 @@ import scala.concurrent.{ExecutionContext, Future}
 object CloudWatch {
   val client = {
     val credentialsProvider = new AWSCredentialsProviderChain(
-      new InstanceProfileCredentialsProvider()
-      // add profile to chain if required for local dev
-      // new ProfileCredentialsProvider("profile-name")
+      new InstanceProfileCredentialsProvider(),
+      new ProfileCredentialsProvider("deployTools")
     )
     val region = Option(Regions.getCurrentRegion).getOrElse(Region.getRegion(Regions.EU_WEST_1))
     val acwac = new AmazonCloudWatchAsyncClient(credentialsProvider)
