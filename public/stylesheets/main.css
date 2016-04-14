@@ -167,15 +167,18 @@ h1 {
 .modal.ami-modal {
     border-radius: 0;
     width: 88%;
-    max-height: 90%;
+    max-height: 88%;
 }
 
 .modal.ami-modal .modal-footer {
     border-radius: 0;
 }
 
-.modal .ami-details__container {
+.modal.ami-modal .modal-content {
     padding: 12px;
+}
+
+.ami-details__container {
     display: flex;
 }
 
@@ -287,7 +290,7 @@ h1 {
         margin-top: 0;
     }
 
-    .upgrade-icon {
+    .no-upgrade-icon {
         background-position-y: bottom;
     }
 }

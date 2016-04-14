@@ -1,7 +1,7 @@
 @(ami: AMI, id: String = java.util.UUID.randomUUID.toString)
 
-@import datetime.DateUtils.{readableDateTime, getAgeColour, daysAgo}
-@import prism.Recommendations
+@import datetime.DateUtils.{getAgeColour, daysAgo}
+@import views.html.fragments.amiWithUpgrade
 
 @defining(ami.creationDate.map(getAgeColour).getOrElse("red")) { colour =>
     <div class="ami-badge z-depth-1 grey lighten-3">
@@ -43,25 +43,8 @@
         }
         <a href="#!" class="black-text modal-action modal-close waves-effect waves-white btn grey lighten-3">Close</a>
     </div>
-    <div class="modal-content ami-details__container">
-        <div class="ami-details--this-ami">
-            @amiDetails(ami)
-        </div>
-            @ami.upgrade.map { upgrade =>
-                <div class="ami-details--upgrade upgrade-icon upgrade-icon--@ami.upgrade.flatMap(upgrade => upgrade.creationDate).map(getAgeColour).getOrElse("black")">
-                        @amiDetails(upgrade)
-                </div>
-            }.getOrElse {
-                @if(Recommendations.isUnknown(ami)) {
-                    <div class="ami-details--upgrade upgrade-icon unkown-upgrade-icon">
-                        <div class="no-ami-upgrade--message">Unknown AMI, cannot recommend upgrades</div>
-                    </div>
-                } else {
-                    <div class="ami-details--upgrade upgrade-icon no-upgrade-icon--@ami.creationDate.map(getAgeColour).getOrElse("black")">
-                        <div class="no-ami-upgrade--message">No upgrade available</div>
-                    </div>
-                }
-            }
+    <div class="modal-content">
+        @amiWithUpgrade(ami)
     </div>
     @ami.creationDate.map { date =>
         <div class="modal-footer @getAgeColour(date) lighten-3 black-text">

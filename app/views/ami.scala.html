@@ -1,13 +1,13 @@
 @(amiOpt: Option[AMI])
 
-@import views.html.fragments.{amiDetails, heading}
+@import views.html.fragments.{amiWithUpgrade, heading}
 
 @main("AMI") {
     @heading("AMI details")
     <div class="container">
         @amiOpt match {
             case Some(ami) => {
-                @amiDetails(ami)
+                @amiWithUpgrade(ami)
             }
             case None => {
                 AMI not found
