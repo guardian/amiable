@@ -1,6 +1,6 @@
 @(ssa: SSA, amisWithUpgrades: List[AMI], amiSSAs: List[(SSA, scala.List[AMI])])
 
-@import views.html.fragments.{ssaAmiForm, formatAmi, heading, printSSA}
+@import views.html.fragments.{ssaAmiForm, amiOverlay, heading, printSSA}
 
 @main("Instance AMIs") {
     <div class="heading grey lighten-3">
@@ -22,7 +22,7 @@
             <div class="amis-list">
                 @for(ami <- amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis))) {
                     <div class="amis-list__item">
-                        @formatAmi(ami)
+                        @amiOverlay(ami)
                     </div>
                 }
             </div>
@@ -41,7 +41,7 @@
             <div class="ssa-amis">
                         @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
                             <div class="ssa-amis__item">
-                                @formatAmi(ami)
+                                @amiOverlay(ami)
                             </div>
                         }
         </div>
@@ -53,7 +53,7 @@
                                 <div class="card-content">
                                     @printSSA(ssa)
                                     @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
-                                        @formatAmi(ami)
+                                        @amiOverlay(ami)
                                     }
                                 </div>
                             </div>

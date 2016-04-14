@@ -1,0 +1,82 @@
+@(ami: AMI)
+
+@import datetime.DateUtils.{readableDateTime, getAgeColour, daysAgo}
+@import prism.Recommendations
+
+<table class="ami-details__table bordered">
+    <tr>
+        <th>Image ID</th>
+        <td>@ami.imageId</td>
+    </tr>
+    <tr>
+        <th>Creation date</th>
+        <td>
+        @ami.creationDate match {
+            case Some(date) => {
+                @readableDateTime.print(date) -
+                <span class="@getAgeColour(date)-text">
+                    @daysAgo(date) day@if(daysAgo(date) != 1){s} old
+                </span>
+            }
+            case None => {
+                <span class="red-text">Very old (no creation date available)</span>
+            }
+        }
+        </td>
+    </tr>
+    @ami.name.map { name =>
+        <tr>
+            <th>Name</th>
+            <td>@ami.name</td>
+        </tr>
+    }
+    @ami.description.map { description =>
+        <tr>
+            <th>Description</th>
+            <td>@ami.description</td>
+        </tr>
+    }
+    @if(ami.tags.nonEmpty) {
+        <tr class="ami-details__table--tag-row">
+            <th colspan="2">Tags</th>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="tags__table">
+                    <tbody>
+                    @for( (key, value) <- ami.tags) {
+                        <tr>
+                            <th>@key:</th>
+                            <td>@value</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    }
+    <tr>
+        <th>Region</th>
+        <td>@ami.region</td>
+    </tr>
+    <tr>
+        <th>Virtualization</th>
+        <td>@ami.virtualizationType</td>
+    </tr>
+    <tr>
+        <th>Architecture</th>
+        <td>@ami.architecture</td>
+    </tr>
+    <tr>
+        <th>Storage type</th>
+        <td>@ami.rootDeviceType</td>
+    </tr>
+    <tr>
+        <th>Owner</th>
+        <td>@Recommendations.owner(ami)</td>
+    </tr>
+    <tr>
+        <th>ARN</th>
+        <td>@ami.arn</td>
+    </tr>
+</table>

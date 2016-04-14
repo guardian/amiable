@@ -1,22 +1,17 @@
 @(amiOpt: Option[AMI])
 
-@import views.html.fragments.{formatAmi, heading}
+@import views.html.fragments.{amiDetails, heading}
 
 @main("AMI") {
     @heading("AMI details")
     <div class="container">
-        <div class="row">
-            <div class="col m6">
-            @amiOpt match {
-                case Some(ami) => {
-                    @formatAmi(ami)
-                }
-                case None => {
-                    AMI not found
-                }
+        @amiOpt match {
+            case Some(ami) => {
+                @amiDetails(ami)
             }
-            </div>
-        </div>
+            case None => {
+                AMI not found
+            }
+        }
     </div>
-
 }()

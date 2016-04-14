@@ -45,10 +45,6 @@ h1 {
     margin-top: -5px;
 }
 
-table.ami-details td, table.ami-details th {
-    padding: 5px;
-}
-
 .ssa-amis {
     display: flex;
     flex-flow: row wrap;
@@ -168,16 +164,130 @@ table.ami-details td, table.ami-details th {
     padding: 12px;
 }
 
-table.tags th {
-    padding: 0px;
-}
-table.tags td {
-    padding: 0px;
-}
-
 .modal.ami-modal {
     border-radius: 0;
+    width: 88%;
+    max-height: 90%;
 }
+
 .modal.ami-modal .modal-footer {
     border-radius: 0;
+}
+
+.modal .ami-details__container {
+    padding: 12px;
+    display: flex;
+}
+
+.ami-details--this-ami {
+    display: flex;
+    flex-basis: 50%;
+    padding-right: 5px;
+    border-right: solid 1px #ccc;
+}
+.ami-details--upgrade {
+    display: flex;
+    flex-basis: 50%;
+    padding-left: 5px;
+    min-height: 180px;
+}
+.ami-details__table--container {
+    padding: 5px;
+}
+
+.ami-details__table td, .ami-details__table th {
+    padding: 5px;
+    word-wrap: break-word;
+}
+
+.ami-details__table--tag-row {
+    border-bottom: none !important;
+}
+
+.tags__table th {
+    padding: 0;
+    font-weight: normal;
+}
+.tags__table td {
+    padding: 0;
+}
+
+.upgrade-icon {
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.no-ami-upgrade--message {
+    font-weight: bold;
+    margin: 20px auto;
+}
+
+.upgrade-icon--green {
+    background-image: url("/assets/images/upgrade-ami-fresh.png");
+}
+.upgrade-icon--amber {
+    background-image: url("/assets/images/upgrade-ami-turning.png");
+}
+.upgrade-icon--red {
+    background-image: url("/assets/images/upgrade-ami-old.png");
+}
+.upgrade-icon--black {
+    background-image: url("/assets/images/upgrade-ami-unknown.png");
+}
+.no-upgrade-icon--green {
+    background-image: url("/assets/images/no-upgrade-ami-fresh.png");
+}
+.no-upgrade-icon--amber {
+    background-image: url("/assets/images/no-upgrade-ami-turning.png");
+}
+.no-upgrade-icon--red {
+    background-image: url("/assets/images/no-upgrade-ami-old.png");
+}
+.no-upgrade-icon--black {
+    background-image: url("/assets/images/no-upgrade-ami-unknown.png");
+}
+.unkown-upgrade-icon {
+    background-image: url("/assets/images/unknown-upgrade-ami.png");
+}
+
+@media only screen and (min-width: 1200px) {
+    .modal.ami-modal {
+        width: 75%;
+    }
+}
+@media only screen and (max-width: 992px) {
+    .modal.ami-modal {
+        width: 98%;
+    }
+
+    .ami-details__container {
+        font-size: 0.8rem;
+    }
+}
+@media only screen and (max-width: 670px) {
+    .modal.ami-modal {
+        width: 98%;
+    }
+
+    .ami-details__container {
+        flex-direction: column;
+        font-size: 1rem;
+    }
+
+    .ami-details--this-ami {
+        padding: 0;
+        margin-bottom: 20px;
+        border-right: none;
+    }
+    .ami-details--upgrade {
+        padding: 0;
+    }
+
+    .no-ami-upgrade--message {
+        margin-top: 0;
+    }
+
+    .upgrade-icon {
+        background-position-y: bottom;
+    }
 }

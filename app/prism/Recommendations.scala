@@ -83,6 +83,9 @@ object Recommendations {
   def isUbuntu(ami: AMI): Boolean = ami.ownerId == "099720109477"
   def isAmazon(ami: AMI): Boolean = ami.ownerId == "137112412989"
   def isMachineImages(ami: AMI): Boolean = ami.tags.get("BuildName").exists(_.endsWith("-machine-images"))
+  def isUnknown(ami: AMI): Boolean = {
+    !(isUbuntu(ami) || isAmazon(ami) || isMachineImages(ami))
+  }
 
   def owner(ami: AMI): String = {
     if (isUbuntu(ami)) "Ubuntu"
