@@ -132,6 +132,10 @@ h1 {
 
 .ami-badge__description {
     flex: 1;
+}
+
+.ami-badge__link {
+    display: block;
     padding: 10px 5px 10px 5px;
 }
 
