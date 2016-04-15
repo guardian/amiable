@@ -127,8 +127,7 @@ h1 {
     display: flex;
     position: relative;
     margin: 10px 0;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
+    border-radius: 20px;
 }
 
 .ami-badge__description {
@@ -144,6 +143,11 @@ h1 {
     border-bottom-right-radius: 20px;
 }
 
+.ami-badge__icon-container {
+    flex: 0 0 35px;
+    align-self: center;
+    margin-left: 2px;
+}
 .ami-badge__icon-container {
     flex: 0 0 35px;
     align-self: center;
@@ -215,7 +219,7 @@ h1 {
     padding: 0;
 }
 
-.upgrade-icon {
+.upgrade-image {
     background-position: center;
     background-repeat: no-repeat;
 }
@@ -225,32 +229,32 @@ h1 {
     margin: 20px auto;
 }
 
-.upgrade-icon--green {
-    background-image: url("/assets/images/upgrade-ami-fresh.png");
+.upgrade-image--green {
+    background-image: url("/assets/images/upgrade-images/upgrade-ami-green.png");
 }
-.upgrade-icon--amber {
-    background-image: url("/assets/images/upgrade-ami-turning.png");
+.upgrade-image--amber {
+    background-image: url("/assets/images/upgrade-images/upgrade-ami-amber.png");
 }
-.upgrade-icon--red {
-    background-image: url("/assets/images/upgrade-ami-old.png");
+.upgrade-image--red {
+    background-image: url("/assets/images/upgrade-images/upgrade-ami-red.png");
 }
-.upgrade-icon--black {
-    background-image: url("/assets/images/upgrade-ami-unknown.png");
+.upgrade-image--black {
+    background-image: url("/assets/images/upgrade-images/upgrade-ami-black.png");
 }
-.no-upgrade-icon--green {
-    background-image: url("/assets/images/no-upgrade-ami-fresh.png");
+.no-upgrade-image--green {
+    background-image: url("/assets/images/upgrade-images/no-upgrade-ami-green.png");
 }
-.no-upgrade-icon--amber {
-    background-image: url("/assets/images/no-upgrade-ami-turning.png");
+.no-upgrade-image--amber {
+    background-image: url("/assets/images/upgrade-images/no-upgrade-ami-amber.png");
 }
-.no-upgrade-icon--red {
-    background-image: url("/assets/images/no-upgrade-ami-old.png");
+.no-upgrade-image--red {
+    background-image: url("/assets/images/upgrade-images/no-upgrade-ami-red.png");
 }
-.no-upgrade-icon--black {
-    background-image: url("/assets/images/no-upgrade-ami-unknown.png");
+.no-upgrade-image--black {
+    background-image: url("/assets/images/upgrade-images/no-upgrade-ami-black.png");
 }
-.unkown-upgrade-icon {
-    background-image: url("/assets/images/unknown-upgrade-ami.png");
+.unkown-upgrade-image {
+    background-image: url("/assets/images/upgrade-images/unknown-upgrade-ami.png");
 }
 
 @media only screen and (min-width: 1200px) {
@@ -290,7 +294,7 @@ h1 {
         margin-top: 0;
     }
 
-    .no-upgrade-icon {
+    .no-upgrade-image {
         background-position-y: bottom;
     }
 }
