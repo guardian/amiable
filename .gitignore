@@ -7,6 +7,8 @@ target
 /.settings
 /RUNNING_PID
 
+# gimp dev files
+*.xcf
 
 # Created by https://www.gitignore.io/api/scala,sbt,intellij,emacs
 

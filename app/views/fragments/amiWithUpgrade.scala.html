@@ -1,0 +1,26 @@
+@(ami: AMI)
+
+@import datetime.DateUtils.{getAgeColour}
+@import prism.Recommendations
+@import views.html.fragments.amiDetails
+
+<div class="ami-details__container">
+    <div class="ami-details--this-ami">
+        @amiDetails(ami)
+    </div>
+    @ami.upgrade.map { upgrade =>
+    <div class="ami-details--upgrade upgrade-image upgrade-image--@ami.upgrade.flatMap(upgrade => upgrade.creationDate).map(getAgeColour).getOrElse("black")">
+    @amiDetails(upgrade)
+    </div>
+    }.getOrElse {
+        @if(Recommendations.isUnknown(ami)) {
+            <div class="ami-details--upgrade upgrade-image no-upgrade-image unkown-upgrade-image">
+                <div class="no-ami-upgrade--message">Unknown AMI, cannot recommend upgrades</div>
+            </div>
+        } else {
+            <div class="ami-details--upgrade upgrade-image no-upgrade-image no-upgrade-image--@ami.creationDate.map(getAgeColour).getOrElse("black")">
+                <div class="no-ami-upgrade--message">No upgrade available</div>
+            </div>
+        }
+    }
+</div>

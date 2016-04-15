@@ -1,0 +1,66 @@
+@(ami: AMI, id: String = java.util.UUID.randomUUID.toString)
+
+@import datetime.DateUtils.{getAgeColour, daysAgo}
+@import views.html.fragments.amiWithUpgrade
+@import prism.Recommendations
+
+@defining(ami.creationDate.map(getAgeColour).getOrElse("red")) { colour =>
+    <div class="ami-badge z-depth-1 grey lighten-3">
+        <div class="ami-badge__age @colour lighten-3 center-align">
+        @ami.creationDate match {
+            case Some(date) => {
+                @daysAgo(date)
+                <i class="mdi-image-timelapse"></i>
+            }
+            case None => {
+                Ancient
+            }
+        }
+        </div>
+        <div class="ami-badge__description center-align">
+            <a class="modal-trigger black-text" href="#modal-@id">
+                @ami.imageId
+            </a>
+        </div>
+        <div class="ami-badge__icon-container">
+            @ami.upgrade.map { upgrade =>
+                <img src="/assets/images/upgrade-icons/upgrade-ami-@{upgrade.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
+            }.getOrElse {
+                @if(Recommendations.isUnknown(ami)) {
+                    <img src="/assets/images/upgrade-icons/unknown-upgrade-ami.png" class="ami-badge__icon" />
+                } else {
+                    <img src="/assets/images/upgrade-icons/no-upgrade-ami-@{ami.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
+                }
+            }
+        </div>
+    </div>
+}
+
+
+<div id="modal-@id" class="modal ami-modal" xmlns="http://www.w3.org/1999/html">
+    <div class="modal-footer ami-header white-text">
+        @ami.upgrade.map { upgrade =>
+        <div class="ami-header--title">
+            <i class="mdi-action-backup"></i>
+            Upgrade available
+        </div>
+        }.getOrElse {
+            <div class="ami-header--title">
+                <i class="mdi-action-done"></i>
+                Latest version
+            </div>
+        }
+        <a href="#!" class="black-text modal-action modal-close waves-effect waves-white btn grey lighten-3">Close</a>
+    </div>
+    <div class="modal-content">
+        @amiWithUpgrade(ami)
+    </div>
+    @ami.creationDate.map { date =>
+        <div class="modal-footer @getAgeColour(date) lighten-3 black-text">
+            <div class="ami-header--title">
+                This AMI is <b>@daysAgo(date)</b> day@if(daysAgo(date) != 1){s} old
+            </div>
+        </div>
+    }
+
+</div>

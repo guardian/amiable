@@ -19,7 +19,7 @@ object DateUtils {
   def getAge(date: DateTime): Option[Age] = {
     daysAgo(date) match {
       case age if age < 0 => None
-      case age if age < 7 => Some(Fresh)
+      case age if age < 14 => Some(Fresh)
       case age if age < 30 => Some(Turning)
       case _ => Some(Old)
     }
