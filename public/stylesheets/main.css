@@ -139,19 +139,14 @@ h1 {
     flex: 0 0 58px;
     align-self: stretch;
     padding: 10px 2px 10px 2px;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
 }
 
 .ami-badge__icon-container {
     flex: 0 0 35px;
     align-self: center;
-    margin-left: 2px;
-}
-.ami-badge__icon-container {
-    flex: 0 0 35px;
-    align-self: center;
-    margin-left: 2px;
+    margin-right: 4px;
 }
 
 .ami-badge__icon {
