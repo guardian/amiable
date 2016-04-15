@@ -18,20 +18,22 @@
         }
         </div>
         <div class="ami-badge__description center-align">
-            <a class="modal-trigger black-text" href="#modal-@id">
+            <a class="modal-trigger black-text ami-badge__link" href="#modal-@id">
                 @ami.imageId
             </a>
         </div>
         <div class="ami-badge__icon-container">
-            @ami.upgrade.map { upgrade =>
-                <img src="/assets/images/upgrade-icons/upgrade-ami-@{upgrade.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
-            }.getOrElse {
-                @if(Recommendations.isUnknown(ami)) {
-                    <img src="/assets/images/upgrade-icons/unknown-upgrade-ami.png" class="ami-badge__icon" />
-                } else {
-                    <img src="/assets/images/upgrade-icons/no-upgrade-ami-@{ami.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
+            <a class="modal-trigger black-text" href="#modal-@id">
+                @ami.upgrade.map { upgrade =>
+                    <img src="/assets/images/upgrade-icons/upgrade-ami-@{upgrade.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
+                }.getOrElse {
+                    @if(Recommendations.isUnknown(ami)) {
+                        <img src="/assets/images/upgrade-icons/unknown-upgrade-ami.png" class="ami-badge__icon" />
+                    } else {
+                        <img src="/assets/images/upgrade-icons/no-upgrade-ami-@{ami.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
+                    }
                 }
-            }
+            </a>
         </div>
     </div>
 }
