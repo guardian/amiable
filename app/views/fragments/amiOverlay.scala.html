@@ -24,13 +24,17 @@
         </div>
         <div class="ami-badge__icon-container">
             <a class="modal-trigger black-text" href="#modal-@id">
-                @ami.upgrade.map { upgrade =>
-                    <img src="/assets/images/upgrade-icons/upgrade-ami-@{upgrade.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
-                }.getOrElse {
-                    @if(Recommendations.isUnknown(ami)) {
-                        <img src="/assets/images/upgrade-icons/unknown-upgrade-ami.png" class="ami-badge__icon" />
-                    } else {
-                        <img src="/assets/images/upgrade-icons/no-upgrade-ami-@{ami.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
+                @if(Recommendations.isObsoleteUbuntu(ami)) {
+                    <img src="/assets/images/upgrade-icons/dist-eol.png" class="ami-badge__icon" />
+                } else {
+                    @ami.upgrade.map { upgrade =>
+                        <img src="/assets/images/upgrade-icons/upgrade-ami-@{upgrade.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
+                    }.getOrElse {
+                        @if(Recommendations.isUnknown(ami)) {
+                            <img src="/assets/images/upgrade-icons/unknown-upgrade-ami.png" class="ami-badge__icon" />
+                        } else {
+                            <img src="/assets/images/upgrade-icons/no-upgrade-ami-@{ami.creationDate.map(getAgeColour).getOrElse("black")}.png" class="ami-badge__icon" />
+                        }
                     }
                 }
             </a>
