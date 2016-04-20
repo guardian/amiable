@@ -60,5 +60,9 @@ class RecommendationsTest extends FreeSpec with Matchers with OptionValues {
       val imageName = "ubuntu/images/hvm-ssd/ubuntu-saucy-13.10-amd64-server-20140709"
       isObsoleteUbuntu(emptyAmi("arn").copy(name = Some(imageName))) shouldEqual true
     }
+
+    "returns false for a non-Ubuntu AMI" in {
+      isObsoleteUbuntu(emptyAmi("arn")) shouldEqual false
+    }
   }
 }

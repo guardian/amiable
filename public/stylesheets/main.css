@@ -255,6 +255,9 @@ h1 {
 .unkown-upgrade-image {
     background-image: url("/assets/images/upgrade-images/unknown-upgrade-ami.png");
 }
+.dist-eol {
+    background-image: url("/assets/images/upgrade-images/dist-eol.png");
+}
 
 @media only screen and (min-width: 1200px) {
     .modal.ami-modal {
