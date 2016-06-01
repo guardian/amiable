@@ -57,7 +57,7 @@ object CloudWatch {
       .withNamespace(namespace)
       .withMetricName(metricName)
       .withDimensions(dimensions.asJava)
-      .withPeriod(60 * 60 * 6)  // 6 hours
+      .withPeriod(60 * 60 * 24)  // 1 day (24 hrs)
       .withStartTime(now.minusDays(30).toDate)
       .withEndTime(now.toDate)
       .withStatistics(Statistic.Maximum)
