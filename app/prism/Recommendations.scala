@@ -7,7 +7,7 @@ object Recommendations {
     * Searches for a more recent version of the provided AMI.
     *
     * For Ubuntu AMIs it will check the Name to match the distribution, etc.
-    * For Machine images AMIs it will check the tags.
+    * For Machine images and amigo AMIs it will check the tags.
     *
     * In all cases it should check the virtualisation and architecture as
     * well as using the date to see what is newer.
@@ -24,9 +24,13 @@ object Recommendations {
       .filter(_.creationDate.nonEmpty)
 
     val upgrades = {
+      // filter on additional ami-creator specific properties where appropriate
       if (isUbuntu(ami)) candidateAmis.filter(isUbuntuUpgrade(ami))
       else if (isMachineImages(ami)) candidateAmis.filter(isMachineImagesUpgrade(ami))
-      else if (isAmazon(ami)) candidateAmis  // with Amazon Linux, it is enough to have matched the above conditions
+      else if (isAmigo(ami)) candidateAmis.filter(isAmigoUpgrade(ami))
+      // with Amazon Linux, it is enough to have matched the above conditions
+      else if (isAmazon(ami)) candidateAmis
+      // unknown ami type, cannot recommend upgrades
       else Set.empty
     }
     upgrades
@@ -66,9 +70,6 @@ object Recommendations {
     }
   }
 
-  /**
-    * A machine images upgrade will have the same ImageName and Branch
-    */
   private[prism] def isMachineImagesUpgrade(machineImagesAmi: AMI)(candidateAmi: AMI): Boolean = {
     (for {
       amiImageName <- machineImagesAmi.tags.get("ImageName")
@@ -80,16 +81,29 @@ object Recommendations {
     }) getOrElse false
   }
 
+  private[prism] def isAmigoUpgrade(amigoAmi: AMI)(candidateAmi: AMI): Boolean = {
+    (for {
+      amiStage <- amigoAmi.tags.get("AmigoStage")
+      candidateStage <- candidateAmi.tags.get("AmigoStage")
+      amiRecipe <- amigoAmi.tags.get("Recipe")
+      candidateRecipe <- candidateAmi.tags.get("Recipe")
+    } yield {
+      amiStage == candidateStage && amiRecipe == candidateRecipe
+    }) getOrElse false
+  }
+
   def isUbuntu(ami: AMI): Boolean = ami.ownerId == "099720109477"
   def isAmazon(ami: AMI): Boolean = ami.ownerId == "137112412989"
   def isMachineImages(ami: AMI): Boolean = ami.tags.get("BuildName").exists(_.endsWith("-machine-images"))
+  def isAmigo(ami: AMI): Boolean = ami.tags.get("BuiltBy").contains("amigo")
   def isUnknown(ami: AMI): Boolean = {
-    !(isUbuntu(ami) || isAmazon(ami) || isMachineImages(ami))
+    !(isUbuntu(ami) || isAmazon(ami) || isAmigo(ami) || isMachineImages(ami))
   }
 
   def owner(ami: AMI): String = {
     if (isUbuntu(ami)) "Ubuntu"
     else if (isAmazon(ami)) "Amazon"
+    else if (isAmigo(ami)) "Amigo"
     else if (isMachineImages(ami)) "Machine-images"
     else ami.ownerId
   }
