@@ -24,11 +24,14 @@ object Recommendations {
       .filter(_.creationDate.nonEmpty)
 
     val upgrades = {
+      // filter on additional ami-creator specific properties where appropriate
       if (isUbuntu(ami)) candidateAmis.filter(isUbuntuUpgrade(ami))
       else if (isMachineImages(ami)) candidateAmis.filter(isMachineImagesUpgrade(ami))
       else if (isAmigo(ami)) candidateAmis.filter(isAmigoUpgrade(ami))
-      else if (isAmazon(ami)) candidateAmis  // with Amazon Linux, it is enough to have matched the above conditions
-      else Set.empty  // unknown ami type, cannot recommend upgrades
+      // with Amazon Linux, it is enough to have matched the above conditions
+      else if (isAmazon(ami)) candidateAmis
+      // unknown ami type, cannot recommend upgrades
+      else Set.empty
     }
     upgrades
       .toList
