@@ -2,8 +2,8 @@ package controllers
 
 import javax.inject.Inject
 
+import auth.AuthActions
 import config.AmiableConfigProvider
-import metrics.CloudWatch
 import models.{Attempt, SSA}
 import play.api._
 import play.api.mvc._
@@ -13,10 +13,11 @@ import services.Agents
 import scala.concurrent.ExecutionContext
 
 
-class AMIable @Inject()(amiableConfigProvider: AmiableConfigProvider, agents: Agents)(implicit exec: ExecutionContext) extends Controller {
+class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvider, agents: Agents)
+                       (implicit exec: ExecutionContext) extends Controller with AuthActions {
   implicit val conf = amiableConfigProvider.conf
 
-  def index = Action.async { implicit request =>
+  def index = AuthAction.async { implicit request =>
     attempt {
       for {
         prodInstances <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
@@ -26,7 +27,7 @@ class AMIable @Inject()(amiableConfigProvider: AmiableConfigProvider, agents: Ag
     }
   }
 
-  def ami(imageId: String) = Action.async { implicit request =>
+  def ami(imageId: String) = AuthAction.async { implicit request =>
     attempt {
       for {
         amis <- Prism.getAMIs()
@@ -36,7 +37,7 @@ class AMIable @Inject()(amiableConfigProvider: AmiableConfigProvider, agents: Ag
     }
   }
 
-  def ssaInstanceAMIs(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String]) = Action.async { implicit request =>
+  def ssaInstanceAMIs(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String]) = AuthAction.async { implicit request =>
     val ssa = SSA.fromParams(stackOpt, stageOpt, appOpt)
     attempt {
       for {
