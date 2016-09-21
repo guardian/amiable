@@ -23,7 +23,7 @@ resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
 javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
 
-PlayKeys.playDefaultPort := 80
+PlayKeys.playDefaultPort := 9101
 
 // Allow building both ways on Teamcity
 addCommandAlias("riffRaffArtifact", "riffRaffUpload")
