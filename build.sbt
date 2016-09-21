@@ -1,19 +1,8 @@
-import com.gu.riffraff.artifact.RiffRaffArtifact
-import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport._
-import play.sbt.PlayImport.PlayKeys._
-
-
 name := """amiable"""
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file("."))
-  .enablePlugins(PlayScala, RiffRaffArtifact)
-  .settings(
-    packageName in Universal := normalizedName.value,
-    topLevelDirectory in Universal := Some(normalizedName.value),
-    riffRaffPackageType := (packageZipTarball in Universal).value
-  )
+enablePlugins(PlayScala, RiffRaffArtifact, JDebPackaging)
 
 scalaVersion := "2.11.8"
 
@@ -34,4 +23,40 @@ resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
 javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
 
-playDefaultPort := 9101
+PlayKeys.playDefaultPort := 9101
+
+// Allow building both ways on Teamcity
+addCommandAlias("riffRaffArtifact", "riffRaffUpload")
+
+packageName in Universal := name.value
+maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
+packageSummary := "AMIable"
+packageDescription := """Web app for monitoring the use of AMIs"""
+debianPackageDependencies := Seq("openjdk-8-jre-headless")
+
+javaOptions in Universal ++= Seq(
+  "-Dpidfile.path=/dev/null",
+  s"-Dconfig.file=/etc/${name.value}.conf",
+  "-J-XX:MaxRAMFraction=2",
+  "-J-XX:InitialRAMFraction=2",
+  "-J-XX:MaxMetaspaceSize=300m",
+  "-J-XX:+PrintGCDetails",
+  "-J-XX:+PrintGCDateStamps",
+  s"-J-Xloggc:/var/log/${packageName.value}/gc.log"
+)
+
+import com.typesafe.sbt.packager.archetypes.ServerLoader.Systemd
+serverLoading in Debian := Systemd
+riffRaffPackageType := (packageBin in Debian).value
+
+def env(key: String): Option[String] = Option(System.getenv(key))
+
+riffRaffBuildIdentifier := env("BUILD_NUMBER").getOrElse("DEV")
+riffRaffManifestBranch := env("BRANCH_NAME").getOrElse("unknown_branch")
+riffRaffManifestVcsUrl := "git@github.com:guardian/amiable.git"
+riffRaffUploadArtifactBucket := Some("riffraff-artifact")
+riffRaffUploadManifestBucket := Some("riffraff-builds")
+riffRaffArtifactResources  := Seq(
+  riffRaffPackageType.value -> s"packages/${name.value}/${name.value}.deb",
+  baseDirectory.value / "deploy.json" -> "deploy.json"
+)
