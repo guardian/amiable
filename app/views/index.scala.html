@@ -1,4 +1,9 @@
-@(oldInstances: List[Instance], oldStacks: List[String], oldCountData: List[(org.joda.time.DateTime, Double)])
+@(
+        totalInstances: Int,
+        oldInstances: List[Instance],
+        oldStacks: List[String],
+        oldCountData: List[(org.joda.time.DateTime, Double)]
+)
 
 @import views.html.fragments.ssaAmiForm
 
@@ -11,8 +16,8 @@
                     <p class="grey-text darken-1">
                         Instances running on an out-of-date AMI
                     </p>
-                    <div class="old-instance-count deep-purple-text">
-                        @oldInstances.size
+                    <div class="deep-purple-text">
+                        <span class="old-instance-count">@oldInstances.size</span> <span class="total-instance-count">/ @totalInstances</span>
                     </div>
                     @if(oldCountData.nonEmpty) {
                         <div class="old-instance-count-chart__container">
