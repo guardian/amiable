@@ -23,7 +23,7 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         prodInstances <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
         oldInstances = PrismLogic.oldInstances(prodInstances)
         oldStacks = PrismLogic.stacks(oldInstances)
-      } yield Ok(views.html.index(oldInstances, oldStacks.sorted, agents.oldProdInstanceCountHistory))
+      } yield Ok(views.html.index(prodInstances.length, oldInstances, oldStacks.sorted, agents.oldProdInstanceCountHistory))
     }
   }
 

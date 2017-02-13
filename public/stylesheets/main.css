@@ -31,8 +31,12 @@ h1 {
 }
 
 .old-instance-count {
-    margin-top: -25px;
+    line-height: 1em;
     font-size:8rem;
+}
+
+.total-instance-count {
+    font-size:1.5rem;
 }
 
 .old-instance-count-chart__container {
