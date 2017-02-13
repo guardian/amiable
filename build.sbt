@@ -57,6 +57,6 @@ riffRaffManifestVcsUrl := "git@github.com:guardian/amiable.git"
 riffRaffUploadArtifactBucket := Some("riffraff-artifact")
 riffRaffUploadManifestBucket := Some("riffraff-builds")
 riffRaffArtifactResources  := Seq(
-  riffRaffPackageType.value -> s"packages/${name.value}/${name.value}.deb",
-  baseDirectory.value / "deploy.json" -> "deploy.json"
+  riffRaffPackageType.value -> s"${name.value}/${name.value}.deb",
+  baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml"
 )
