@@ -1,4 +1,4 @@
-package datetime
+package utils
 
 import models.{Age, Fresh, Old, Turning}
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}

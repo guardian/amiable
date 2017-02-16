@@ -14,14 +14,14 @@ class PrismLogicTest extends FreeSpec with Matchers {
     val i2 = emptyInstance("i2")
     val youngAmi = emptyAmi("a1").copy(creationDate = Some(DateTime.now.minusDays(1)))
     val oldAmi = emptyAmi("a2").copy(creationDate = Some(DateTime.now.minusDays(40)))
-    val instances = List(i1 -> Some(youngAmi), i2 -> Some(oldAmi))
+    val allInstances = List(i1 -> Some(youngAmi), i2 -> Some(oldAmi))
 
     "returns old instances" in {
-      oldInstances(instances) should contain(i2)
+      oldInstances(allInstances) should contain(i2)
     }
 
     "excludes young instances" in {
-      oldInstances(instances) shouldNot contain(i1)
+      oldInstances(allInstances) shouldNot contain(i1)
     }
   }
 
@@ -86,23 +86,27 @@ class PrismLogicTest extends FreeSpec with Matchers {
     val i4 = instanceWithAmiArn("i4", None)
 
     "associates an ami with its instances" in {
-      amiInstances(List(a1), List(i1)) shouldEqual List(a1 -> List(i1))
+      amiInstances(List(a1), List(i1)) shouldEqual List(a1.copy(instances = Some(List(i1))))
     }
 
     "associates ami with Nil if no instances use it" in {
-      amiInstances(List(a3), List(i1, i2, i3, i4)) shouldEqual List(a3 -> Nil)
+      amiInstances(List(a3), List(i1, i2, i3, i4)) shouldEqual List(a3.copy(instances = Some(Nil)))
     }
 
     "associates ami with Nil if no instances are available" in {
-      amiInstances(List(a1), Nil) shouldEqual List(a1 -> Nil)
+      amiInstances(List(a1), Nil) shouldEqual List(a1.copy(instances = Some(Nil)))
     }
 
     "associates an AMI with multiple instances that are based on it" in {
-      amiInstances(List(a1), List(i1, i3)) shouldEqual List(a1 -> List(i1, i3))
+      amiInstances(List(a1), List(i1, i3)) shouldEqual List(a1.copy(instances = Some(List(i1, i3))))
     }
 
     "associates various instances correctly" in {
-      amiInstances(List(a1, a2, a3), List(i1, i2, i3, i4)) shouldEqual List(a1 -> List(i1, i3), a2 -> List(i2), a3 -> Nil)
+      amiInstances(List(a1, a2, a3), List(i1, i2, i3, i4)) shouldEqual List(
+        a1.copy(instances = Some(List(i1, i3))),
+        a2.copy(instances = Some(List(i2))),
+        a3.copy(instances = Some(Nil))
+      )
     }
   }
 
@@ -145,29 +149,35 @@ class PrismLogicTest extends FreeSpec with Matchers {
       val i2 = instanceWithSSA("i2", ssa2)
 
       "an SSA with an AMI" in {
-        amiSSAs(List(a1 -> List(i1))) shouldEqual Map(ssa1 -> List(a1))
+        val ami = a1.copy(instances = Some(List(i1)))
+        allSSAs(List(ami)) shouldEqual Map(ssa1 -> List(ami))
       }
 
       "an SSA with multiple AMIs" in {
-        amiSSAs(List(a1 -> List(i1), a2 -> List(i1))) shouldEqual Map(ssa1 -> List(a1, a2))
+        val ami1 = a1.copy(instances = Some(List(i1)))
+        val ami2 = a2.copy(instances = Some(List(i1)))
+        allSSAs(List(ami1, ami2)) shouldEqual Map(ssa1 -> List(ami1, ami2))
       }
 
       "an AMI with multiple SSAs when it's used on different instances" in {
-        amiSSAs(List(a1 -> List(i1, i2))) shouldEqual Map(ssa1 -> List(a1), ssa2 -> List(a1))
+        val ami = a1.copy(instances = Some(List(i1, i2)))
+        allSSAs(List(ami)) shouldEqual Map(ssa1 -> List(ami), ssa2 -> List(ami))
       }
     }
 
     "if an instance's app is empty, associates with the stack/stage combo" in {
       val stackStage = SSA(Some("stack"), Some("stage"), None)
       val instance = instanceWithSSA("i", stackStage)
-      amiSSAs(List(a1 -> List(instance))) shouldEqual Map(stackStage -> List(a1))
+      val ami = a1.copy(instances = Some(List(instance)))
+      allSSAs(List(ami)) shouldEqual Map(stackStage -> List(ami))
     }
 
     "correctly associates instances with multiple apps" in {
       val instance = emptyInstance("i").copy(app = List("app1", "app2"))
-      amiSSAs(List(a1 -> List(instance))) shouldEqual Map(
-        SSA(None, None, Some("app1")) -> List(a1),
-        SSA(None, None, Some("app2")) -> List(a1)
+      val ami = a1.copy(instances = Some(List(instance)))
+      allSSAs(List(ami)) shouldEqual Map(
+        SSA(None, None, Some("app1")) -> List(ami),
+        SSA(None, None, Some("app2")) -> List(ami)
       )
     }
 
@@ -175,10 +185,12 @@ class PrismLogicTest extends FreeSpec with Matchers {
       val i1 = emptyInstance("i1").copy(app = List("app1", "another-app"))
       val i2 = emptyInstance("i2").copy(app = List("app1", "app2"))
       val i3 = emptyInstance("i3").copy(app = List("app2"))
-      amiSSAs(List(a1 -> List(i1, i2), a2 -> List(i3))) shouldEqual Map(
-        SSA(None, None, Some("app1"))-> List(a1),
-        SSA(None, None, Some("another-app"))-> List(a1),
-        SSA(None, None, Some("app2")) -> List(a1, a2)
+      val ami1 = a1.copy(instances = Some(List(i1, i2)))
+      val ami2 = a2.copy(instances = Some(List(i3)))
+      allSSAs(List(ami1, ami2)) shouldEqual Map(
+        SSA(None, None, Some("app1"))-> List(ami1),
+        SSA(None, None, Some("another-app"))-> List(ami1),
+        SSA(None, None, Some("app2")) -> List(ami1, ami2)
       )
     }
   }
@@ -192,15 +204,28 @@ class PrismLogicTest extends FreeSpec with Matchers {
     val mediumAmi = emptyAmi("medium").copy(creationDate = Some(DateTime.now.minusDays(20)))
 
     "puts an SSA group with an old AMI before one with a newer AMI" in {
-      sortSSAAmisByAge(Map(ssa1 -> List(oldAmi), ssa2 -> List(newAmi))).map(_._1) should contain inOrderOnly(ssa1, ssa2)
+      val amis = List(
+        oldAmi.copy(instances = Some(List(instanceWithSSA("i", ssa1)))),
+        newAmi.copy(instances = Some(List(instanceWithSSA("i", ssa2))))
+      )
+      allSSAsSortedByAge(amis).map(_._1) should contain inOrderOnly(ssa1, ssa2)
     }
 
     "sorts by oldest AMI (SSA with old AMI goes first, even if it has a new AMI as well)" in {
-      sortSSAAmisByAge(Map(ssa1 -> List(oldAmi, newAmi), ssa2 -> List(mediumAmi))).map(_._1) should contain inOrderOnly(ssa1, ssa2)
+      val amis = List(
+        oldAmi.copy(instances = Some(List(instanceWithSSA("i", ssa1)))),
+        newAmi.copy(instances = Some(List(instanceWithSSA("i", ssa1)))),
+        mediumAmi.copy(instances = Some(List(instanceWithSSA("i", ssa2))))
+      )
+      allSSAsSortedByAge(amis).map(_._1) should contain inOrderOnly(ssa1, ssa2)
     }
 
     "empty SSA goes last even if it has the oldest AMIs" in {
-      sortSSAAmisByAge(Map(ssaEmpty -> List(oldAmi), ssa1 -> List(newAmi))).map(_._1) should contain inOrderOnly(ssa1, ssaEmpty)
+      val amis = List(
+        oldAmi.copy(instances = Some(List(instanceWithSSA("i", ssaEmpty)))),
+        newAmi.copy(instances = Some(List(instanceWithSSA("i", ssa1))))
+      )
+      allSSAsSortedByAge(amis).map(_._1) should contain inOrderOnly(ssa1, ssaEmpty)
     }
   }
 

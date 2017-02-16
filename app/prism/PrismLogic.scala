@@ -1,8 +1,8 @@
 package prism
 
-import datetime.DateUtils
 import models._
 import org.joda.time.DateTime
+import utils.{DateUtils, Percentiles}
 
 object PrismLogic {
   def oldInstances(instanceAmis: List[(Instance, Option[AMI])]): List[Instance] = {
@@ -35,14 +35,18 @@ object PrismLogic {
   /**
     * Associates AMIs with instances that use them
     */
-  def amiInstances(amis: List[AMI], instances: List[Instance]): List[(AMI, List[Instance])] = {
+  def amiInstances(amis: List[AMI], instances: List[Instance]): List[AMI] = {
     amis.map { ami =>
-      ami -> instances.filter { instance =>
+      val amiInstances = instances.filter { instance =>
         instance.amiArn.fold(false)(_ == ami.arn)
       }
+      ami.copy(instances = Some(amiInstances))
     }
   }
 
+  /**
+    * @return all SSA for a given list of instances
+    */
   def instanceSSAs(instances: List[Instance]): List[SSA] = {
     val allInstanceSSAs = for {
       instance <- instances
@@ -55,15 +59,13 @@ object PrismLogic {
   }
 
   /**
-    * T will either be an AMI, or an AMI attempt.
-    * From a full list of Ts and instances, return each unique
-    * SSA combination with all its associated Ts.
+    * All SSAs associated with the instances of the given AMIs
     */
-  def amiSSAs[T](amisWithInstances: List[(T, List[Instance])]): Map[SSA, List[T]] = {
+  def allSSAs(amis: List[AMI]): Map[SSA, List[AMI]] = {
     val allSSACombos = for {
-      (t, instances) <- amisWithInstances
-      ssa <- instanceSSAs(instances)
-    } yield ssa -> t
+      ami <- amis
+      ssa <- instanceSSAs(ami.instances.getOrElse(Nil))
+    } yield ssa -> ami
 
     allSSACombos
       .groupBy { case (ssa, _) => ssa }
@@ -76,8 +78,8 @@ object PrismLogic {
     * SSAs are sorted by their oldest AMI, except for the empty SSA which
     * always appears last.
     */
-  def sortSSAAmisByAge(ssaAmis: Map[SSA, List[AMI]]): List[(SSA, List[AMI])] = {
-    ssaAmis.toList.sortBy { case (ssa, amis) =>
+  def allSSAsSortedByAge(allAmis: List[AMI]): List[(SSA, List[AMI])] = {
+    allSSAs(allAmis).toList.sortBy { case (ssa, amis) =>
       if (ssa.isEmpty) {
         // put empty SSA last
         DateTime.now.getMillis
@@ -99,4 +101,26 @@ object PrismLogic {
       }
     }.getOrElse(true)
   }
+
+  /**
+    * @return Percentiles of instance AMIs age
+    */
+  def instancesAmisAgePercentiles(amis: List[AMI]): Percentiles = {
+    val ages = amis.flatMap { ami =>
+      val amiAge = ami.creationDate.map(DateUtils.daysAgo).getOrElse(0)
+      List.fill(ami.instances.getOrElse(Nil).length)(amiAge)
+    }
+    Percentiles(ages)
+  }
+
+  /**
+    * @return the number of instances from the list of AMIs that match a given SSA
+    */
+  def instancesCountForSSA(amis: List[AMI], ssa: SSA): Int = {
+    amis
+      .flatMap(_.instances.getOrElse(Nil))
+      .filter(i => i.stack == ssa.stack && i.stage == ssa.stage && ssa.app.exists(i.app.contains))
+      .length
+  }
+
 }

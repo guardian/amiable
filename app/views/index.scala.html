@@ -2,23 +2,20 @@
         totalInstances: Int,
         oldInstances: List[Instance],
         oldStacks: List[String],
-        oldCountData: List[(org.joda.time.DateTime, Double)]
+        oldCountData: List[(org.joda.time.DateTime, Double)],
+        agePercentiles: utils.Percentiles
 )
 
 @import views.html.fragments.ssaAmiForm
+@import views.html.fragments.metricsHeader
 
 @main("Welcome to AMIable") {
     <div class="hero grey lighten-3">
         <div class="container">
             <h1 class="hide">AMIable</h1>
+            @metricsHeader(oldInstances.length, totalInstances, agePercentiles)
             <div class="row">
                 <div class="col l6 ami-kpis__container">
-                    <p class="grey-text darken-1">
-                        Instances running on an out-of-date AMI
-                    </p>
-                    <div class="deep-purple-text">
-                        <span class="old-instance-count">@oldInstances.size</span> <span class="total-instance-count">/ @totalInstances</span>
-                    </div>
                     @if(oldCountData.nonEmpty) {
                         <div class="old-instance-count-chart__container">
                             <canvas id="old-instances-chart" width="400" height="250"></canvas>

@@ -1,0 +1,23 @@
+@(oldInstancesCount: Int, totalInstancesCount: Int, agePercentiles: utils.Percentiles)
+
+@percentileRow(percentileKey: Int, percentileValue: Int) = {
+    @{percentileKey}th percentile: @percentileValue day@if(percentileValue > 1) {s} <br/>
+}
+
+<div class="row">
+    <p class="grey-text darken-1">
+        Instances running on an out-of-date AMI
+    </p>
+    <div class="row deep-purple-text valign-wrapper">
+        <div class="col m6">
+            <span class="old-instance-count">@oldInstancesCount</span> <span class="total-instance-count">/ @totalInstancesCount</span>
+        </div>
+        <div class="col m6 right-align valign">
+            @percentileRow(90, agePercentiles.p90)
+            @percentileRow(75, agePercentiles.p75)
+            @percentileRow(50, agePercentiles.p50)
+            @percentileRow(25, agePercentiles.p25)
+        </div>
+    </div>
+</div>
+

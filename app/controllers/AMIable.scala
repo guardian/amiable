@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import auth.AuthActions
 import config.AmiableConfigProvider
-import models.{Attempt, SSA}
+import models._
 import play.api._
 import play.api.mvc._
 import prism.{Prism, PrismLogic, Recommendations}
@@ -18,12 +18,21 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
   implicit val conf = amiableConfigProvider.conf
 
   def index = AuthAction.async { implicit request =>
+    val ssa = SSA(stage = Some("PROD"))
     attempt {
       for {
-        prodInstances <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
+        prodInstances <- Prism.instancesWithAmis(ssa)
         oldInstances = PrismLogic.oldInstances(prodInstances)
         oldStacks = PrismLogic.stacks(oldInstances)
-      } yield Ok(views.html.index(prodInstances.length, oldInstances, oldStacks.sorted, agents.oldProdInstanceCountHistory))
+        agePercentiles <- Prism.instancesAmisAgePercentiles(ssa)
+      } yield Ok(views.html.index(
+        prodInstances.length,
+        oldInstances,
+        oldStacks.sorted,
+        agents.oldProdInstanceCountHistory,
+        agePercentiles)
+      )
+
     }
   }
 
@@ -46,10 +55,7 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         amis <- Attempt.successfulAttempts(amiArns.map(Prism.getAMI))
         amisWithUpgrades = amis.map(Recommendations.amiWithUpgrade(agents.allAmis))
         amisWithInstances = PrismLogic.amiInstances(amisWithUpgrades, instances)
-        amiSSAs = PrismLogic.amiSSAs(amisWithInstances)
-      } yield {
-        Ok(views.html.instanceAMIs(ssa, amisWithUpgrades, PrismLogic.sortSSAAmisByAge(amiSSAs)))
-      }
+      } yield Ok(views.html.instanceAMIs(ssa, amisWithInstances))
     }
   }
 

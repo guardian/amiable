@@ -1,12 +1,8 @@
 package models
 
-import org.joda.time.format.DateTimeFormatter
-
 import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
-
-import scala.concurrent.Future
+import utils.DateUtils
 
 case class AMI(
   arn: String,
@@ -23,13 +19,10 @@ case class AMI(
   hypervisor: String,
   rootDeviceType: String,
   sriovNetSupport: Option[String],
-  upgrade: Option[AMI] = None
+  upgrade: Option[AMI] = None,
+  instances: Option[List[Instance]] = None
 ) {
   override def toString: String = s"AMI<$arn>"
-}
-object AMI {
-  import datetime.DateUtils._
-  implicit val jsonFormat = Json.format[AMI]
 }
 
 case class Instance(
@@ -98,3 +91,11 @@ sealed trait Age
 object Fresh extends Age
 object Turning extends Age
 object Old extends Age
+
+object JsonFormat {
+  import utils.DateUtils._
+  implicit val originFormat = Json.format[Origin]
+  implicit val metaFormat = Json.format[Meta]
+  implicit val instanceFormat = Json.format[Instance]
+  implicit val amiFormat = Json.format[AMI]
+}

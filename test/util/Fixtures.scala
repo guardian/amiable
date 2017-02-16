@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 
 object Fixtures {
   def emptyAmi(arn: String): AMI =
-    AMI(arn, None, "", "", None, Map.empty, None, "", "", "", "", "",  "", None, None)
+    AMI(arn, None, "", "", None, Map.empty, None, "", "", "", "", "",  "", None, None, None)
   def emptyInstance(arn: String): Instance =
     Instance(arn, "", "", "", "", "", DateTime.now, "", "", "", Nil, Map.empty, None, None, Nil, Nil, Map.empty, Meta("", Origin("", "", "", "")))
   def instanceWithAmiArn(arn: String, amiArnOpt: Option[String]): Instance =

@@ -4,6 +4,7 @@ import config.AMIableConfig
 import models._
 import prism.JsonUtils._
 import prism.Urls._
+import utils.Percentiles
 
 import scala.concurrent.ExecutionContext
 
@@ -37,11 +38,23 @@ object Prism {
     } yield instances
   }
 
-  def instancesWithAmis(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[(Instance, Option[AMI])]] = {
+  private def instancesAndAmis(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[(List[Instance], List[AMI])] = {
     for {
       prodInstances <- getInstances(stackStageApp)
       amiAttempts = amiArns(prodInstances).map(getAMI)
       amis <- Attempt.successfulAttempts(amiAttempts)
-    } yield instanceAmis(prodInstances, amis)
+    } yield (prodInstances, amis)
+  }
+
+  def instancesWithAmis(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[(Instance, Option[AMI])]] = {
+    instancesAndAmis(stackStageApp).map { case (instances, amis)  => instanceAmis(instances, amis)}
+  }
+
+  def amiWithInstances(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[AMI]] = {
+    instancesAndAmis(stackStageApp).map { case (instances, amis)  => amiInstances(amis, instances)}
+  }
+
+  def instancesAmisAgePercentiles(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[Percentiles] = {
+    amiWithInstances(stackStageApp).map(PrismLogic.instancesAmisAgePercentiles)
   }
 }
