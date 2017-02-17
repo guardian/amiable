@@ -70,7 +70,6 @@ object CloudWatch {
   }
 
   def getOldCountData(client: AmazonCloudWatchAsyncClient)(implicit executionContext: ExecutionContext): Future[List[(DateTime, Double)]] = {
-    val request = getOldCountRequest
     awsToScala(client.getMetricStatisticsAsync)(getOldCountRequest).map(extractCountRequestData)
   }
 
