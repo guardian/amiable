@@ -21,10 +21,12 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
     val ssa = SSA(stage = Some("PROD"))
     attempt {
       for {
-        prodInstances <- Prism.instancesWithAmis(ssa)
+        (instances, amis) <- Prism.instancesAndAmis(ssa)
+        prodInstances = PrismLogic.instanceAmis(instances, amis)
         oldInstances = PrismLogic.oldInstances(prodInstances)
         oldStacks = PrismLogic.stacks(oldInstances)
-        agePercentiles <- Prism.instancesAmisAgePercentiles(ssa)
+        amisWithInstances = PrismLogic.amiInstances(amis, instances)
+        agePercentiles = PrismLogic.instancesAmisAgePercentiles(amisWithInstances)
         metrics = Metrics(oldInstances.length, prodInstances.length, agePercentiles)
       } yield Ok(views.html.index(oldStacks.sorted, agents.oldProdInstanceCountHistory, metrics))
     }
@@ -44,9 +46,7 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
     val ssa = SSA.fromParams(stackOpt, stageOpt, appOpt)
     attempt {
       for {
-        instances <- Prism.getInstances(ssa)
-        amiArns = instances.flatMap(_.amiArn).distinct
-        amis <- Attempt.successfulAttempts(amiArns.map(Prism.getAMI))
+        (instances, amis) <- Prism.instancesAndAmis(ssa)
         amisWithUpgrades = amis.map(Recommendations.amiWithUpgrade(agents.allAmis))
         amisWithInstances = PrismLogic.amiInstances(amisWithUpgrades, instances)
         amiSSAs = PrismLogic.amiSSAs(amisWithInstances)
