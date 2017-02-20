@@ -6,6 +6,29 @@ enablePlugins(PlayScala, RiffRaffArtifact, JDebPackaging)
 
 scalaVersion := "2.11.8"
 
+javaOptions in Universal ++= Seq(
+  "-Dpidfile.path=/dev/null",
+  s"-Dconfig.file=/etc/${name.value}.conf",
+  "-J-XX:MaxRAMFraction=2",
+  "-J-XX:InitialRAMFraction=2",
+  "-J-XX:MaxMetaspaceSize=300m",
+  "-J-XX:+PrintGCDetails",
+  "-J-XX:+PrintGCDateStamps",
+  s"-J-Xloggc:/var/log/${packageName.value}/gc.log"
+)
+
+javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
+
+scalacOptions := Seq(
+  "-unchecked",
+  "-deprecation",
+  "-Xcheckinit",
+  "-feature",
+  "-Yinline-warnings",
+  "-Xfatal-warnings",
+  "-Ywarn-unused"
+)
+
 libraryDependencies ++= Seq(
   jdbc,
   cache,
@@ -21,8 +44,6 @@ libraryDependencies ++= Seq(
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
-javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
-
 PlayKeys.playDefaultPort := 9101
 
 // Allow building both ways on Teamcity
@@ -33,17 +54,6 @@ maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
 packageDescription := """Web app for monitoring the use of AMIs"""
 debianPackageDependencies := Seq("openjdk-8-jre-headless")
-
-javaOptions in Universal ++= Seq(
-  "-Dpidfile.path=/dev/null",
-  s"-Dconfig.file=/etc/${name.value}.conf",
-  "-J-XX:MaxRAMFraction=2",
-  "-J-XX:InitialRAMFraction=2",
-  "-J-XX:MaxMetaspaceSize=300m",
-  "-J-XX:+PrintGCDetails",
-  "-J-XX:+PrintGCDateStamps",
-  s"-J-Xloggc:/var/log/${packageName.value}/gc.log"
-)
 
 import com.typesafe.sbt.packager.archetypes.ServerLoader.Systemd
 serverLoading in Debian := Systemd
