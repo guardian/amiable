@@ -102,25 +102,12 @@ object PrismLogic {
     }.getOrElse(true)
   }
 
-  /**
-    * @return Percentiles of instance AMIs age
-    */
   def instancesAmisAgePercentiles(amis: List[AMI]): Percentiles = {
     val ages = amis.flatMap { ami =>
       val amiAge = ami.creationDate.map(DateUtils.daysAgo).getOrElse(0)
       List.fill(ami.instances.getOrElse(Nil).length)(amiAge)
     }
     Percentiles(ages)
-  }
-
-  /**
-    * @return the number of instances from the list of AMIs that match a given SSA
-    */
-  def instancesCountForSSA(amis: List[AMI], ssa: SSA): Int = {
-    amis
-      .flatMap(_.instances.getOrElse(Nil))
-      .filter(i => i.stack == ssa.stack && i.stage == ssa.stage && ssa.app.exists(i.app.contains))
-      .length
   }
 
 }
