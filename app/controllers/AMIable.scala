@@ -25,14 +25,8 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         oldInstances = PrismLogic.oldInstances(prodInstances)
         oldStacks = PrismLogic.stacks(oldInstances)
         agePercentiles <- Prism.instancesAmisAgePercentiles(ssa)
-      } yield Ok(views.html.index(
-        prodInstances.length,
-        oldInstances,
-        oldStacks.sorted,
-        agents.oldProdInstanceCountHistory,
-        agePercentiles)
-      )
-
+        metrics = Metrics(oldInstances.length, prodInstances.length, agePercentiles)
+      } yield Ok(views.html.index(oldStacks.sorted, agents.oldProdInstanceCountHistory, metrics))
     }
   }
 
@@ -56,7 +50,12 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         amisWithUpgrades = amis.map(Recommendations.amiWithUpgrade(agents.allAmis))
         amisWithInstances = PrismLogic.amiInstances(amisWithUpgrades, instances)
         amiSSAs = PrismLogic.amiSSAs(amisWithInstances)
-      } yield Ok(views.html.instanceAMIs(ssa, amisWithInstances, PrismLogic.sortSSAAmisByAge(amiSSAs)))
+        metrics = Metrics(
+          oldInstancesCount = amisWithInstances.filter(PrismLogic.amiIsOld).flatMap(_.instances.getOrElse(Nil)).length,
+          totalInstancesCount = amisWithInstances.flatMap(_.instances.getOrElse(Nil)).length,
+          PrismLogic.instancesAmisAgePercentiles(amisWithInstances)
+        )
+      } yield Ok(views.html.instanceAMIs(ssa, metrics, amisWithInstances, PrismLogic.sortSSAAmisByAge(amiSSAs)))
     }
   }
 

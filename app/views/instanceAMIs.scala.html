@@ -1,4 +1,4 @@
-@(ssa: SSA, amis: List[AMI], amiSSAs: List[(SSA, List[AMI])])
+@(ssa: SSA, metrics: models.Metrics, amis: List[AMI], amiSSAs: List[(SSA, List[AMI])])
 
 @import views.html.fragments.{ssaAmiForm, amiOverlay, printSSA, metricsHeader}
 
@@ -14,11 +14,7 @@
                     @printSSA(ssa, "*")
                 </div>
             </div>
-            @metricsHeader(
-                oldInstancesCount = amis.filter(prism.PrismLogic.amiIsOld).flatMap(_.instances.getOrElse(Nil)).length,
-                totalInstancesCount = amis.flatMap(_.instances.getOrElse(Nil)).length,
-                prism.PrismLogic.instancesAmisAgePercentiles(amis)
-            )
+            @metricsHeader(metrics)
         </div>
     </div>
     <div class="container">

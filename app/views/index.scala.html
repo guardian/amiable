@@ -1,9 +1,7 @@
 @(
-        totalInstances: Int,
-        oldInstances: List[Instance],
         oldStacks: List[String],
         oldCountData: List[(org.joda.time.DateTime, Double)],
-        agePercentiles: utils.Percentiles
+        metrics: models.Metrics
 )
 
 @import views.html.fragments.ssaAmiForm
@@ -13,7 +11,7 @@
     <div class="hero grey lighten-3">
         <div class="container">
             <h1 class="hide">AMIable</h1>
-            @metricsHeader(oldInstances.length, totalInstances, agePercentiles)
+            @metricsHeader(metrics)
             <div class="row">
                 <div class="col l6 ami-kpis__container">
                     @if(oldCountData.nonEmpty) {

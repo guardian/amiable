@@ -2,7 +2,7 @@ package models
 
 import org.joda.time.DateTime
 import play.api.libs.json._
-import utils.DateUtils
+import utils.{DateUtils, Percentiles}
 
 case class AMI(
   arn: String,
@@ -99,3 +99,5 @@ object JsonFormat {
   implicit val instanceFormat = Json.format[Instance]
   implicit val amiFormat = Json.format[AMI]
 }
+
+case class Metrics(oldInstancesCount: Int, totalInstancesCount: Int, agePercentiles: Percentiles)
