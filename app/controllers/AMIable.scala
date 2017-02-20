@@ -55,7 +55,8 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         amis <- Attempt.successfulAttempts(amiArns.map(Prism.getAMI))
         amisWithUpgrades = amis.map(Recommendations.amiWithUpgrade(agents.allAmis))
         amisWithInstances = PrismLogic.amiInstances(amisWithUpgrades, instances)
-      } yield Ok(views.html.instanceAMIs(ssa, amisWithInstances))
+        amiSSAs = PrismLogic.amiSSAs(amisWithInstances)
+      } yield Ok(views.html.instanceAMIs(ssa, amisWithInstances, PrismLogic.sortSSAAmisByAge(amiSSAs)))
     }
   }
 

@@ -61,7 +61,7 @@ object PrismLogic {
   /**
     * All SSAs associated with the instances of the given AMIs
     */
-  def allSSAs(amis: List[AMI]): Map[SSA, List[AMI]] = {
+  def amiSSAs(amis: List[AMI]): Map[SSA, List[AMI]] = {
     val allSSACombos = for {
       ami <- amis
       ssa <- instanceSSAs(ami.instances.getOrElse(Nil))
@@ -78,8 +78,8 @@ object PrismLogic {
     * SSAs are sorted by their oldest AMI, except for the empty SSA which
     * always appears last.
     */
-  def allSSAsSortedByAge(allAmis: List[AMI]): List[(SSA, List[AMI])] = {
-    allSSAs(allAmis).toList.sortBy { case (ssa, amis) =>
+  def sortSSAAmisByAge(ssaAmis: Map[SSA, List[AMI]]): List[(SSA, List[AMI])] = {
+    ssaAmis.toList.sortBy { case (ssa, amis) =>
       if (ssa.isEmpty) {
         // put empty SSA last
         DateTime.now.getMillis
