@@ -1,28 +1,27 @@
-@(ssa: SSA, amisWithUpgrades: List[AMI], amiSSAs: List[(SSA, scala.List[AMI])])
+@(ssa: SSA, metrics: models.Metrics, amisWithUpgrades: List[AMI], amiSSAs: List[(SSA, List[AMI])])
 
-@import views.html.fragments.{ssaAmiForm, amiOverlay, heading, printSSA}
+@import views.html.fragments.{ssaAmiForm, amiOverlay, printSSA, metricsHeader}
 
 @main("Instance AMIs") {
     <div class="heading grey lighten-3">
         <div class="container">
             <div class="row">
                 <div class="col m7">
-                    <h1>AMIs in use</h1>
+                    @metricsHeader(metrics)
                 </div>
                 <div class="col m5 hide-on-small-only">
                     <p class="right-align"><a href="#search">[edit search]</a></p>
                     @printSSA(ssa, "*")
                 </div>
             </div>
-
         </div>
     </div>
     <div class="container">
         <div class="row">
             <div class="amis-list">
-                @for(ami <- amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis))) {
+                @for(amiWithUpgrade <- amisWithUpgrades) {
                     <div class="amis-list__item">
-                        @amiOverlay(ami)
+                        @amiOverlay(amiWithUpgrade)
                     </div>
                 }
             </div>
@@ -39,7 +38,7 @@
         <div class="row">
             @printSSA(ssa)
             <div class="ssa-amis">
-                        @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
+                        @for(ami <- amis) {
                             <div class="ssa-amis__item">
                                 @amiOverlay(ami)
                             </div>
@@ -52,7 +51,7 @@
                             <div class="card">
                                 <div class="card-content">
                                     @printSSA(ssa)
-                                    @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
+                                    @for(ami <- amis) {
                                         @amiOverlay(ami)
                                     }
                                 </div>

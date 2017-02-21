@@ -35,12 +35,18 @@ h1 {
     font-size:8rem;
 }
 
+@media only screen and (max-width: 992px) { /* small and medium screens */
+    .old-instance-count {
+        font-size:3rem;
+    }
+}
+
 .total-instance-count {
     font-size:1.5rem;
 }
 
 .old-instance-count-chart__container {
-    padding: 0 15px 0 0;
+    padding: 15px 15px 0 0;
     max-width: 450px;
 }
 
@@ -303,4 +309,75 @@ h1 {
     .no-upgrade-image {
         background-position-y: bottom;
     }
+}
+
+/* Percentiles */
+.percentiles {
+    display: flex;
+    margin-top: 1.5em;
+}
+
+.percentiles-col {
+    position: relative;
+    text-align: center;
+    font-size: 14px;
+    background: #e4e4e4;
+    flex: 4;
+}
+
+.percentiles-col span {
+    position: relative;
+    display: block;
+    left: -50%;
+    padding: 6px 0;
+}
+
+.percentiles-col:nth-child(1) span {
+    color: #9e9e9e;
+    text-align: left;
+    left: 0;
+}
+
+.percentiles-col:before,
+.percentiles-col:after {
+    font-size: 14px;
+    font-weight: normal;
+    position: absolute;
+    top: -1.5em;
+    left: -1em;
+}
+
+.percentiles-col:nth-child(1):before {
+    content: 'AMIs age percentiles:';
+    font-size: 14px;
+    color: #9e9e9e;
+    left: 0;
+}
+
+@media only screen and (max-width: 992px) { /* small and medium screens */
+    .percentiles-col:nth-child(1):before {
+        content: 'AMIs age pctl:';
+    }
+}
+
+.percentiles-col:nth-child(2):before {
+    content: '25th';
+    color: #9e9e9e;
+}
+
+.percentiles-col:nth-child(3):before {
+    content: '50th';
+    color: #9e9e9e;
+}
+
+.percentiles-col:nth-child(4):before {
+    content: '75th';
+    color: #9e9e9e;
+}
+
+.percentiles-col:nth-child(4):after {
+    content: '';
+    color: #9e9e9e;
+    left: auto;
+    right: 0;
 }

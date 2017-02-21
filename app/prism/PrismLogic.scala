@@ -1,8 +1,8 @@
 package prism
 
-import datetime.DateUtils
 import models._
 import org.joda.time.DateTime
+import utils.{DateUtils, Percentiles}
 
 object PrismLogic {
   def oldInstances(instanceAmis: List[(Instance, Option[AMI])]): List[Instance] = {
@@ -99,4 +99,12 @@ object PrismLogic {
       }
     }.getOrElse(true)
   }
+
+  def instancesAmisAgePercentiles(instances: List[(Instance, Option[AMI])]): Percentiles = {
+    val ages = instances.flatMap { case (instance, ami) =>
+      ami.flatMap(_.creationDate.map(DateUtils.daysAgo))
+    }
+    Percentiles(ages)
+  }
+
 }

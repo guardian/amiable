@@ -3,7 +3,7 @@ package models
 import play.api.libs.json.Json
 
 object Serialisation {
-  import datetime.DateUtils._
+  import utils.DateUtils._
 
   implicit val originFormat = Json.format[Origin]
   implicit val metaFormat = Json.format[Meta]

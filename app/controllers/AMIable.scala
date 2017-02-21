@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import auth.AuthActions
 import config.AmiableConfigProvider
-import models.{Attempt, SSA}
+import models._
 import play.api._
 import play.api.mvc._
 import prism.{Prism, PrismLogic, Recommendations}
@@ -18,12 +18,15 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
   implicit val conf = amiableConfigProvider.conf
 
   def index = AuthAction.async { implicit request =>
+    val ssa = SSA(stage = Some("PROD"))
     attempt {
       for {
-        prodInstances <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
-        oldInstances = PrismLogic.oldInstances(prodInstances)
+        instancesWithAmis <- Prism.instancesWithAmis(ssa)
+        oldInstances = PrismLogic.oldInstances(instancesWithAmis)
         oldStacks = PrismLogic.stacks(oldInstances)
-      } yield Ok(views.html.index(prodInstances.length, oldInstances, oldStacks.sorted, agents.oldProdInstanceCountHistory))
+        agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
+        metrics = Metrics(oldInstances.length, instancesWithAmis.length, agePercentiles)
+      } yield Ok(views.html.index(oldStacks.sorted, agents.oldProdInstanceCountHistory, metrics))
     }
   }
 
@@ -41,15 +44,24 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
     val ssa = SSA.fromParams(stackOpt, stageOpt, appOpt)
     attempt {
       for {
-        instances <- Prism.getInstances(ssa)
-        amiArns = instances.flatMap(_.amiArn).distinct
-        amis <- Attempt.successfulAttempts(amiArns.map(Prism.getAMI))
+        instancesWithAmis <- Prism.instancesWithAmis(ssa)
+        instances = instancesWithAmis.map(_._1)
+        amis = instancesWithAmis.flatMap(_._2).distinct
         amisWithUpgrades = amis.map(Recommendations.amiWithUpgrade(agents.allAmis))
         amisWithInstances = PrismLogic.amiInstances(amisWithUpgrades, instances)
+        oldInstances = PrismLogic.oldInstances(instancesWithAmis)
         amiSSAs = PrismLogic.amiSSAs(amisWithInstances)
-      } yield {
-        Ok(views.html.instanceAMIs(ssa, amisWithUpgrades, PrismLogic.sortSSAAmisByAge(amiSSAs)))
-      }
+        metrics = Metrics(
+          oldInstancesCount = oldInstances.length,
+          totalInstancesCount = instances.length,
+          PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
+        )
+      } yield Ok(views.html.instanceAMIs(
+        ssa,
+        metrics,
+        amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis)),
+        PrismLogic.sortSSAAmisByAge(amiSSAs)
+      ))
     }
   }
 

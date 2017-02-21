@@ -1,4 +1,4 @@
-package datetime
+package utils
 
 import org.joda.time.DateTime
 import org.scalatest.{FreeSpec, Matchers}

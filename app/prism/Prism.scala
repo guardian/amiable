@@ -4,6 +4,7 @@ import config.AMIableConfig
 import models._
 import prism.JsonUtils._
 import prism.Urls._
+import utils.Percentiles
 
 import scala.concurrent.ExecutionContext
 

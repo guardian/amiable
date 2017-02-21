@@ -1,0 +1,18 @@
+@(metrics: models.Metrics)
+
+<div class="deep-purple-text">
+    <div>
+        <span class="old-instance-count">@metrics.oldInstancesCount</span>
+        <span class="total-instance-count">/ @metrics.totalInstancesCount</span>
+        <span class="grey-text darken-1">instances running on an out-of-date AMI</span>
+    </div>
+    <div>
+        <div class="percentiles">
+            <div class="percentiles-col"><span>Days:</span></div>
+            <div class="percentiles-col"><span>@metrics.agePercentiles.p25</span></div>
+            <div class="percentiles-col"><span>@metrics.agePercentiles.p50</span></div>
+            <div class="percentiles-col"><span>@metrics.agePercentiles.p75</span></div>
+        </div>
+    </div>
+</div>
+

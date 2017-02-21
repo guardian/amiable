@@ -1,12 +1,8 @@
 package models
 
-import org.joda.time.format.DateTimeFormatter
-
 import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
-
-import scala.concurrent.Future
+import utils.{DateUtils, Percentiles}
 
 case class AMI(
   arn: String,
@@ -27,8 +23,9 @@ case class AMI(
 ) {
   override def toString: String = s"AMI<$arn>"
 }
+
 object AMI {
-  import datetime.DateUtils._
+  import utils.DateUtils._
   implicit val jsonFormat = Json.format[AMI]
 }
 
@@ -98,3 +95,5 @@ sealed trait Age
 object Fresh extends Age
 object Turning extends Age
 object Old extends Age
+
+case class Metrics(oldInstancesCount: Int, totalInstancesCount: Int, agePercentiles: Percentiles)
