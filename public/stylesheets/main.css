@@ -348,7 +348,7 @@ h1 {
 }
 
 .percentiles-col:nth-child(1):before {
-    content: 'AMI age percentiles:';
+    content: 'AMIs age percentiles:';
     font-size: 14px;
     color: #9e9e9e;
     left: 0;
@@ -356,7 +356,7 @@ h1 {
 
 @media only screen and (max-width: 992px) { /* small and medium screens */
     .percentiles-col:nth-child(1):before {
-        content: 'AMI age pctl:';
+        content: 'AMIs age pctl:';
     }
 }
 

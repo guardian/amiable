@@ -59,7 +59,7 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
       } yield Ok(views.html.instanceAMIs(
         ssa,
         metrics,
-        amisWithInstances.sortBy(_._1.creationDate.map(_.getMillis)),
+        amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis)),
         PrismLogic.sortSSAAmisByAge(amiSSAs)
       ))
     }

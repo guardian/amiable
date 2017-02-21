@@ -1,4 +1,4 @@
-@(ssa: SSA, metrics: models.Metrics, amisWithInstances: List[(AMI, List[Instance])], amiSSAs: List[(SSA, List[AMI])])
+@(ssa: SSA, metrics: models.Metrics, amisWithUpgrades: List[AMI], amiSSAs: List[(SSA, List[AMI])])
 
 @import views.html.fragments.{ssaAmiForm, amiOverlay, printSSA, metricsHeader}
 
@@ -19,9 +19,9 @@
     <div class="container">
         <div class="row">
             <div class="amis-list">
-                @for(amiWithInstances <- amisWithInstances) {
+                @for(amiWithUpgrade <- amisWithUpgrades) {
                     <div class="amis-list__item">
-                        @amiOverlay(amiWithInstances._1)
+                        @amiOverlay(amiWithUpgrade)
                     </div>
                 }
             </div>
