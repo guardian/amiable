@@ -20,32 +20,6 @@ case class Attempt[A] private (underlying: Future[Either[AMIableErrors, A]]) {
     asFuture.map(_.fold(failure, success))
   }
 
-  /** Creates a new attempt by filtering the value of the current attempt with a predicate.
-    *
-    *  If the current attempt contains a value which satisfies the predicate, the new attempt will also hold that value.
-    *  Otherwise, the resulting attempt will fail with an AMIableError.
-    *
-    *  If the current attempt fails, then the resulting attempt also fails.
-    */
-  def filter(p: A => Boolean)(implicit executor: ExecutionContext): Attempt[A] = {
-    val filteredUnderlying = underlying.map { res =>
-      res match {
-        case Right(a) if !p(a) => Left(AMIableErrors(AMIableError("", "Attempt.filter predicate is not satisfied", -1)))
-        case _ => res
-      }
-    }
-    new Attempt(filteredUnderlying)
-
-//    new Attempt(underlying.filter(_ match {
-//      case Right(a) => p(a)
-//      case Left(_) => true
-//    }))
-  }
-
-  /** Used by for-comprehensions.
-    */
-  final def withFilter(p: A => Boolean)(implicit executionContext: ExecutionContext): Attempt[A] = filter(p)(executionContext)
-
   /**
     * If there is an error in the Future itself (e.g. a timeout) we convert it to a
     * Left so we have a consistent error representation. This would likely have
