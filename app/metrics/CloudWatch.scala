@@ -17,6 +17,11 @@ import scala.concurrent.{ExecutionContext, Future}
 sealed abstract class CloudWatchMetric(val name: String)
 object CloudWatchMetrics {
   case object OldCount extends CloudWatchMetric("instances-running-out-of-date-amis")
+  case object AmisAgePercentile25th extends CloudWatchMetric("instances-amis-age-percentile-25th")
+  case object AmisAgePercentile50th extends CloudWatchMetric("instances-amis-age-percentile-50th")
+  case object AmisAgePercentile75th extends CloudWatchMetric("instances-amis-age-percentile-75th")
+  case object AmisAgePercentile90th extends CloudWatchMetric("instances-amis-age-percentile-90th")
+  case object AmisAgePercentileHighest extends CloudWatchMetric("instances-amis-age-percentile-highest")
 }
 
 object CloudWatch {

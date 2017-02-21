@@ -12,6 +12,7 @@ import play.api.inject.ApplicationLifecycle
 import play.api.{Environment, Logger, Mode}
 import prism.{Prism, PrismLogic}
 import rx.lang.scala.Observable
+import utils.Percentiles
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,23 +27,25 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
   private val ssasAgent: Agent[Set[SSA]] = Agent(Set.empty)
   private val oldProdInstanceCountAgent: Agent[Option[Int]] = Agent(None)
   private val oldProdInstanceCountHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
+  private val amisAgePercentilesAgent: Agent[Option[Percentiles]] = Agent(None)
 
   def allAmis: Set[AMI] = amisAgent.get
   def allSSAs: Set[SSA] = ssasAgent.get
   def oldProdInstanceCount: Option[Int] = oldProdInstanceCountAgent.get
   def oldProdInstanceCountHistory: List[(DateTime, Double)] = oldProdInstanceCountHistoryAgent.get
+  def amisAgePercentiles: Option[Percentiles] = amisAgePercentilesAgent.get
 
   if (environment.mode != Mode.Test) {
     refreshAmis()
     refreshSSAs()
-    refreshOldProdInstanceCount()
+    refreshInstancesInfo()
     refreshOldProdInstanceCountHistory()
 
     val prismDataSubscription = Observable.interval(refreshInterval).subscribe { i =>
       Logger.debug(s"Refreshing agents")
       refreshAmis()
       refreshSSAs()
-      refreshOldProdInstanceCount()
+      refreshInstancesInfo()
     }
     val cloudwatchDataSubscription = Observable.interval(1.hour).subscribe { i =>
       refreshOldProdInstanceCountHistory()
@@ -79,15 +82,19 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
     )
   }
 
-  def refreshOldProdInstanceCount(): Unit = {
+  def refreshInstancesInfo(): Unit = {
     Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
       { err =>
         Logger.warn(s"Failed to update old PROD instance count ${err.logString}")
       },
-      { prodInstances =>
-        val oldInstances = PrismLogic.oldInstances(prodInstances)
+      { instancesWithAmis =>
+        val oldInstances = PrismLogic.oldInstances(instancesWithAmis)
         Logger.debug(s"Found ${oldInstances.size} PROD instances running on an out-of-date AMI")
         oldProdInstanceCountAgent.send(Some(oldInstances.size))
+
+        val agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
+        Logger.debug(s"AMIs age percentiles: $agePercentiles")
+        amisAgePercentilesAgent.send(Some(agePercentiles))
       }
     )
   }
