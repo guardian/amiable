@@ -1,9 +1,9 @@
 package prism
 
-import models.SSA
+import models.{AMI, Instance, SSA}
 import org.joda.time.DateTime
 import org.scalatest.{FreeSpec, Matchers}
-
+import scala.util.Random
 
 class PrismLogicTest extends FreeSpec with Matchers {
   import prism.PrismLogic._
@@ -213,6 +213,56 @@ class PrismLogicTest extends FreeSpec with Matchers {
     "returns true for an ageing AMI" in {
       val a1 = emptyAmi("a1").copy(creationDate = Some(DateTime.now.minusDays(40)))
       amiIsOld(a1) shouldEqual true
+    }
+  }
+
+  "instancesAmisAgePercentiles" - {
+    val now = DateTime.now
+
+    sealed trait AmiType
+    case object AmiWithCreationDate extends AmiType
+    case object AmiWithoutCreationDate extends AmiType
+    case object NoAmi extends AmiType
+
+    def instancesGen(count: Int, expectedAmiType: AmiType) = Random
+      .shuffle(0 to count)
+      .toList
+      .map { i =>
+        val instance: Instance = emptyInstance(s"instance-$i")
+        val ami: Option[AMI] = expectedAmiType match {
+          case AmiWithCreationDate => Some(emptyAmi(s"ami-$i").copy(creationDate = Some(now.minusDays(i))))
+          case AmiWithoutCreationDate => Some(emptyAmi(s"ami-$i"))
+          case NoAmi => None
+        }
+        (instance, ami)
+      }
+
+    "return correct percentiles values when all instances have an AMI with creation date" in {
+      val percentiles = instancesAmisAgePercentiles(instancesGen(count = 100, expectedAmiType = AmiWithCreationDate))
+      percentiles.p25 shouldEqual Some(25)
+      percentiles.p50 shouldEqual Some(50)
+      percentiles.p75 shouldEqual Some(75)
+      percentiles.p90 shouldEqual Some(90)
+    }
+
+    "ignore instances with no AMI" in {
+      val hasAMICount = 8
+      val allInstances = instancesGen(count = hasAMICount, expectedAmiType = AmiWithCreationDate) ++ instancesGen(count = 100 - hasAMICount, expectedAmiType = NoAmi)
+      val percentiles = instancesAmisAgePercentiles(allInstances)
+      percentiles.p25 shouldEqual Some(2)
+      percentiles.p50 shouldEqual Some(4)
+      percentiles.p75 shouldEqual Some(6)
+      percentiles.p90 shouldEqual Some(7)
+    }
+
+    "ignore instances with AMI that doesn't have a creation date" in {
+      val hasAMICount = 16
+      val allInstances = instancesGen(count = hasAMICount, expectedAmiType = AmiWithCreationDate) ++ instancesGen(count = 100 - hasAMICount, expectedAmiType = AmiWithoutCreationDate)
+      val percentiles = instancesAmisAgePercentiles(allInstances)
+      percentiles.p25 shouldEqual Some(4)
+      percentiles.p50 shouldEqual Some(8)
+      percentiles.p75 shouldEqual Some(12)
+      percentiles.p90 shouldEqual Some(14)
     }
   }
 }
