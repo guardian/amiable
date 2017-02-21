@@ -8,9 +8,9 @@ import scala.collection.JavaConverters._
 
 
 class CloudWatchTest extends FreeSpec with Matchers with OptionValues {
-  "putOldCountRequest" - {
+  "putRequest" - {
     "sets provided count value" in {
-      val metricDataRequest = CloudWatch.putOldCountRequest(5)
+      val metricDataRequest = CloudWatch.putRequest("test-metric", 5)
       val metricDatum = metricDataRequest.getMetricData.asScala.headOption.value
       metricDatum.getValue shouldEqual 5
     }
@@ -27,12 +27,12 @@ class CloudWatchTest extends FreeSpec with Matchers with OptionValues {
       }
 
     "extracts date from result" in {
-      val (dt, _) = CloudWatch.extractCountRequestData(result).headOption.value
+      val (dt, _) = CloudWatch.extractDataFromResult(result).headOption.value
       dt shouldEqual dateTime
     }
 
     "extracts max value from result" in {
-      val (_, v) = CloudWatch.extractCountRequestData(result).headOption.value
+      val (_, v) = CloudWatch.extractDataFromResult(result).headOption.value
       v shouldEqual value
     }
   }

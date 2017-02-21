@@ -2,8 +2,7 @@ package services
 
 import javax.inject.{Inject, Singleton}
 
-import aws.AwsAsyncHandler.awsToScala
-import metrics.CloudWatch
+import metrics.{CloudWatch, CloudWatchMetrics}
 import play.api.inject.ApplicationLifecycle
 import play.api.{Environment, Logger, Mode}
 import rx.lang.scala.Observable
@@ -22,8 +21,7 @@ class Metrics @Inject()(environment: Environment, agents: Agents, lifecycle: App
       agents.oldProdInstanceCount.fold {
         Logger.warn("Not updating cloudwatch - no old PROD instance count available")
       }{ count =>
-        val metricDataRequest = CloudWatch.putOldCountRequest(count)
-        awsToScala(CloudWatch.client.putMetricDataAsync)(metricDataRequest)
+        CloudWatch.put(CloudWatchMetrics.OldCount.name, count)
         Logger.debug(s"Updated CloudWatch with out-of-date instances count: $count")
       }
     }

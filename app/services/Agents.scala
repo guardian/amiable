@@ -5,7 +5,7 @@ import javax.inject.{Inject, Singleton}
 import akka.actor.ActorSystem
 import akka.agent.Agent
 import config.AmiableConfigProvider
-import metrics.CloudWatch
+import metrics.{CloudWatch, CloudWatchMetrics}
 import models.{AMI, SSA}
 import org.joda.time.DateTime
 import play.api.inject.ApplicationLifecycle
@@ -93,7 +93,7 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
   }
 
   def refreshOldProdInstanceCountHistory(): Unit = {
-    CloudWatch.attemptOldCountData(CloudWatch.client).fold(
+    CloudWatch.get(CloudWatchMetrics.OldCount.name).fold(
       { err =>
         Logger.warn(s"Failed to update old PROD instance count ${err.logString}")
       },
