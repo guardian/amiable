@@ -102,12 +102,9 @@ object PrismLogic {
     }.getOrElse(true)
   }
 
-  def instancesAmisAgePercentiles(amis: List[AMI]): Percentiles = {
-    val ages = amis.flatMap { ami =>
-      ami
-        .creationDate
-        .map(date => List.fill(ami.instances.getOrElse(Nil).length)(DateUtils.daysAgo(date)))
-        .getOrElse(Nil)
+  def instancesAmisAgePercentiles(instances: List[(Instance, Option[AMI])]): Percentiles = {
+    val ages = instances.flatMap { case (instance, ami) =>
+      ami.flatMap(_.creationDate.map(DateUtils.daysAgo))
     }
     Percentiles(ages)
   }

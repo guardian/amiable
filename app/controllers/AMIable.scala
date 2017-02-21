@@ -21,13 +21,11 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
     val ssa = SSA(stage = Some("PROD"))
     attempt {
       for {
-        (instances, amis) <- Prism.instancesAndAmis(ssa)
-        prodInstances = PrismLogic.instanceAmis(instances, amis)
-        oldInstances = PrismLogic.oldInstances(prodInstances)
+        instancesWithAmis <- Prism.instancesWithAmis(ssa)
+        oldInstances = PrismLogic.oldInstances(instancesWithAmis)
         oldStacks = PrismLogic.stacks(oldInstances)
-        amisWithInstances = PrismLogic.amiInstances(amis, instances)
-        agePercentiles = PrismLogic.instancesAmisAgePercentiles(amisWithInstances)
-        metrics = Metrics(oldInstances.length, prodInstances.length, agePercentiles)
+        agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
+        metrics = Metrics(oldInstances.length, instancesWithAmis.length, agePercentiles)
       } yield Ok(views.html.index(oldStacks.sorted, agents.oldProdInstanceCountHistory, metrics))
     }
   }
@@ -46,14 +44,16 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
     val ssa = SSA.fromParams(stackOpt, stageOpt, appOpt)
     attempt {
       for {
-        (instances, amis) <- Prism.instancesAndAmis(ssa)
+        instancesWithAmis <- Prism.instancesWithAmis(ssa)
+        instances = instancesWithAmis.map(_._1)
+        amis = instancesWithAmis.flatMap(_._2).distinct
         amisWithUpgrades = amis.map(Recommendations.amiWithUpgrade(agents.allAmis))
         amisWithInstances = PrismLogic.amiInstances(amisWithUpgrades, instances)
         amiSSAs = PrismLogic.amiSSAs(amisWithInstances)
         metrics = Metrics(
           oldInstancesCount = amisWithInstances.filter(PrismLogic.amiIsOld).flatMap(_.instances.getOrElse(Nil)).length,
           totalInstancesCount = amisWithInstances.flatMap(_.instances.getOrElse(Nil)).length,
-          PrismLogic.instancesAmisAgePercentiles(amisWithInstances)
+          PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
         )
       } yield Ok(views.html.instanceAMIs(ssa, metrics, amisWithInstances, PrismLogic.sortSSAAmisByAge(amiSSAs)))
     }
