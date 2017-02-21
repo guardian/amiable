@@ -49,13 +49,13 @@ object CloudWatch {
       .withValue(allStacks)
   )
 
-  private[metrics] def putRequest(metricName: String, count: Int): PutMetricDataRequest = {
+  private[metrics] def putRequest(metricName: String, value: Int): PutMetricDataRequest = {
     new PutMetricDataRequest()
       .withNamespace(namespace)
       .withMetricData {
         new MetricDatum()
           .withMetricName(metricName)
-          .withValue(count.toDouble)
+          .withValue(value.toDouble)
           .withDimensions(dimensions.asJava)
       }
   }
@@ -89,7 +89,7 @@ object CloudWatch {
   private def attemptWithRequest(request: GetMetricStatisticsRequest)(implicit executionContext: ExecutionContext): Attempt[Option[List[(DateTime, Double)]]] = {
     val tmp: Future[Either[AMIableErrors, Option[List[(DateTime, Double)]]]] = getWithRequest(request).map(ds => Right(Some(ds)))
     Attempt.fromFuture(tmp){ case e =>
-      Logger.warn("Failed to fetch old instance count cloudwatch data", e)
+      Logger.warn("Failed to fetch CloudWatch data", e)
       Right(None)
     }
   }
