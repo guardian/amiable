@@ -1,22 +1,17 @@
 @(metrics: models.Metrics)
 
-@percentileRow(percentileKey: Int, percentileValue: Option[Int]) = {
-    @{percentileKey}th percentile: @percentileValue.getOrElse(0) day@if(percentileValue.exists(_ > 1)) {s} <br/>
-}
-
-<div class="row">
-    <p class="grey-text darken-1">
-        Instances running on an out-of-date AMI
-    </p>
-    <div class="row deep-purple-text valign-wrapper">
-        <div class="col m6">
-            <span class="old-instance-count">@metrics.oldInstancesCount</span> <span class="total-instance-count">/ @metrics.totalInstancesCount</span>
-        </div>
-        <div class="col m6 right-align valign">
-            @percentileRow(90, metrics.agePercentiles.p90)
-            @percentileRow(75, metrics.agePercentiles.p75)
-            @percentileRow(50, metrics.agePercentiles.p50)
-            @percentileRow(25, metrics.agePercentiles.p25)
+<div class="deep-purple-text">
+    <div>
+        <span class="old-instance-count">@metrics.oldInstancesCount</span>
+        <span class="total-instance-count">/ @metrics.totalInstancesCount</span>
+        <span class="grey-text darken-1">instances running on an out-of-date AMI</span>
+    </div>
+    <div>
+        <div class="percentiles">
+            <div class="percentiles-col"><span>Days:</span></div>
+            <div class="percentiles-col"><span>@metrics.agePercentiles.p25</span></div>
+            <div class="percentiles-col"><span>@metrics.agePercentiles.p50</span></div>
+            <div class="percentiles-col"><span>@metrics.agePercentiles.p75</span></div>
         </div>
     </div>
 </div>

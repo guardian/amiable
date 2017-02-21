@@ -6,15 +6,14 @@
     <div class="heading grey lighten-3">
         <div class="container">
             <div class="row">
-                <div class="col m6">
-                    <h1>AMIs in use</h1>
+                <div class="col m7">
+                    @metricsHeader(metrics)
                 </div>
-                <div class="col m6 hide-on-small-only">
+                <div class="col m5 hide-on-small-only">
                     <p class="right-align"><a href="#search">[edit search]</a></p>
                     @printSSA(ssa, "*")
                 </div>
             </div>
-            @metricsHeader(metrics)
         </div>
     </div>
     <div class="container">
