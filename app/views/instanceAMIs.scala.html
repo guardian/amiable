@@ -1,4 +1,4 @@
-@(ssa: SSA, metrics: models.Metrics, amis: List[AMI], amiSSAs: List[(SSA, List[AMI])])
+@(ssa: SSA, metrics: models.Metrics, amisWithInstances: List[(AMI, List[Instance])], amiSSAs: List[(SSA, List[AMI])])
 
 @import views.html.fragments.{ssaAmiForm, amiOverlay, printSSA, metricsHeader}
 
@@ -20,9 +20,9 @@
     <div class="container">
         <div class="row">
             <div class="amis-list">
-                @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
+                @for(amiWithInstances <- amisWithInstances) {
                     <div class="amis-list__item">
-                        @amiOverlay(ami)
+                        @amiOverlay(amiWithInstances._1)
                     </div>
                 }
             </div>
@@ -39,7 +39,7 @@
         <div class="row">
             @printSSA(ssa)
             <div class="ssa-amis">
-                        @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
+                        @for(ami <- amis) {
                             <div class="ssa-amis__item">
                                 @amiOverlay(ami)
                             </div>
@@ -52,7 +52,7 @@
                             <div class="card">
                                 <div class="card-content">
                                     @printSSA(ssa)
-                                    @for(ami <- amis.sortBy(_.creationDate.map(_.getMillis))) {
+                                    @for(ami <- amis) {
                                         @amiOverlay(ami)
                                     }
                                 </div>

@@ -35,18 +35,14 @@ object PrismLogic {
   /**
     * Associates AMIs with instances that use them
     */
-  def amiInstances(amis: List[AMI], instances: List[Instance]): List[AMI] = {
+  def amiInstances(amis: List[AMI], instances: List[Instance]): List[(AMI, List[Instance])] = {
     amis.map { ami =>
-      val amiInstances = instances.filter { instance =>
+      ami -> instances.filter { instance =>
         instance.amiArn.fold(false)(_ == ami.arn)
       }
-      ami.copy(instances = Some(amiInstances))
     }
   }
 
-  /**
-    * @return all SSA for a given list of instances
-    */
   def instanceSSAs(instances: List[Instance]): List[SSA] = {
     val allInstanceSSAs = for {
       instance <- instances
@@ -59,13 +55,15 @@ object PrismLogic {
   }
 
   /**
-    * All SSAs associated with the instances of the given AMIs
+    * T will either be an AMI, or an AMI attempt.
+    * From a full list of Ts and instances, return each unique
+    * SSA combination with all its associated Ts.
     */
-  def amiSSAs(amis: List[AMI]): Map[SSA, List[AMI]] = {
+  def amiSSAs[T](amisWithInstances: List[(T, List[Instance])]): Map[SSA, List[T]] = {
     val allSSACombos = for {
-      ami <- amis
-      ssa <- instanceSSAs(ami.instances.getOrElse(Nil))
-    } yield ssa -> ami
+      (t, instances) <- amisWithInstances
+      ssa <- instanceSSAs(instances)
+    } yield ssa -> t
 
     allSSACombos
       .groupBy { case (ssa, _) => ssa }

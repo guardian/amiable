@@ -49,13 +49,19 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         amis = instancesWithAmis.flatMap(_._2).distinct
         amisWithUpgrades = amis.map(Recommendations.amiWithUpgrade(agents.allAmis))
         amisWithInstances = PrismLogic.amiInstances(amisWithUpgrades, instances)
+        oldInstances = PrismLogic.oldInstances(instancesWithAmis)
         amiSSAs = PrismLogic.amiSSAs(amisWithInstances)
         metrics = Metrics(
-          oldInstancesCount = amisWithInstances.filter(PrismLogic.amiIsOld).flatMap(_.instances.getOrElse(Nil)).length,
-          totalInstancesCount = amisWithInstances.flatMap(_.instances.getOrElse(Nil)).length,
+          oldInstancesCount = oldInstances.length,
+          totalInstancesCount = instances.length,
           PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
         )
-      } yield Ok(views.html.instanceAMIs(ssa, metrics, amisWithInstances, PrismLogic.sortSSAAmisByAge(amiSSAs)))
+      } yield Ok(views.html.instanceAMIs(
+        ssa,
+        metrics,
+        amisWithInstances.sortBy(_._1.creationDate.map(_.getMillis)),
+        PrismLogic.sortSSAAmisByAge(amiSSAs)
+      ))
     }
   }
 

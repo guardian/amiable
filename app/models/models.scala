@@ -19,10 +19,14 @@ case class AMI(
   hypervisor: String,
   rootDeviceType: String,
   sriovNetSupport: Option[String],
-  upgrade: Option[AMI] = None,
-  instances: Option[List[Instance]] = None
+  upgrade: Option[AMI] = None
 ) {
   override def toString: String = s"AMI<$arn>"
+}
+
+object AMI {
+  import utils.DateUtils._
+  implicit val jsonFormat = Json.format[AMI]
 }
 
 case class Instance(
@@ -91,13 +95,5 @@ sealed trait Age
 object Fresh extends Age
 object Turning extends Age
 object Old extends Age
-
-object JsonFormat {
-  import utils.DateUtils._
-  implicit val originFormat = Json.format[Origin]
-  implicit val metaFormat = Json.format[Meta]
-  implicit val instanceFormat = Json.format[Instance]
-  implicit val amiFormat = Json.format[AMI]
-}
 
 case class Metrics(oldInstancesCount: Int, totalInstancesCount: Int, agePercentiles: Percentiles)

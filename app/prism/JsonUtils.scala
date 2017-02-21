@@ -1,7 +1,6 @@
 package prism
 
 import models._
-import models.JsonFormat._
 import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.ws.WSResponse
