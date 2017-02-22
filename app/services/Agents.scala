@@ -93,7 +93,7 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
         oldProdInstanceCountAgent.send(Some(oldInstances.size))
 
         val agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
-        Logger.debug(s"AMIs age percentiles: $agePercentiles")
+        Logger.debug(s"Found AMIs age percentiles (p25: ${agePercentiles.p25}, p50: ${agePercentiles.p50}, p75: ${agePercentiles.p75})")
         amisAgePercentilesAgent.send(Some(agePercentiles))
       }
     )
