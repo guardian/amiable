@@ -86,17 +86,19 @@ object CloudWatch {
     awsToScala(client.putMetricDataAsync)(request)
   }
 
-  private def attemptWithRequest(request: GetMetricStatisticsRequest)(implicit executionContext: ExecutionContext): Attempt[Option[List[(DateTime, Double)]]] = {
-    val tmp: Future[Either[AMIableErrors, Option[List[(DateTime, Double)]]]] = getWithRequest(request).map(ds => Right(Some(ds)))
-    Attempt.fromFuture(tmp){ case e =>
+  def get(metricName: String)(implicit executionContext: ExecutionContext): Attempt[Option[List[(DateTime, Double)]]] = {
+    Attempt.fromFuture(getWithRequest(getRequest(metricName)).map(ds => Right(Option(ds)))){ case e =>
       Logger.warn("Failed to fetch CloudWatch data", e)
       Right(None)
     }
   }
 
-  def get(metricName: String)(implicit executionContext: ExecutionContext): Attempt[Option[List[(DateTime, Double)]]] = {
-    attemptWithRequest(getRequest(metricName))
+  def put(metricName: String, maybeValue: Option[Int]): Unit = {
+    maybeValue.fold {
+      Logger.warn(s"Not updating CloudWatch - no value available for '$metricName'")
+    }{ value =>
+      putWithRequest(putRequest(metricName, value))
+      Logger.debug(s"Updated CloudWatch metric '$metricName' with value '$value'")
+    }
   }
-
-  def put(metricName: String, value: Int) = putWithRequest(putRequest(metricName, value))
 }
