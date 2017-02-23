@@ -19,6 +19,14 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
 
   def index = AuthAction.async { implicit request =>
     val ssa = SSA(stage = Some("PROD"))
+    val charts = List(
+      Chart("Instances with out-of-date AMI", List(ChartTimeSerie("Old instances count", agents.oldProdInstanceCountHistory))),
+      Chart("Age of AMIs (Percentiles)", List(
+        ChartTimeSerie("25th percentile", agents.amisAgePercentile25thHistory, "#4d94ff"),
+        ChartTimeSerie("50th percentile", agents.amisAgePercentile50thHistory, "#3385ff"),
+        ChartTimeSerie("75th percentile", agents.amisAgePercentile75thHistory, "#1a75ff")
+      ))
+    )
     attempt {
       for {
         instancesWithAmis <- Prism.instancesWithAmis(ssa)
@@ -26,7 +34,7 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         oldStacks = PrismLogic.stacks(oldInstances)
         agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
         metrics = Metrics(oldInstances.length, instancesWithAmis.length, agePercentiles)
-      } yield Ok(views.html.index(oldStacks.sorted, agents.oldProdInstanceCountHistory, metrics))
+      } yield Ok(views.html.index(oldStacks.sorted, charts, metrics))
     }
   }
 

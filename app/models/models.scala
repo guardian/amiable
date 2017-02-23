@@ -97,3 +97,7 @@ object Turning extends Age
 object Old extends Age
 
 case class Metrics(oldInstancesCount: Int, totalInstancesCount: Int, agePercentiles: Percentiles)
+case class ChartTimeSerie(label: String, data: List[(DateTime, Double)], color: String = "")
+case class Chart(title: String, data: List[ChartTimeSerie]) {
+  val id = title.hashCode
+}

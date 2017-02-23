@@ -26,10 +26,6 @@ h1 {
     padding-top: 30px;
 }
 
-.ami-kpis__container {
-    width: 100%;
-}
-
 .old-instance-count {
     line-height: 1em;
     font-size:8rem;
@@ -380,4 +376,34 @@ h1 {
     color: #9e9e9e;
     left: auto;
     right: 0;
+}
+
+/* Index charts */
+#charts-container {
+    padding-top: 1em;
+}
+
+#charts-nav .tabs{
+    background-color: transparent;
+    font-size: 12px;
+}
+
+#charts-nav .tabs .tab {
+    text-transform: none;
+}
+
+#charts-nav .tabs .tab .active{
+    background-color: #e4e4e4;
+}
+
+#charts-nav .tabs .indicator {
+    display: none;
+}
+
+.chart {
+    background-color: #e4e4e4;
+}
+
+.chart canvas{
+    padding: 0.4em;
 }
