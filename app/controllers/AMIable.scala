@@ -9,6 +9,7 @@ import play.api._
 import play.api.mvc._
 import prism.{Prism, PrismLogic, Recommendations}
 import services.Agents
+import utils.DateUtils
 
 import scala.concurrent.ExecutionContext
 
@@ -24,7 +25,8 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
       Chart("Age of AMIs (Percentiles)", List(
         ChartTimeSerie("25th percentile", agents.amisAgePercentile25thHistory, "#4d94ff"),
         ChartTimeSerie("50th percentile", agents.amisAgePercentile50thHistory, "#3385ff"),
-        ChartTimeSerie("75th percentile", agents.amisAgePercentile75thHistory, "#1a75ff")
+        ChartTimeSerie("75th percentile", agents.amisAgePercentile75thHistory, "#1a75ff"),
+        ChartTimeSerie("Freshness goal", agents.amisAgePercentile75thHistory.map{ case (d, v) => (d, DateUtils.freshnessLimit.toDouble) }, "green")
       ))
     )
     attempt {
