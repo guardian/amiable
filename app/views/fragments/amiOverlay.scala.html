@@ -1,4 +1,4 @@
-@(ami: AMI, id: String = java.util.UUID.randomUUID.toString)
+@(ami: AMI, instanceCount: Option[Int] = None, id: String = java.util.UUID.randomUUID.toString)
 
 @import utils.DateUtils.{getAgeColour, daysAgo}
 @import views.html.fragments.amiWithUpgrade
@@ -6,17 +6,27 @@
 
 @defining(ami.creationDate.map(getAgeColour).getOrElse("red")) { colour =>
     <div class="ami-badge z-depth-1 grey lighten-3">
-        <div class="ami-badge__age @colour lighten-3 center-align">
-        @ami.creationDate match {
-            case Some(date) => {
-                @daysAgo(date)
-                <i class="mdi-image-timelapse"></i>
+        <div class="ami-badge__info ami-badge__age @colour lighten-3">
+            <span>
+            @ami.creationDate match {
+                case Some(date) => {
+                    <i class="mdi-image-timelapse"></i>
+                    @daysAgo(date)
+                }
+                case None => {
+                    Ancient
+                }
             }
-            case None => {
-                Ancient
-            }
-        }
+            </span>
         </div>
+        @instanceCount.map { count =>
+            <div class=" ami-badge__info ami-badge__instances_count">
+                <span>
+                    <i class="mdi-hardware-computer"></i>
+                    @count
+                </span>
+            </div>
+        }
         <div class="ami-badge__description center-align">
             <a class="modal-trigger black-text ami-badge__link" href="#modal-@id">
                 @ami.imageId
