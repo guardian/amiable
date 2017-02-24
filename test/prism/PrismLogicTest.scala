@@ -265,4 +265,32 @@ class PrismLogicTest extends FreeSpec with Matchers {
       percentiles.p90 shouldEqual Some(14)
     }
   }
+
+  "instancesCountPerSSA" - {
+    "returns " in {
+      val ssa1 = SSA(Some("stack-1"), Some("stage-1"), Some("app-1"))
+      val ssa2 = SSA(Some("stack-2"), Some("stage-2"))
+      val ssa3 = SSA(Some("stack-3"))
+      val a1 = emptyAmi("a1")
+      val a2 = emptyAmi("a2")
+      val i1 = emptyInstance("i1").copy(stack = Some("stack-1"), stage = Some("stage-1"), app = List("app-1"))
+      val i2 = emptyInstance("i2").copy(stack = Some("stack-2"), stage = Some("stage-2"), app = List("app-2"))
+      val i3 = emptyInstance("i3").copy(stack = Some("stack-3"), stage = Some("stage-2"), app = List("app-3"))
+      val i4 = emptyInstance("i4").copy(stack = Some("stack-3"), stage = Some("stage-2"), app = List("app-4"))
+      val i5 = emptyInstance("i5").copy(stack = Some("stack-1"), stage = Some("stage-1"), app = List("app-5"))
+      val i6 = emptyInstance("i6").copy(stack = Some("stack-3"), stage = Some("stage-2"), app = List("app-6"))
+      val amisWithInstances = List(
+        (a1, List(i1, i2, i3)),
+        (a2, List(i4, i5, i6))
+      )
+      val allSSAs = List(ssa1, ssa2, ssa3)
+      val expectedResult = Map(
+        (ssa1, a1) -> 1,
+        (ssa2, a1) -> 1,
+        (ssa3, a1) -> 1,
+        (ssa3, a2) -> 2
+      )
+      instancesCountPerSSA(amisWithInstances, allSSAs) should be (expectedResult)
+    }
+  }
 }

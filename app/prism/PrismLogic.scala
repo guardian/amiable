@@ -107,4 +107,18 @@ object PrismLogic {
     Percentiles(ages)
   }
 
+  /**
+    * T will either be an AMI, or an AMI attempt.
+    * From a full list of Ts and instances and a list of SSAs, return unique
+    * SSA and AMI combinations with their respective number of instances
+    */
+  def instancesCountPerSSA[T](amisWithInstances: List[(T, List[Instance])], ssas: List[SSA]): Map[(SSA, T), Int] = {
+    for {
+      (t, instances) <- amisWithInstances.toMap
+      ssa <- ssas
+      instancesCount = instances.filter(_.belongsToSSA(ssa)).length
+      if(instancesCount > 0)
+    } yield (ssa, t) -> instancesCount
+
+  }
 }

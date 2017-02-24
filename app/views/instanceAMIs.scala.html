@@ -1,4 +1,10 @@
-@(ssa: SSA, metrics: models.Metrics, amisWithUpgrades: List[AMI], amiSSAs: List[(SSA, List[AMI])])
+@(
+        filterSsa: SSA,
+        metrics: models.Metrics,
+        amisWithUpgrades: List[AMI],
+        amiSSAs: List[(SSA, List[AMI])],
+        instancesCount: Map[(SSA, AMI), Int]
+)
 
 @import views.html.fragments.{ssaAmiForm, amiOverlay, printSSA, metricsHeader}
 
@@ -11,7 +17,7 @@
                 </div>
                 <div class="col m5 hide-on-small-only">
                     <p class="right-align"><a href="#search">[edit search]</a></p>
-                    @printSSA(ssa, "*")
+                    @printSSA(filterSsa, "*")
                 </div>
             </div>
         </div>
@@ -21,7 +27,7 @@
             <div class="amis-list">
                 @for(amiWithUpgrade <- amisWithUpgrades) {
                     <div class="amis-list__item">
-                        @amiOverlay(amiWithUpgrade)
+                        @amiOverlay(amiWithUpgrade, instancesCount.get(filterSsa, amiWithUpgrade))
                     </div>
                 }
             </div>
@@ -40,7 +46,7 @@
             <div class="ssa-amis">
                         @for(ami <- amis) {
                             <div class="ssa-amis__item">
-                                @amiOverlay(ami)
+                                @amiOverlay(ami, instancesCount.get(ssa, ami))
                             </div>
                         }
         </div>
@@ -52,7 +58,7 @@
                                 <div class="card-content">
                                     @printSSA(ssa)
                                     @for(ami <- amis) {
-                                        @amiOverlay(ami)
+                                        @amiOverlay(ami, instancesCount.get(ssa, ami))
                                     }
                                 </div>
                             </div>
@@ -62,6 +68,6 @@
             </div>
         </div>
         <a name="search"></a>
-        @ssaAmiForm(ssa)
+        @ssaAmiForm(filterSsa)
     </div>
 }()
