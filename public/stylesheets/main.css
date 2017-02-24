@@ -332,10 +332,15 @@ h1 {
     padding: 6px 0;
 }
 
+.percentiles-col:nth-child(1) {
+    min-width: 8em;
+}
+
 .percentiles-col:nth-child(1) span {
     color: #9e9e9e;
     text-align: left;
     left: 0;
+    padding-left: 0.3em;
 }
 
 .percentiles-col:before,
@@ -348,16 +353,11 @@ h1 {
 }
 
 .percentiles-col:nth-child(1):before {
-    content: 'AMIs age percentiles:';
+    content: 'Percentiles:';
     font-size: 14px;
     color: #9e9e9e;
     left: 0;
-}
-
-@media only screen and (max-width: 992px) { /* small and medium screens */
-    .percentiles-col:nth-child(1):before {
-        content: 'AMIs age pctl:';
-    }
+    padding-left: 0.3em;
 }
 
 .percentiles-col:nth-child(2):before {
