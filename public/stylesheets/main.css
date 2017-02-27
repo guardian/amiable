@@ -383,27 +383,24 @@ h1 {
     padding-top: 1em;
 }
 
-#charts-nav .tabs{
+.charts-nav__tabs {
     background-color: transparent;
     font-size: 12px;
 }
 
-#charts-nav .tabs .tab {
-    text-transform: none;
-}
-
-#charts-nav .tabs .tab .active{
+.charts__chart-container {
     background-color: #e4e4e4;
 }
 
-#charts-nav .tabs .indicator {
-    display: none;
-}
-
-.chart {
-    background-color: #e4e4e4;
-}
-
-.chart canvas{
+.charts__chart {
     padding: 0.4em;
+}
+
+/* overwriting Materialize tabs style */
+.charts-nav__tab .active{
+    background-color: #e4e4e4;
+}
+
+.charts-nav__tabs .indicator {
+    display: none;
 }

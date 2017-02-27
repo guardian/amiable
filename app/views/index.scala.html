@@ -13,10 +13,10 @@
             <h1 class="hide">AMIable</h1>
             @metricsHeader(metrics)
             <div class="row">
-                <div id="charts-container" class="col l6">
+                <div id="charts-container" class="col l6 m12">
                    @allCharts(charts)
                 </div>
-                <div class="col l6">
+                <div class="col l6 m12">
                     <p class="grey-text darken-1">
                         Stacks running old AMIs
                     </p>
@@ -89,19 +89,17 @@
 
 @allCharts(charts: List[models.Chart]) = {
     @if(charts.nonEmpty) {
-        <div id="charts-nav">
-            <ul class="tabs">
+        <div>
+            <ul class="charts-nav__tabs tabs">
         @for(chart <- charts) {
-            <li class="tab"><a class="grey-text" href="#@chart.id">@chart.title</a></li>
+            <li class="charts-nav__tab tab"><a class="grey-text" href="#@chart.id">@chart.title</a></li>
         }
             </ul>
         </div>
-        <div class="charts">
         @for(chart <- charts) {
-            <div id="@chart.id" class="chart">
-                <canvas id="@chart.id-chart" width="400" height="250"></canvas>
+            <div id="@chart.id" class="charts__chart-container">
+                <canvas id="@chart.id-chart" class="charts__chart"></canvas>
             </div>
         }
-        </div>
     }
 }
