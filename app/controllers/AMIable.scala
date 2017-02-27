@@ -4,6 +4,7 @@ import javax.inject.Inject
 
 import auth.AuthActions
 import config.AmiableConfigProvider
+import metrics.Charts
 import models._
 import play.api._
 import play.api.mvc._
@@ -20,14 +21,11 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
 
   def index = AuthAction.async { implicit request =>
     val ssa = SSA(stage = Some("PROD"))
-    val charts = List(
-      Chart("Instances with out-of-date AMI", List(ChartTimeSerie("Old instances count", agents.oldProdInstanceCountHistory))),
-      Chart("Age of AMIs (Percentiles)", List(
-        ChartTimeSerie("25th percentile", agents.amisAgePercentile25thHistory, "#4d94ff"),
-        ChartTimeSerie("50th percentile", agents.amisAgePercentile50thHistory, "#3385ff"),
-        ChartTimeSerie("75th percentile", agents.amisAgePercentile75thHistory, "#1a75ff"),
-        ChartTimeSerie("Freshness goal", agents.amisAgePercentile75thHistory.map{ case (d, v) => (d, DateUtils.freshnessLimit.toDouble) }, "green")
-      ))
+    val charts = Charts.charts(
+      instanceCountHistory = agents.oldProdInstanceCountHistory,
+      age25thPercentileHistory = agents.amisAgePercentile25thHistory,
+      age50thPercentileHistory = agents.amisAgePercentile50thHistory,
+      age75thPercentileHistory = agents.amisAgePercentile75thHistory
     )
     attempt {
       for {
