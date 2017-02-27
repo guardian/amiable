@@ -266,7 +266,7 @@ class PrismLogicTest extends FreeSpec with Matchers {
     }
   }
 
-  "instancesCountPerSSAandAMI" - {
+  "instancesCountPerSsaPerAmi" - {
     "correctly associates the instance count with each couple SSA/AMI" in {
       val ssa1 = SSA(Some("stack-1"), Some("stage-1"), Some("app-1"))
       val ssa2 = SSA(Some("stack-2"), Some("stage-2"))
@@ -290,7 +290,7 @@ class PrismLogicTest extends FreeSpec with Matchers {
         (ssa3, a1) -> 1,
         (ssa3, a2) -> 2
       )
-      instancesCountPerSSA(amisWithInstances, allSSAs) should be (expectedResult)
+      instancesCountPerSsaPerAmi(amisWithInstances, allSSAs) should be (expectedResult)
     }
   }
 

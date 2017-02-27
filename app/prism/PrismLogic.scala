@@ -112,7 +112,7 @@ object PrismLogic {
     * From a full list of Ts and instances and a list of SSAs, return unique
     * SSA and AMI combinations with their respective number of instances
     */
-  def instancesCountPerSSA[T](amisWithInstances: List[(T, List[Instance])], ssas: List[SSA]): Map[(SSA, T), Int] = {
+  def instancesCountPerSsaPerAmi[T](amisWithInstances: List[(T, List[Instance])], ssas: List[SSA]): Map[(SSA, T), Int] = {
     for {
       (t, instances) <- amisWithInstances.toMap
       ssa <- ssas
