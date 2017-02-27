@@ -56,7 +56,7 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
           totalInstancesCount = instances.length,
           PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
         )
-        allSSAs = PrismLogic.instanceSSAs(instances) :+ ssa
+        allSSAs = ssa :: PrismLogic.instanceSSAs(instances)
         instancesCount = PrismLogic.instancesCountPerSSA(amisWithInstances, allSSAs)
       } yield Ok(views.html.instanceAMIs(
           ssa,
