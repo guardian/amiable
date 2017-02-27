@@ -266,8 +266,8 @@ class PrismLogicTest extends FreeSpec with Matchers {
     }
   }
 
-  "instancesCountPerSSA" - {
-    "returns " in {
+  "instancesCountPerSSAandAMI" - {
+    "correctly associates the instance count with each couple SSA/AMI" in {
       val ssa1 = SSA(Some("stack-1"), Some("stage-1"), Some("app-1"))
       val ssa2 = SSA(Some("stack-2"), Some("stage-2"))
       val ssa3 = SSA(Some("stack-3"))
@@ -291,6 +291,43 @@ class PrismLogicTest extends FreeSpec with Matchers {
         (ssa3, a2) -> 2
       )
       instancesCountPerSSA(amisWithInstances, allSSAs) should be (expectedResult)
+    }
+  }
+
+
+  "Instance" - {
+    val i1 = emptyInstance("i1").copy(stack = Some("stack1"), stage = Some("stage1"), app = List("app1"))
+    "should belong to SSA " - {
+      "with same stack name" in {
+        val stack = SSA(stack = i1.stack)
+        doesInstanceBelongToSSA(i1, stack) should be(true)
+      }
+      "with same stack and stage name" in {
+        val stack = SSA(stack = i1.stack, stage = i1.stage)
+        doesInstanceBelongToSSA(i1, stack) should be(true)
+      }
+      "with same stack, stage and app name" in {
+        val stack = SSA(stack = i1.stack, stage = i1.stage, app = i1.app.headOption)
+        doesInstanceBelongToSSA(i1, stack) should be(true)
+      }
+    }
+    "should NOT belong to SSA " - {
+      "with different stack name" in {
+        val stack = SSA(stack = Some("another stack"))
+        doesInstanceBelongToSSA(i1, stack) should be(false)
+      }
+      "with same stack name but different stage name" in {
+        val stack = SSA(stack = i1.stack, stage = Some("another stage"))
+        doesInstanceBelongToSSA(i1, stack) should be(false)
+      }
+      "with same stack and stage name but different app name" in {
+        val stack = SSA(stack = i1.stack, stage = i1.stack, app = Some("another app"))
+        doesInstanceBelongToSSA(i1, stack) should be(false)
+      }
+      "with same stage name but different stack name" in {
+        val stack = SSA(stack = Some("another stack"), stage = i1.stage)
+        doesInstanceBelongToSSA(i1, stack) should be(false)
+      }
     }
   }
 }

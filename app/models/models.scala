@@ -52,9 +52,6 @@ case class Instance(
   val amiArn = specification.get("imageArn")
 
   override def toString: String = s"Instance<$arn>"
-  def belongsToSSA(ssa: SSA): Boolean = ssa.stack == stack &&
-    ssa.stage.fold(true)(s => stage.exists(_ == s)) &&
-    ssa.app.fold(true)(app.contains(_))
 }
 
 case class Meta(
