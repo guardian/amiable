@@ -122,7 +122,7 @@ h1 {
     }
 }
 
-@media only screen and (min-width: 720px) {
+@media only screen and (min-width: 1200px) {
     .amis-list:after {
         content: "";
         flex: 0 0 32%;
@@ -149,10 +149,19 @@ h1 {
     padding: 10px 5px 10px 5px;
 }
 
-.ami-badge__age {
+.ami-badge__info {
     flex: 0 0 58px;
-    align-self: stretch;
-    padding: 10px 2px 10px 2px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ami-badge__instances_count {
+    background-color: #E6E6E6;
+}
+
+.ami-badge__age {
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
 }
