@@ -295,36 +295,36 @@ class PrismLogicTest extends FreeSpec with Matchers {
   }
 
 
-  "Instance" - {
+  "doesInstanceBelongToSSA" - {
     val i1 = emptyInstance("i1").copy(stack = Some("stack1"), stage = Some("stage1"), app = List("app1"))
-    "should belong to SSA " - {
-      "with same stack name" in {
+    "should return true when instance and SSA have" - {
+      "the same stack" in {
         val stack = SSA(stack = i1.stack)
         doesInstanceBelongToSSA(i1, stack) should be(true)
       }
-      "with same stack and stage name" in {
+      "the same stack and stage" in {
         val stack = SSA(stack = i1.stack, stage = i1.stage)
         doesInstanceBelongToSSA(i1, stack) should be(true)
       }
-      "with same stack, stage and app name" in {
+      "the same stack, stage and app" in {
         val stack = SSA(stack = i1.stack, stage = i1.stage, app = i1.app.headOption)
         doesInstanceBelongToSSA(i1, stack) should be(true)
       }
     }
-    "should NOT belong to SSA " - {
-      "with different stack name" in {
+    "should return false when instance and SSA have" - {
+      "different stack" in {
         val stack = SSA(stack = Some("another stack"))
         doesInstanceBelongToSSA(i1, stack) should be(false)
       }
-      "with same stack name but different stage name" in {
+      "the same stack but different stage" in {
         val stack = SSA(stack = i1.stack, stage = Some("another stage"))
         doesInstanceBelongToSSA(i1, stack) should be(false)
       }
-      "with same stack and stage name but different app name" in {
+      "the same stack and stage but different app" in {
         val stack = SSA(stack = i1.stack, stage = i1.stack, app = Some("another app"))
         doesInstanceBelongToSSA(i1, stack) should be(false)
       }
-      "with same stage name but different stack name" in {
+      "the same stage but different stack" in {
         val stack = SSA(stack = Some("another stack"), stage = i1.stage)
         doesInstanceBelongToSSA(i1, stack) should be(false)
       }
