@@ -1,6 +1,6 @@
 @(
         oldStacks: List[String],
-        oldCountData: List[(org.joda.time.DateTime, Double)],
+        charts: List[models.Chart],
         metrics: models.Metrics
 )
 
@@ -13,14 +13,10 @@
             <h1 class="hide">AMIable</h1>
             @metricsHeader(metrics)
             <div class="row">
-                <div class="col l6 ami-kpis__container">
-                    @if(oldCountData.nonEmpty) {
-                        <div class="old-instance-count-chart__container">
-                            <canvas id="old-instances-chart" width="400" height="250"></canvas>
-                        </div>
-                    }
+                <div id="charts-container" class="col l6 m12">
+                   @allCharts(charts)
                 </div>
-                <div class="col l6">
+                <div class="col l6 m12">
                     <p class="grey-text darken-1">
                         Stacks running old AMIs
                     </p>
@@ -51,35 +47,59 @@
         </div>
     </div>
 }{
-    @if(oldCountData.nonEmpty) {
+    @if(charts.nonEmpty) {
         <script src="/assets/javascripts/Chart.Core.min.js"></script>
         <script src="/assets/javascripts/Chart.Scatter.min.js"></script>
         <script>
-            var tzOffsetSecs = new Date().getTimezoneOffset() * 60,
-                data = [
-                    {
-                        label: "History",
-                        data: [
-@for(((datetime, value), i) <- oldCountData.zipWithIndex) {
-@if(i != 0) {,}
-{x: new Date(@datetime.getMillis - tzOffsetSecs), y: @value}
-}
-                        ]
-                    }
-                ],
-                options = {
-                    bezierCurve: false,
-                    showTooltips: true,
-                    scaleShowHorizontalLines: true,
-                    scaleShowLabels: true,
-                    scaleTimeFormat: "H:MM",
-                    scaleDateTimeFormat: "mmm d, yyyy, HH:MM",
-                    responsive: true,
-                    scaleType: "date",
-                    useUtc: false // display in local time
-                },
-                ctx = document.getElementById("old-instances-chart").getContext("2d");
-            new Chart(ctx).Scatter(data, options);
+        @for(chart <- charts) {
+                var tzOffsetSecs = new Date().getTimezoneOffset() * 60,
+                        data = [
+                            @for(timeSerie <- chart.data) {
+                                @if(timeSerie != chart.data.head) {, }
+                                {
+                                    label: '@timeSerie.label',
+                                    strokeColor: '@timeSerie.color',
+                                    data: [
+                                            @for(((datetime, value), i) <- timeSerie.data.zipWithIndex) {
+                                                @if(i != 0) {, }
+                                                {x: new Date(@datetime.getMillis -tzOffsetSecs), y: @value}
+                                            }
+                                    ]
+                                }
+                            }
+                        ],
+                        options = {
+                            pointDot: false,
+                            bezierCurve: false,
+                            showTooltips: true,
+                            scaleShowHorizontalLines: true,
+                            scaleShowLabels: true,
+                            scaleTimeFormat: "H:MM",
+                            scaleDateTimeFormat: "mmm d, yyyy, HH:MM",
+                            responsive: true,
+                            scaleType: "date",
+                            useUtc: false // display in local time
+                        },
+                        ctx = document.getElementById("@chart.id-chart").getContext("2d");
+                new Chart(ctx).Scatter(data, options);
+        }
         </script>
+    }
+}
+
+@allCharts(charts: List[models.Chart]) = {
+    @if(charts.nonEmpty) {
+        <div>
+            <ul class="charts-nav__tabs tabs">
+        @for(chart <- charts) {
+            <li class="charts-nav__tab tab"><a class="grey-text" href="#@chart.id">@chart.title</a></li>
+        }
+            </ul>
+        </div>
+        @for(chart <- charts) {
+            <div id="@chart.id" class="charts__chart-container">
+                <canvas id="@chart.id-chart" class="charts__chart"></canvas>
+            </div>
+        }
     }
 }

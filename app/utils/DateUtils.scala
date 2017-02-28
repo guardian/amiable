@@ -6,6 +6,9 @@ import org.joda.time.{DateTime, Days}
 import play.api.libs.json.{Format, Reads, Writes}
 
 object DateUtils {
+
+  val freshnessLimit = 30
+
   def daysAgo(date:DateTime): Int = Days.daysBetween(date, DateTime.now).getDays
 
   def getAgeColour(date: DateTime): String = {
@@ -20,7 +23,7 @@ object DateUtils {
     daysAgo(date) match {
       case age if age < 0 => None
       case age if age < 14 => Some(Fresh)
-      case age if age < 30 => Some(Turning)
+      case age if age < freshnessLimit => Some(Turning)
       case _ => Some(Old)
     }
   }

@@ -4,11 +4,13 @@ import javax.inject.Inject
 
 import auth.AuthActions
 import config.AmiableConfigProvider
+import metrics.Charts
 import models._
 import play.api._
 import play.api.mvc._
 import prism.{Prism, PrismLogic, Recommendations}
 import services.Agents
+import utils.DateUtils
 
 import scala.concurrent.ExecutionContext
 
@@ -19,6 +21,12 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
 
   def index = AuthAction.async { implicit request =>
     val ssa = SSA(stage = Some("PROD"))
+    val charts = Charts.charts(
+      instanceCountHistory = agents.oldProdInstanceCountHistory,
+      age25thPercentileHistory = agents.amisAgePercentile25thHistory,
+      age50thPercentileHistory = agents.amisAgePercentile50thHistory,
+      age75thPercentileHistory = agents.amisAgePercentile75thHistory
+    )
     attempt {
       for {
         instancesWithAmis <- Prism.instancesWithAmis(ssa)
@@ -26,7 +34,7 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         oldStacks = PrismLogic.stacks(oldInstances)
         agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
         metrics = Metrics(oldInstances.length, instancesWithAmis.length, agePercentiles)
-      } yield Ok(views.html.index(oldStacks.sorted, agents.oldProdInstanceCountHistory, metrics))
+      } yield Ok(views.html.index(oldStacks.sorted, charts, metrics))
     }
   }
 
