@@ -5,11 +5,11 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 nginxHome=`nginx -V 2>&1 | grep "configure arguments:" | sed 's/[^*]*conf-path=\([^ ]*\)\/nginx\.conf.*/\1/g'`
 
-if [ "$(uname)" == "Darwin" ]; then
+SYSTEM=$(uname -s)
+if [ $SYSTEM == "Darwin" ]; then
     # Mac OS X platform
     confDir=servers
-elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    #  GNU/Linux platform
+elif [ $SYSTEM == "Linux" ]; then
     confDir=sites-enabled
 fi
 

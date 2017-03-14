@@ -35,3 +35,5 @@ For this reason, in order to set up locally, the following steps must be followe
  In order to setup the auth parameters (eg. `serviceAccountCertPath`),
  please consult someone from the Dev Tools team.
  
+ - Finally open your browser at `https://amiable.local.dev-gutools.co.uk`!
+ 
