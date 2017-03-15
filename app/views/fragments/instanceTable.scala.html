@@ -1,0 +1,50 @@
+@(instances: List[Instance], emptyChar: String = "-")
+
+<div class="container">
+@if(instances.nonEmpty) {
+    <div class="ami-usage--message">AMI Usage</div>
+    <table class="striped">
+        <thead>
+            <tr>
+                <th class="instance-details-table__heading">Stack</th>
+                <th class="instance-details-table__heading">Stage</th>
+                <th class="instance-details-table__heading">App</th>
+                <th class="instance-details-table__heading">State</th>
+                <th class="instance-details-table__heading">Name</th>
+                <th class="instance-details-table__heading">Arn</th>
+                <th class="instance-details-table__heading">Dns</th>
+                <th class="instance-details-table__heading">Group</th>
+                <th class="instance-details-table__heading">Ip</th>
+                <th class="instance-details-table__heading">Created at</th>
+                <th class="instance-details-table__heading">Instance name</th>
+                <th class="instance-details-table__heading">Region</th>
+                <th class="instance-details-table__heading">Vendor</th>
+                <th class="instance-details-table__heading">Size</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for(instance <- instances) {
+            <tr>
+                <td class="instance-details-table__entry">@instance.stack.getOrElse(emptyChar)</td>
+                <td class="instance-details-table__entry">@instance.stage.getOrElse(emptyChar)</td>
+                <td class="instance-details-table__entry">@instance.app</td>
+                <td class="instance-details-table__entry">@instance.vendorState</td>
+                <td class="instance-details-table__entry">@instance.name</td>
+                <td class="instance-details-table__entry">@instance.arn</td>
+                <td class="instance-details-table__entry">@instance.dnsName</td>
+                <td nowrap class="instance-details-table__entry">@instance.group</td>
+                <td class="instance-details-table__entry">@instance.ip</td>
+                <td class="instance-details-table__entry">@instance.createdAt</td>
+                <td class="instance-details-table__entry">@instance.instanceName</td>
+                <td nowrap class="instance-details-table__entry">@instance.region</td>
+                <td class="instance-details-table__entry">@instance.vendor</td>
+                <td class="instance-details-table__entry">@instance.specification.getOrElse("instanceType", emptyChar)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+} else {
+    <div class="ami-usage--message">No instances running for the specific AMI</div>
+    }
+</div>
+    

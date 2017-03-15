@@ -116,12 +116,12 @@ object PrismLogic {
     for {
       (t, instances) <- amisWithInstances.toMap
       ssa <- ssas
-      instancesCount = instances.filter(i => doesInstanceBelongToSSA(i, ssa)).length
-      if(instancesCount > 0)
+      instancesCount = instances.count(i => doesInstanceBelongToSSA(i, ssa))
+      if instancesCount > 0
     } yield (ssa, t) -> instancesCount
   }
 
   def doesInstanceBelongToSSA(instance: Instance, ssa: SSA): Boolean = ssa.stack == instance.stack &&
-    ssa.stage.fold(true)(s => instance.stage.exists(_ == s)) &&
+    ssa.stage.fold(true)(s => instance.stage.contains(s)) &&
     ssa.app.fold(true)(instance.app.contains(_))
 }

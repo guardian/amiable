@@ -42,9 +42,10 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
     attempt {
       for {
         amis <- Prism.getAMIs()
-        ami = amis.find(_.imageId == imageId)
-        amiWithUpgrade = ami.map(Recommendations.amiWithUpgrade(agents.allAmis))
-      } yield Ok(views.html.ami(amiWithUpgrade))
+        maybeAmi = amis.find(_.imageId == imageId)
+        instances <- Prism.imageUsage(maybeAmi)
+        amiWithUpgrade = maybeAmi.map(Recommendations.amiWithUpgrade(agents.allAmis))
+      } yield Ok(views.html.ami(amiWithUpgrade, instances))
     }
   }
 
@@ -67,12 +68,12 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         allSSAs = ssa :: PrismLogic.instanceSSAs(instances)
         instancesCount = PrismLogic.instancesCountPerSsaPerAmi(amisWithInstances, allSSAs)
       } yield Ok(views.html.instanceAMIs(
-          ssa,
-          metrics,
-          amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis)),
-          PrismLogic.sortSSAAmisByAge(amiSSAs),
-          instancesCount
-        ))
+        ssa,
+        metrics,
+        amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis)),
+        PrismLogic.sortSSAAmisByAge(amiSSAs),
+        instancesCount
+      ))
     }
   }
 

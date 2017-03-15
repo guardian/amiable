@@ -1,6 +1,6 @@
-@(amiOpt: Option[AMI])
+@(amiOpt: Option[AMI], instances: List[Instance])
 
-@import views.html.fragments.{amiWithUpgrade, heading}
+@import views.html.fragments.{amiWithUpgrade, heading, instanceTable}
 
 @main("AMI") {
     @heading("AMI details")
@@ -14,4 +14,5 @@
             }
         }
     </div>
+    @instanceTable(instances)
 }()

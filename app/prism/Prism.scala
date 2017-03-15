@@ -31,6 +31,18 @@ object Prism {
 
   def getInstances(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
     val url = instancesUrl(stackStageApp, config.prismUrl)
+    getInstancesFromUrl(url)
+  }
+
+  def imageUsage(imageOpt: Option[AMI])(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
+    for {
+      image <- Attempt.fromOption(imageOpt, AMIableErrors(AMIableError("Could not find image", "Could not find image", 404)))
+      url = imageInstancesUrl(image.imageId, config.prismUrl)
+      instances <- getInstancesFromUrl(url)
+    } yield instances
+  }
+
+  private def getInstancesFromUrl(url: String)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
     for {
       response <- Http.response(config.wsClient.url(url).get(), "Unable to fetch instance", url)
       jsons <- instancesResponseJson(response)
