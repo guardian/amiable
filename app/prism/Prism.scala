@@ -54,4 +54,13 @@ object Prism {
       amis <- Attempt.successfulAttempts(amiAttempts)
     } yield instanceAmis(prodInstances, amis)
   }
+
+  def launchConfigUsage(image: AMI)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[LaunchConfiguration]] = {
+    val url = imageLaunchConfigUrl(image.imageId, config.prismUrl)
+    for {
+      response <- Http.response(config.wsClient.url(url).get(), "Unable to fetch launch configurations", url)
+      jsons <- launchConfigurationResponseJson(response)
+      launchConfigurations <- Attempt.sequence(jsons.map(extractLaunchConfiguration))
+    } yield launchConfigurations
+  }
 }

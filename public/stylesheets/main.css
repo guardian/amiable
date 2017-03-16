@@ -255,6 +255,10 @@ h1 {
     margin-bottom: 5px;
 }
 
+.ami-usage--table {
+    margin-top: 40px;
+}
+
 .instance-details-table__heading {
     padding-top: 0;
     padding-bottom: 10px;

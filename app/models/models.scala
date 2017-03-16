@@ -54,17 +54,24 @@ case class Instance(
   override def toString: String = s"Instance<$arn>"
 }
 
+case class Origin(
+   vendor: String,
+   accountName: String,
+   region: String,
+   accountNumber: String)
+
+object Origin {
+  implicit val jsonFormat = Json.format[Origin]
+}
+
 case class Meta(
   href: String,
   origin: Origin
 )
 
-case class Origin(
-  vendor: String,
-  accountName: String,
-  region: String,
-  accountNumber: String
-)
+object Meta {
+  implicit val jsonFormat = Json.format[Meta]
+}
 
 case class SSA (
   stack: Option[String] = None,
@@ -100,4 +107,21 @@ case class Metrics(oldInstancesCount: Int, totalInstancesCount: Int, agePercenti
 case class ChartTimeSerie(label: String, data: List[(DateTime, Double)], color: String = "")
 case class Chart(title: String, data: List[ChartTimeSerie]) {
   val id = title.hashCode
+}
+
+case class LaunchConfiguration(
+   arn: String,
+   name: String,
+   imageId: String,
+   region: String,
+   createdTime: DateTime,
+   instanceType: String,
+   keyName: String,
+   securityGroups: List[String],
+   userData: String,
+   meta: Meta)
+
+object LaunchConfiguration {
+  import utils.DateUtils._
+  implicit val jsonFormat = Json.format[LaunchConfiguration]
 }

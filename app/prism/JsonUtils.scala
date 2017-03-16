@@ -63,9 +63,21 @@ object JsonUtils {
     }
   }
 
+  def launchConfigurationResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
+    JsonUtils.jsResultToAttempt("Could not get Launch Configuration from response JSON"){
+      (response.json \ "data" \ "launch-configurations").validate[List[JsValue]]
+    }
+  }
+
   def extractInstance(json: JsValue): Attempt[Instance] = {
     JsonUtils.extractToAttempt[Instance]("Could not get Instance from response JSON") {
       json.validate[Instance]
+    }
+  }
+
+  def extractLaunchConfiguration(json: JsValue): Attempt[LaunchConfiguration] = {
+    JsonUtils.extractToAttempt[LaunchConfiguration]("Could not get Launch Configuration from response JSON") {
+      json.validate[LaunchConfiguration]
     }
   }
 }

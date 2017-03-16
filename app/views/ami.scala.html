@@ -1,6 +1,6 @@
-@(ami: AMI, instances: List[Instance])
+@(ami: AMI, instances: List[Instance], launchConfigs: List[LaunchConfiguration])
 
-@import views.html.fragments.{amiWithUpgrade, heading, instanceTable}
+@import views.html.fragments.{amiWithUpgrade, heading, amiUsage}
 
 @main("AMI") {
     @heading("AMI details")
@@ -8,6 +8,6 @@
         @amiWithUpgrade(ami)
     </div>
     <div class="container">
-        @instanceTable(instances)
+        @amiUsage(instances, launchConfigs)
     </div>
 }()
