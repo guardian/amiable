@@ -1,14 +1,16 @@
 @(instances: List[Instance], launchConfigs: List[LaunchConfiguration], emptyChar: String = "-")
 
-<div class="ami-usage--title">AMI Usage</div>
-@if(instances.nonEmpty && launchConfigs.nonEmpty) {
-    <div class="ami-usage--message">This AMI is used by @instances.length instances and @launchConfigs.length launch configurations</div>
+@if(instances.nonEmpty || launchConfigs.nonEmpty) {
+    <div class="ami-usage-title">
+    <span class="ami-usage-title--label">AMI Usage: </span>
+        <span class="ami-usage-title--info">@instances.length instances, @launchConfigs.length launch configurations</span>
+    </div>
 } else {
     <div class="ami-usage--message">No instances or launch configurations are using this AMI</div>
 }
 @if(instances.nonEmpty) {
+    <div class="ami-usage--message">Instances</div>
     <table class="striped ami-usage--table">
-        <caption>Instances</caption>
         <thead>
             <tr>
                 <th class="instance-details-table__heading">Stack</th>
@@ -36,12 +38,12 @@
     </table>
 }
 @if(launchConfigs.nonEmpty) {
+    <div class="ami-usage--message">Launch Configurations</div>
     <table class="striped ami-usage--table">
-        <caption>Launch Configurations</caption>
         <thead>
             <tr>
+                <th class="instance-details-table__heading">Account</th>
                 <th class="instance-details-table__heading">Name</th>
-                <th class="instance-details-table__heading">Region</th>
                 <th class="instance-details-table__heading">Created at</th>
                 <th class="instance-details-table__heading">Instance type</th>
             </tr>
@@ -49,8 +51,8 @@
         <tbody>
         @for(launchConfig <- launchConfigs) {
             <tr>
+                <td class="instance-details-table__entry">@launchConfig.meta.origin.accountName</td>
                 <td class="instance-details-table__entry">@launchConfig.name</td>
-                <td class="instance-details-table__entry">@launchConfig.region</td>
                 <td class="instance-details-table__entry">@launchConfig.createdTime</td>
                 <td class="instance-details-table__entry">@launchConfig.instanceType</td>
             </tr>
