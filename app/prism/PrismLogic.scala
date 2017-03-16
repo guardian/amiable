@@ -117,7 +117,7 @@ object PrismLogic {
       (t, instances) <- amisWithInstances.toMap
       ssa <- ssas
       instancesCount = instances.count(i => doesInstanceBelongToSSA(i, ssa))
-      if instancesCount > 0
+      if(instancesCount > 0)
     } yield (ssa, t) -> instancesCount
   }
 

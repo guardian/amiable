@@ -243,14 +243,16 @@ h1 {
     margin: 20px auto;
 }
 
-.ami-usage--message {
+.ami-usage--title {
     font-size: x-large;
     color: #3661B0;
     margin-top: 30px;
 }
 
-.instance-details__container {
-    display: flex;
+.ami-usage--message {
+    font-size: large;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 .instance-details-table__heading {

@@ -42,11 +42,16 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
     attempt {
       for {
         amis <- Prism.getAMIs()
-        maybeAmi = amis.find(_.imageId == imageId)
-        instances <- Prism.imageUsage(maybeAmi)
-        amiWithUpgrade = maybeAmi.map(Recommendations.amiWithUpgrade(agents.allAmis))
+        ami <- extractAmi(imageId, amis)
+        instances <- Prism.imageUsage(ami)
+        amiWithUpgrade = Recommendations.amiWithUpgrade(agents.allAmis)(ami)
       } yield Ok(views.html.ami(amiWithUpgrade, instances))
     }
+  }
+
+  private def extractAmi(imageId: String, amis: List[AMI]): Attempt[AMI] = {
+    val imageOpt = amis.find(_.imageId == imageId)
+    Attempt.fromOption(imageOpt, AMIableErrors(AMIableError(s"Could not find image with id: $imageId", s"Could not find image with id: $imageId", 404)))
   }
 
   def ssaInstanceAMIs(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String]) = AuthAction.async { implicit request =>

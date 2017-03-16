@@ -34,12 +34,9 @@ object Prism {
     getInstancesFromUrl(url)
   }
 
-  def imageUsage(imageOpt: Option[AMI])(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
-    for {
-      image <- Attempt.fromOption(imageOpt, AMIableErrors(AMIableError("Could not find image", "Could not find image", 404)))
-      url = imageInstancesUrl(image.imageId, config.prismUrl)
-      instances <- getInstancesFromUrl(url)
-    } yield instances
+  def imageUsage(image: AMI)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
+    val url = imageInstancesUrl(image.imageId, config.prismUrl)
+    getInstancesFromUrl(url)
   }
 
   private def getInstancesFromUrl(url: String)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {

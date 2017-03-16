@@ -1,18 +1,13 @@
-@(amiOpt: Option[AMI], instances: List[Instance])
+@(ami: AMI, instances: List[Instance])
 
 @import views.html.fragments.{amiWithUpgrade, heading, instanceTable}
 
 @main("AMI") {
     @heading("AMI details")
     <div class="container">
-        @amiOpt match {
-            case Some(ami) => {
-                @amiWithUpgrade(ami)
-            }
-            case None => {
-                AMI not found
-            }
-        }
+        @amiWithUpgrade(ami)
     </div>
-    @instanceTable(instances)
+    <div class="container">
+        @instanceTable(instances)
+    </div>
 }()
