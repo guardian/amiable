@@ -124,4 +124,25 @@ object PrismLogic {
   def doesInstanceBelongToSSA(instance: Instance, ssa: SSA): Boolean = ssa.stack == instance.stack &&
     ssa.stage.fold(true)(s => instance.stage.contains(s)) &&
     ssa.app.fold(true)(instance.app.contains(_))
+
+  /**
+    * Sort Launch Configurations by accountName (ie. the owner of the stack)
+    * and by Launch Configuration name, in ascending order
+    */
+  def sortLCsByOwner: List[LaunchConfiguration] => List[LaunchConfiguration] = {
+    lc => lc.sortWith {
+      (l1, l2) => l1.meta.origin.accountName < l2.meta.origin.accountName ||
+        l1.name < l2.name
+    }
+  }
+
+  /**
+    * Sorts Instances by Stack, App, Stage in ascending order
+    */
+  def sortInstancesByStack: List[Instance] => List[Instance] = {
+    insts => insts.sortWith {
+      (i1, i2) => i1.stack.getOrElse("") < i2.stack.getOrElse("") ||
+        i1.app.headOption.getOrElse("") < i2.app.headOption.getOrElse("") || i1.stage.getOrElse("") < i2.stage.getOrElse("")
+    }
+  }
 }

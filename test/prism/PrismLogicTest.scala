@@ -1,6 +1,6 @@
 package prism
 
-import models.{AMI, Instance, SSA}
+import models._
 import org.joda.time.DateTime
 import org.scalatest.{FreeSpec, Matchers}
 import scala.util.Random
@@ -327,6 +327,53 @@ class PrismLogicTest extends FreeSpec with Matchers {
       "the same stage but different stack" in {
         val stack = SSA(stack = Some("another stack"), stage = i1.stage)
         doesInstanceBelongToSSA(i1, stack) should be(false)
+      }
+    }
+  }
+
+  "sortInstancesByStack" - {
+    "should sort by stack, app, stage" - {
+      "when stack and stage are non empty" in {
+        val in1 = Instance("arn", "name", "state", "group", "dns","ip", DateTime.now(), "instanceName", "region", "vendor", List.empty,Map.empty, Some("stack1"), Some("stageB"), List("appB"), List.empty, Map.empty, null)
+        val in2 = in1.copy(stack = Some("stack2"), stage = Some("stageA"), app = List("appA"))
+        val instanceList = List(in2, in1)
+        PrismLogic.sortInstancesByStack(instanceList) should contain inOrderOnly(in1, in2)
+      }
+      "when stack is empty" in {
+        val in1 = Instance("arn", "name", "state", "group", "dns","ip", DateTime.now(), "instanceName", "region", "vendor", List.empty,Map.empty, None, Some("stageB"), List("app1"), List.empty, Map.empty, null)
+        val in2 = in1.copy(stage = Some("stageA"), app = List("app2"))
+        val instanceList = List(in2, in1)
+        PrismLogic.sortInstancesByStack(instanceList) should contain inOrderOnly(in1, in2)
+      }
+      "when stack and stage are empty" in {
+        val in1 = Instance("arn", "name", "state", "group", "dns","ip", DateTime.now(), "instanceName", "region", "vendor", List.empty,Map.empty, None, None, List("app1"), List.empty, Map.empty, null)
+        val in2 = in1.copy(app = List("app2"))
+        val instanceList = List(in2, in1)
+        PrismLogic.sortInstancesByStack(instanceList) should contain inOrderOnly(in1, in2)
+      }
+    }
+  }
+
+  "sortLCsByOwner" - {
+    "should sort Launch Configurations" - {
+      "by account first" in {
+        val meta1 = Meta("href", Origin("vendor", "account1", "region", "accountNum"))
+        val lc1 = LaunchConfiguration("arn1", "nameB", "imageId", "region", DateTime.now(), "t1-micro", "key",List.empty, "", meta1 )
+
+        val meta2 = meta1.copy(origin = meta1.origin.copy(accountName = "account2"))
+        val lc2 = lc1.copy(name = "nameA", meta = meta2)
+
+        val lcList = List(lc2, lc1)
+        PrismLogic.sortLCsByOwner(lcList) should contain inOrderOnly(lc1, lc2)
+      }
+      "by name when accounts are the same" in {
+        val meta1 = Meta("href", Origin("vendor", "account", "region", "accountNum"))
+        val lc1 = models.LaunchConfiguration("arn1", "name1", "imageId1", "region", DateTime.now(), "t1-micro", "key1", List.empty, "", meta1 )
+
+        val lc2 = lc1.copy(name = "name2")
+
+        val lcList = List(lc2, lc1)
+        PrismLogic.sortLCsByOwner(lcList) should contain inOrderOnly(lc1, lc2)
       }
     }
   }

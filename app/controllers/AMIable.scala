@@ -45,8 +45,11 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         ami <- extractAmi(imageId, amis)
         amiWithUpgrade = Recommendations.amiWithUpgrade(agents.allAmis)(ami)
         instances <- Prism.imageUsage(ami)
-        launchConfig <- Prism.launchConfigUsage(ami)
-      } yield Ok(views.html.ami(amiWithUpgrade, instances, launchConfig))
+        launchConfigs <- Prism.launchConfigUsage(ami)
+      } yield Ok(views.html.ami(
+        amiWithUpgrade,
+        PrismLogic.sortInstancesByStack(instances),
+        PrismLogic.sortLCsByOwner(launchConfigs)))
     }
   }
 

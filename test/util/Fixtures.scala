@@ -119,4 +119,34 @@ object Fixtures {
                           |  }
                           |}""".stripMargin
   }
+
+  object LaunchConfigs {
+    val validLaunchConfiguration =
+      """{
+        |        "name": "LaunchConfig-123",
+        |        "arn": "arn:aws:autoscaling:us-west-1:12343425:launchConfiguration:123-123-325-d121:launchConfigurationName/LaunchConfig-123",
+        |        "imageId": "ami-12345",
+        |        "region": "us-west-1",
+        |        "createdTime": "2015-01-02T17:00:00.000Z",
+        |        "instanceType": "t2.micro",
+        |        "keyName": "KeyPair",
+        |        "securityGroups": [
+        |          "arn:aws:ec2:us-west-1:12343243:security-group/sg-aa111111",
+        |          "arn:aws:ec2:us-west-1:12332144:security-group/sg-bb222222",
+        |          "arn:aws:ec2:us-west-1:11111111:security-group/sg-cc333333",
+        |          "arn:aws:ec2:us-west-1:22222222:security-group/sg-dd444444"
+        |        ],
+        |        "userData": "UserDataHash=",
+        |        "meta": {
+        |          "href": "http://localhost:8080/configs/arn:aws:autoscaling:us-west-1:12343425:launchConfiguration:123-123-325-d121:launchConfigurationName:LaunchConfig-1233",
+        |          "origin": {
+        |            "accountName": "account",
+        |            "region": "us-west-1",
+        |            "accountNumber": "123456789",
+        |            "vendor": "aws",
+        |            "credentials": "arn:aws:iam::12345678:role/IamRole-IamRole-1234SASDASD"
+        |          }
+        |        }
+        |      }""".stripMargin
+  }
 }
