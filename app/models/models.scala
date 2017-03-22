@@ -27,6 +27,11 @@ case class AMI(
 object AMI {
   import utils.DateUtils._
   implicit val jsonFormat = Json.format[AMI]
+
+  def extract(imageId: String, amis: List[AMI]): Attempt[AMI] = {
+    val imageOpt = amis.find(_.imageId == imageId)
+    Attempt.fromOption(imageOpt, AMIableErrors(AMIableError(s"Could not find image with id: $imageId", s"Could not find image with id: $imageId", 404)))
+  }
 }
 
 case class Instance(
@@ -55,10 +60,10 @@ case class Instance(
 }
 
 case class Origin(
-   vendor: String,
-   accountName: String,
-   region: String,
-   accountNumber: String)
+  vendor: String,
+  accountName: String,
+  region: String,
+  accountNumber: String)
 
 object Origin {
   implicit val jsonFormat = Json.format[Origin]
@@ -110,16 +115,16 @@ case class Chart(title: String, data: List[ChartTimeSerie]) {
 }
 
 case class LaunchConfiguration(
-   arn: String,
-   name: String,
-   imageId: String,
-   region: String,
-   createdTime: DateTime,
-   instanceType: String,
-   keyName: String,
-   securityGroups: List[String],
-   userData: String,
-   meta: Meta)
+  arn: String,
+  name: String,
+  imageId: String,
+  region: String,
+  createdTime: DateTime,
+  instanceType: String,
+  keyName: String,
+  securityGroups: List[String],
+  userData: String,
+  meta: Meta)
 
 object LaunchConfiguration {
   import utils.DateUtils._

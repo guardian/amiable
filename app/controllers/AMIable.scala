@@ -42,7 +42,7 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
     attempt {
       for {
         amis <- Prism.getAMIs()
-        ami <- extractAmi(imageId, amis)
+        ami <- AMI.extract(imageId, amis)
         amiWithUpgrade = Recommendations.amiWithUpgrade(agents.allAmis)(ami)
         instances <- Prism.imageUsage(ami)
         launchConfigs <- Prism.launchConfigUsage(ami)
@@ -51,11 +51,6 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         PrismLogic.sortInstancesByStack(instances),
         PrismLogic.sortLCsByOwner(launchConfigs)))
     }
-  }
-
-  private def extractAmi(imageId: String, amis: List[AMI]): Attempt[AMI] = {
-    val imageOpt = amis.find(_.imageId == imageId)
-    Attempt.fromOption(imageOpt, AMIableErrors(AMIableError(s"Could not find image with id: $imageId", s"Could not find image with id: $imageId", 404)))
   }
 
   def ssaInstanceAMIs(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String]) = AuthAction.async { implicit request =>
