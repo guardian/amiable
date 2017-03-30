@@ -1,17 +1,13 @@
-@(amiOpt: Option[AMI])
+@(ami: AMI, instances: List[Instance], launchConfigs: List[LaunchConfiguration])
 
-@import views.html.fragments.{amiWithUpgrade, heading}
+@import views.html.fragments.{amiWithUpgrade, heading, amiUsage}
 
 @main("AMI") {
     @heading("AMI details")
     <div class="container">
-        @amiOpt match {
-            case Some(ami) => {
-                @amiWithUpgrade(ami)
-            }
-            case None => {
-                AMI not found
-            }
-        }
+        @amiWithUpgrade(ami)
+    </div>
+    <div class="container">
+        @amiUsage(instances, launchConfigs)
     </div>
 }()

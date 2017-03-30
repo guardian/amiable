@@ -1,0 +1,63 @@
+@import utils.DateUtils
+@(instances: List[Instance], launchConfigs: List[LaunchConfiguration], emptyChar: String = "-")
+
+@if(instances.nonEmpty || launchConfigs.nonEmpty) {
+    <div class="ami-usage-title">
+    <span class="ami-usage-title--label">AMI Usage: </span>
+        <span class="ami-usage-title--info">@instances.length instances, @launchConfigs.length launch configurations</span>
+    </div>
+} else {
+    <div class="ami-usage--message">No instances or launch configurations are using this AMI</div>
+}
+@if(launchConfigs.nonEmpty) {
+    <div class="ami-usage--message">Launch Configurations</div>
+    <table class="striped responsive-table ami-usage--table">
+        <thead>
+            <tr>
+                <th class="instance-details-table__heading">Account</th>
+                <th class="instance-details-table__heading">Name</th>
+                <th class="instance-details-table__heading">Instance type</th>
+                <th class="instance-details-table__heading">Creation date</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for(launchConfig <- launchConfigs) {
+            <tr>
+                <td class="instance-details-table__entry">@launchConfig.meta.origin.accountName</td>
+                <td class="instance-details-table__entry">@launchConfig.name</td>
+                <td class="instance-details-table__entry">@launchConfig.instanceType</td>
+                <td class="instance-details-table__entry">@DateUtils.readableDateTime.print(launchConfig.createdTime)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+@if(instances.nonEmpty) {
+    <div class="ami-usage--message">Instances</div>
+    <table class="striped responsive-table ami-usage--table">
+        <thead>
+            <tr>
+                <th class="instance-details-table__heading">Stack</th>
+                <th class="instance-details-table__heading">Stage</th>
+                <th class="instance-details-table__heading">App</th>
+                <th class="instance-details-table__heading">State</th>
+                <th class="instance-details-table__heading">Instance name</th>
+                <th class="instance-details-table__heading">IP</th>
+                <th class="instance-details-table__heading">Creation date</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for(instance <- instances) {
+            <tr>
+                <td class="instance-details-table__entry">@instance.stack.getOrElse(emptyChar)</td>
+                <td class="instance-details-table__entry">@instance.stage.getOrElse(emptyChar)</td>
+                <td class="instance-details-table__entry">@instance.app</td>
+                <td class="instance-details-table__entry">@instance.vendorState</td>
+                <td class="instance-details-table__entry">@instance.instanceName</td>
+                <td class="instance-details-table__entry">@instance.ip</td>
+                <td class="instance-details-table__entry">@DateUtils.readableDateTime.print(instance.createdAt)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

@@ -24,4 +24,12 @@ object Urls {
     } yield getVar
     s"$prismUrl/instances?${getVars.mkString("&")}"
   }
+
+  def imageInstancesUrl(imageId: String, prismUrl: String) = {
+    s"$prismUrl/instances?specification.imageId=$imageId"
+  }
+
+  def imageLaunchConfigUrl(imageId: String, prismUrl: String) = {
+    s"$prismUrl/launch-configurations?imageId=$imageId"
+  }
 }

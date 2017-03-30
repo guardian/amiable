@@ -100,4 +100,28 @@ class JsonUtilsTest extends FreeSpec with Matchers with EitherValues with Attemp
       extractInstance(json).awaitEither.isLeft shouldBe true
     }
   }
+
+  "extractLaunchConfiguration" - {
+    "should return a Launch Configuration from correct json" in {
+      val json = Json.parse(LaunchConfigs.validLaunchConfiguration)
+      val launchConfig = extractLaunchConfiguration(json).awaitEither.right.value
+      launchConfig should have(
+        'name ("LaunchConfig-123"),
+        'arn ("arn:aws:autoscaling:us-west-1:12343425:launchConfiguration:123-123-325-d121:launchConfigurationName/LaunchConfig-123"),
+        'imageId ("ami-12345"),
+        'region ("us-west-1"),
+        'createdTime (new DateTime(2015, 1, 2,17,0)),
+        'instanceType ("t2.micro"),
+        'keyName ("KeyPair")
+      )
+      launchConfig.securityGroups.head shouldEqual "arn:aws:ec2:us-west-1:12343243:security-group/sg-aa111111"
+      launchConfig.meta.href shouldEqual "http://localhost:8080/configs/arn:aws:autoscaling:us-west-1:12343425:launchConfiguration:123-123-325-d121:launchConfigurationName:LaunchConfig-1233"
+    }
+
+    "should return a failure given invalid json" in {
+      val jsonStr = """{"testyinvalid":123}"""
+      val json = Json.parse(jsonStr)
+      extractLaunchConfiguration(json).awaitEither.isLeft shouldBe true
+    }
+  }
 }

@@ -116,12 +116,27 @@ object PrismLogic {
     for {
       (t, instances) <- amisWithInstances.toMap
       ssa <- ssas
-      instancesCount = instances.filter(i => doesInstanceBelongToSSA(i, ssa)).length
+      instancesCount = instances.count(i => doesInstanceBelongToSSA(i, ssa))
       if(instancesCount > 0)
     } yield (ssa, t) -> instancesCount
   }
 
   def doesInstanceBelongToSSA(instance: Instance, ssa: SSA): Boolean = ssa.stack == instance.stack &&
-    ssa.stage.fold(true)(s => instance.stage.exists(_ == s)) &&
+    ssa.stage.fold(true)(s => instance.stage.contains(s)) &&
     ssa.app.fold(true)(instance.app.contains(_))
+
+  /**
+    * Sort Launch Configurations by accountName (ie. the owner of the stack)
+    * and by Launch Configuration name, in ascending order
+    */
+  def sortLCsByOwner(configs: List[LaunchConfiguration]): List[LaunchConfiguration] = {
+    configs.sortBy(lc => (lc.meta.origin.accountName, lc.name))
+  }
+
+  /**
+    * Sorts Instances by Stack, App, Stage in ascending order
+    */
+  def sortInstancesByStack(instances: List[Instance]): List[Instance] = {
+    instances.sortBy(instance => (instance.stack, instance.app.headOption, instance.stage))
+  }
 }

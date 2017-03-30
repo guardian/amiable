@@ -243,6 +243,39 @@ h1 {
     margin: 20px auto;
 }
 
+.ami-usage-title {
+    margin-top: 40px;
+    font-size: x-large;
+}
+
+.ami-usage-title--label {
+    color: #3661B0; !important;
+}
+
+.ami-usage-title--info {
+    color: #9e9e9e !important;
+}
+
+.ami-usage--message {
+    font-size: large;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+.ami-usage--table {
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+.instance-details-table__heading {
+    padding-top: 0;
+    padding-bottom: 10px;
+}
+
+.instance-details-table__entry {
+    padding-bottom: 5px;
+}
+
 .upgrade-image--green {
     background-image: url("/assets/images/upgrade-images/upgrade-ami-green.png");
 }

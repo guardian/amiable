@@ -62,6 +62,9 @@ object Attempt {
   def fromEither[A](e: Either[AMIableErrors, A]): Attempt[A] =
     Attempt(Future.successful(e))
 
+  def fromOption[A](optA: Option[A], ifNone: AMIableErrors): Attempt[A] =
+    fromEither(optA.toRight(ifNone))
+
   /**
     * Convert a plain `Future` value to an attempt by providing a recovery handler.
     */

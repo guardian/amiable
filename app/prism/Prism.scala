@@ -31,6 +31,15 @@ object Prism {
 
   def getInstances(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
     val url = instancesUrl(stackStageApp, config.prismUrl)
+    getInstancesFromUrl(url)
+  }
+
+  def imageUsage(image: AMI)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
+    val url = imageInstancesUrl(image.imageId, config.prismUrl)
+    getInstancesFromUrl(url)
+  }
+
+  private def getInstancesFromUrl(url: String)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
     for {
       response <- Http.response(config.wsClient.url(url).get(), "Unable to fetch instance", url)
       jsons <- instancesResponseJson(response)
@@ -44,5 +53,14 @@ object Prism {
       amiAttempts = amiArns(prodInstances).map(getAMI)
       amis <- Attempt.successfulAttempts(amiAttempts)
     } yield instanceAmis(prodInstances, amis)
+  }
+
+  def launchConfigUsage(image: AMI)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[LaunchConfiguration]] = {
+    val url = imageLaunchConfigUrl(image.imageId, config.prismUrl)
+    for {
+      response <- Http.response(config.wsClient.url(url).get(), "Unable to fetch launch configurations", url)
+      jsons <- launchConfigurationResponseJson(response)
+      launchConfigurations <- Attempt.sequence(jsons.map(extractLaunchConfiguration))
+    } yield launchConfigurations
   }
 }
