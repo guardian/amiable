@@ -4,7 +4,7 @@ import aws.AwsAsyncHandler.awsToScala
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.auth.{AWSCredentialsProviderChain, InstanceProfileCredentialsProvider}
 import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClient
+import com.amazonaws.services.cloudwatch.{AmazonCloudWatchAsyncClient, AmazonCloudWatchAsyncClientBuilder}
 import com.amazonaws.services.cloudwatch.model._
 import models.{AMIableErrors, Attempt}
 import org.joda.time.{DateTime, DateTimeZone}
@@ -27,13 +27,13 @@ object CloudWatchMetrics {
 object CloudWatch {
   lazy val client = {
     val credentialsProvider = new AWSCredentialsProviderChain(
-      new InstanceProfileCredentialsProvider(),
+      InstanceProfileCredentialsProvider.getInstance(),
       new ProfileCredentialsProvider("deployTools")
     )
     val region = Option(Regions.getCurrentRegion).getOrElse(Region.getRegion(Regions.EU_WEST_1))
-    val acwac = new AmazonCloudWatchAsyncClient(credentialsProvider)
-    acwac.setRegion(region)
-    acwac
+    val acwac = AmazonCloudWatchAsyncClientBuilder.standard().withCredentials(credentialsProvider)
+    acwac.setRegion(region.getName)
+    acwac.build()
   }
 
   val prodStage = "PROD"
