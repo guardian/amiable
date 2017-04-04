@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.agent.Agent
 import config.AmiableConfigProvider
 import metrics.{CloudWatch, CloudWatchMetrics}
-import models.{AMI, SSA}
+import models.{AMI, Email, SSA}
 import org.joda.time.DateTime
 import play.api.inject.ApplicationLifecycle
 import play.api.{Environment, Logger, Mode}
@@ -31,6 +31,7 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
   private val amisAgePercentile25thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
   private val amisAgePercentile50thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
   private val amisAgePercentile75thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
+  private val notifyOwnersAgent: Agent[Set[Email]] = Agent(Set.empty)
 
   def allAmis: Set[AMI] = amisAgent.get
   def allSSAs: Set[SSA] = ssasAgent.get
@@ -40,12 +41,14 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
   def amisAgePercentile25thHistory: List[(DateTime, Double)] = amisAgePercentile25thHistoryAgent.get
   def amisAgePercentile50thHistory: List[(DateTime, Double)] = amisAgePercentile50thHistoryAgent.get
   def amisAgePercentile75thHistory: List[(DateTime, Double)] = amisAgePercentile75thHistoryAgent.get
+  def notifications: Set[Email] = notifyOwnersAgent.get
 
   if (environment.mode != Mode.Test) {
     refreshAmis()
     refreshSSAs()
     refreshInstancesInfo()
     refreshHistory()
+    notifyOwners()
 
     val prismDataSubscription = Observable.interval(refreshInterval).subscribe { i =>
       Logger.debug(s"Refreshing agents")
@@ -53,13 +56,19 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
       refreshSSAs()
       refreshInstancesInfo()
     }
+
     val cloudwatchDataSubscription = Observable.interval(1.hour).subscribe { i =>
       refreshHistory()
+    }
+
+    val notifyOwnersSubscription = Observable.interval(7.day).subscribe { i =>
+      notifyOwners()
     }
 
     lifecycle.addStopHook { () =>
       prismDataSubscription.unsubscribe()
       cloudwatchDataSubscription.unsubscribe()
+      notifyOwnersSubscription.unsubscribe()
       Future.successful(())
     }
   }
@@ -86,6 +95,10 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
         ssasAgent.send(ssas.toSet)
       }
     )
+  }
+
+  def notifyOwners(): Unit = {
+
   }
 
   def refreshInstancesInfo(): Unit = {

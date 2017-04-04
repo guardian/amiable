@@ -130,3 +130,5 @@ object LaunchConfiguration {
   import utils.DateUtils._
   implicit val jsonFormat = Json.format[LaunchConfiguration]
 }
+
+case class Email(address: String, subject: String, message: String)

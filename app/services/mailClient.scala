@@ -9,16 +9,15 @@ import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.{Future, Promise}
 
 trait MailClient {
-
-  def send(address: String, subject: String, message: String): Future[String]
+  def send(email: Email): Future[String]
 }
 
 class AWSMailClient(amazonMailClient: AmazonSimpleEmailServiceAsyncClient, fromAddress: String) extends MailClient {
 
-  def send(address: String, subject: String, message: String): Future[String] = {
-    val destination = new Destination().withToAddresses(address)
-    val emailSubject = new Content().withData(subject)
-    val textBody = new Content().withData(message)
+  def send(email: Email): Future[String] = {
+    val destination = new Destination().withToAddresses(email.address)
+    val emailSubject = new Content().withData(email.subject)
+    val textBody = new Content().withData(email.message)
     val body = new Body().withText(textBody)
     val emailMessage = new Message().withSubject(emailSubject).withBody(body)
     val request = new SendEmailRequest().withSource(fromAddress).withDestination(destination).withMessage(emailMessage)
