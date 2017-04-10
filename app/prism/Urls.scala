@@ -15,6 +15,10 @@ object Urls {
     s"$prismUrl/images"
   }
 
+  def ownersUrl(prismUrl: String): String = {
+    s"$prismUrl/owners"
+  }
+
   private[prism] def emptyToNone(strOpt: Option[String]) = strOpt.filter(_.nonEmpty)
 
   def instancesUrl(ssa: SSA, prismUrl: String) = {

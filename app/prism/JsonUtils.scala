@@ -69,6 +69,12 @@ object JsonUtils {
     }
   }
 
+  def ownersResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
+    JsonUtils.jsResultToAttempt("Could not get Launch Configuration from response JSON"){
+      (response.json \ "data" \ "owners").validate[List[JsValue]]
+    }
+  }
+
   def extractInstance(json: JsValue): Attempt[Instance] = {
     JsonUtils.extractToAttempt[Instance]("Could not get Instance from response JSON") {
       json.validate[Instance]
@@ -78,6 +84,12 @@ object JsonUtils {
   def extractLaunchConfiguration(json: JsValue): Attempt[LaunchConfiguration] = {
     JsonUtils.extractToAttempt[LaunchConfiguration]("Could not get Launch Configuration from response JSON") {
       json.validate[LaunchConfiguration]
+    }
+  }
+
+  def extractOwner(json: JsValue): Attempt[Owner] = {
+    JsonUtils.extractToAttempt[Owner]("Could not get Owner from response JSON") {
+      json.validate[Owner]
     }
   }
 }

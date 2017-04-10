@@ -87,6 +87,8 @@ case class SSA (
   override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}>"
 }
 object SSA {
+  implicit val jsonFormat = Json.format[SSA]
+
   /**
     * Filters empty strings to None, such as those provided by request parameters.
     */
@@ -132,3 +134,9 @@ object LaunchConfiguration {
 }
 
 case class Email(address: String, subject: String, message: String)
+
+case class Owner(id: String, stacks: List[SSA])
+
+object Owner {
+  implicit val jsonFormat = Json.format[Owner]
+}

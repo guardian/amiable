@@ -3,6 +3,7 @@ package services
 import com.amazonaws.handlers.AsyncHandler
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient
 import com.amazonaws.services.simpleemail.model._
+import models.Email
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits._
 

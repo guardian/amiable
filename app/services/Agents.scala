@@ -98,9 +98,17 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
   }
 
   def notifyOwners(): Unit = {
-
+    Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
+      { err =>
+        Logger.warn(s"Failed to update old PROD instance count ${err.logString}")
+      },
+      { instancesWithAmis =>
+        val oldInstances = PrismLogic.oldInstances(instancesWithAmis)
+        Logger.debug(s"Found ${oldInstances.size} PROD instances running on an out-of-date AMI")
+        Prism.getOwners
+      }
+    )
   }
-
   def refreshInstancesInfo(): Unit = {
     Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
       { err =>
