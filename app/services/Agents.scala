@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.agent.Agent
 import config.AmiableConfigProvider
 import metrics.{CloudWatch, CloudWatchMetrics}
-import models.{AMI, Email, SSA}
+import models._
 import org.joda.time.DateTime
 import play.api.inject.ApplicationLifecycle
 import play.api.{Environment, Logger, Mode}
@@ -31,7 +31,6 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
   private val amisAgePercentile25thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
   private val amisAgePercentile50thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
   private val amisAgePercentile75thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
-  private val notifyOwnersAgent: Agent[Set[Email]] = Agent(Set.empty)
 
   def allAmis: Set[AMI] = amisAgent.get
   def allSSAs: Set[SSA] = ssasAgent.get
@@ -41,14 +40,12 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
   def amisAgePercentile25thHistory: List[(DateTime, Double)] = amisAgePercentile25thHistoryAgent.get
   def amisAgePercentile50thHistory: List[(DateTime, Double)] = amisAgePercentile50thHistoryAgent.get
   def amisAgePercentile75thHistory: List[(DateTime, Double)] = amisAgePercentile75thHistoryAgent.get
-  def notifications: Set[Email] = notifyOwnersAgent.get
 
   if (environment.mode != Mode.Test) {
     refreshAmis()
     refreshSSAs()
     refreshInstancesInfo()
     refreshHistory()
-    notifyOwners()
 
     val prismDataSubscription = Observable.interval(refreshInterval).subscribe { i =>
       Logger.debug(s"Refreshing agents")
@@ -61,14 +58,9 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
       refreshHistory()
     }
 
-    val notifyOwnersSubscription = Observable.interval(7.day).subscribe { i =>
-      notifyOwners()
-    }
-
     lifecycle.addStopHook { () =>
       prismDataSubscription.unsubscribe()
       cloudwatchDataSubscription.unsubscribe()
-      notifyOwnersSubscription.unsubscribe()
       Future.successful(())
     }
   }
@@ -97,18 +89,6 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
     )
   }
 
-  def notifyOwners(): Unit = {
-    Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
-      { err =>
-        Logger.warn(s"Failed to update old PROD instance count ${err.logString}")
-      },
-      { instancesWithAmis =>
-        val oldInstances = PrismLogic.oldInstances(instancesWithAmis)
-        Logger.debug(s"Found ${oldInstances.size} PROD instances running on an out-of-date AMI")
-        Prism.getOwners
-      }
-    )
-  }
   def refreshInstancesInfo(): Unit = {
     Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
       { err =>

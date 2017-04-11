@@ -1,4 +1,4 @@
-package services
+package services.notification
 
 import com.amazonaws.handlers.AsyncHandler
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient
