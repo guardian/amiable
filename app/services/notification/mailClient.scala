@@ -1,21 +1,26 @@
 package services.notification
 
+import javax.inject.Inject
+
 import com.amazonaws.handlers.AsyncHandler
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient
 import com.amazonaws.services.simpleemail.model._
+import com.google.inject.ImplementedBy
 import models.Email
-import play.api.Logger
+import play.api.{Configuration, Logger}
 import play.api.libs.concurrent.Execution.Implicits._
 
 import scala.concurrent.{Future, Promise}
 
+@ImplementedBy(classOf[AWSMailClient])
 trait MailClient {
   def send(email: Email): Future[String]
 }
 
-class AWSMailClient(amazonMailClient: AmazonSimpleEmailServiceAsyncClient, fromAddress: String) extends MailClient {
+class AWSMailClient @Inject()(amazonMailClient: AmazonSimpleEmailServiceAsyncClient, configuration: Configuration) extends MailClient {
 
   def send(email: Email): Future[String] = {
+    val fromAddress = configuration.getString("amiable.mailClient.fromAddress").get
     val destination = new Destination().withToAddresses(email.address)
     val emailSubject = new Content().withData(email.subject)
     val textBody = new Content().withData(email.message)

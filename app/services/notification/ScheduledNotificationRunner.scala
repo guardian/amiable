@@ -1,7 +1,7 @@
 package services.notification
 
 import config.AMIableConfig
-import models.SSA
+import models.{Email, SSA}
 import play.api.Logger
 import prism.{Prism, PrismLogic}
 
@@ -9,8 +9,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object ScheduledNotificationRunner {
 
-  def run(): Unit = {
-    println("*******************  Running")
+  def run(mailClient: MailClient): Unit = {
+    val email = Email("thomas.kaliakos@guardian.co.uk","Subject","test")
+    mailClient.send(email)
   }
 
   def toCopy(implicit config: AMIableConfig, ec: ExecutionContext): Future[Any] = {

@@ -1,5 +1,5 @@
 import com.google.inject.AbstractModule
-import services.notification.Notifications
+import services.notification.{AWSMailClient, MailClient, Notifications}
 import services.{Agents, Metrics}
 
 
@@ -16,6 +16,7 @@ import services.{Agents, Metrics}
 class Module extends AbstractModule {
   override def configure() = {
     bind(classOf[Agents]).asEagerSingleton()
+    bind(classOf[MailClient]).asEagerSingleton()
     bind(classOf[Metrics]).asEagerSingleton()
     bind(classOf[Notifications]).asEagerSingleton()
   }

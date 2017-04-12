@@ -15,7 +15,8 @@ object NotificationScheduler {
 
   def shutdown(): Unit = scheduler.shutdown()
 
-  def setupSchedule(): Unit = {
+  def setupSchedule(mailClient: MailClient): Unit = {
+    scheduler.getContext.put("MailClient", mailClient)
     val jobDetail = newJob(classOf[NotificationJob])
       .withIdentity(jobKey("notificationJob"))
       .build()
