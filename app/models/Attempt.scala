@@ -20,10 +20,10 @@ case class Attempt[A] private (underlying: Future[Either[AMIableErrors, A]]) {
     asFuture.map(_.fold(failure, success))
   }
 
-  def map2[B, C](a2: Attempt[B])(f: (A, B) => C)(implicit ec: ExecutionContext): Attempt[C] = {
+  def map2[B, C](bAttempt: Attempt[B])(f: (A, B) => C)(implicit ec: ExecutionContext): Attempt[C] = {
     for {
       a <- this
-      b <- a2
+      b <- bAttempt
     } yield f(a, b)
   }
 
