@@ -1,7 +1,7 @@
 package services.notification
 
 import config.AMIableConfig
-import models.{Email, SSA}
+import models.{Email, Instance, Owner, SSA}
 import play.api.Logger
 import prism.{Prism, PrismLogic}
 
@@ -9,15 +9,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object ScheduledNotificationRunner {
 
-  def run(mailClient: MailClient): Unit = {
-    val email = Email("thomas.kaliakos@guardian.co.uk","Subject","test")
-    mailClient.send(email)
-  }
-
-  def toCopy(implicit config: AMIableConfig, ec: ExecutionContext): Future[Any] = {
+  def run(mailClient: MailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Future[Any] = {
     Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
       { err =>
-        Logger.warn(s"Failed to update old PROD instance count ${err.logString}")
+        Logger.warn(s"Failed to retrieve instance info ${err.logString}")
       },
       { instancesWithAmis =>
         val oldInstances = PrismLogic.oldInstances(instancesWithAmis)

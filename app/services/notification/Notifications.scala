@@ -2,14 +2,16 @@ package services.notification
 
 import javax.inject.{Inject, Singleton}
 
-import play.api.{Environment, Logger, Mode}
+import config.{AMIableConfig, AmiableConfigProvider}
 import play.api.inject.ApplicationLifecycle
-import services.Agents
+import play.api.{Environment, Logger, Mode}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Notifications @Inject()(environment: Environment, lifecycle: ApplicationLifecycle, mailClient: MailClient) {
+class Notifications @Inject()(amiableConfigProvider: AmiableConfigProvider, environment: Environment, lifecycle: ApplicationLifecycle, mailClient: MailClient)(implicit exec: ExecutionContext) {
+   implicit val conf: AMIableConfig = amiableConfigProvider.conf
+
   // send notifications only in PROD
   if (environment.mode == Mode.Prod) {
     Logger.info("Starting the scheduler")
