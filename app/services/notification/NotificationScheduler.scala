@@ -11,8 +11,8 @@ import play.api.Logger
 
 import scala.concurrent.ExecutionContext
 
-object NotificationScheduler {
-  private val notifyOwnersSchedule = "0 0 16 ? * FRI *"
+class NotificationScheduler {
+  private val ownerSchdl = NotifySchedule("0 0 16 ? * FRI *")
   private val scheduler = StdSchedulerFactory.getDefaultScheduler
 
   def start(): Unit = scheduler.start()
@@ -28,10 +28,10 @@ object NotificationScheduler {
       .build()
     val trigger = newTrigger()
       .withIdentity(triggerKey("notificationTrigger"))
-      .withSchedule(cronSchedule(notifyOwnersSchedule))
+      .withSchedule(cronSchedule(ownerSchdl.quartzCronExpression))
       .build()
     scheduler.scheduleJob(jobDetail, trigger)
-    Logger.info(s"Scheduled owner notification with schedule [$notifyOwnersSchedule]")
+    Logger.info(s"Scheduled owner notification with schedule [${ownerSchdl.quartzCronExpression}]")
   }
 
   private def triggerKey(id: String): TriggerKey = new TriggerKey(id)

@@ -15,11 +15,12 @@ class Notifications @Inject()(amiableConfigProvider: AmiableConfigProvider, envi
   // send notifications only in PROD
   if (environment.mode == Mode.Prod) {
     Logger.info("Starting the scheduler")
-    NotificationScheduler.start()
-    NotificationScheduler.setupSchedule(mailClient)
+    val notificationScheduler = new NotificationScheduler()
+    notificationScheduler.start()
+    notificationScheduler.setupSchedule(mailClient)
     lifecycle.addStopHook { () =>
       println("Shutting down scheduler")
-      Future.successful(NotificationScheduler.shutdown())
+      Future.successful(notificationScheduler.shutdown())
     }
   }
 }
