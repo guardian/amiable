@@ -88,7 +88,7 @@ object Attempt {
     */
   def successfulAttempts[A](attempts: List[Attempt[A]])(implicit ec: ExecutionContext): Attempt[List[A]] = {
     Attempt.Async.Right {
-      Future.traverse(attempts)(_.fold(_ => None, a => Some(a))).map(_.flatten)
+      Future.traverse(attempts)(_.asFuture).map(_.collect { case Right(a) => a })
     }
   }
 
