@@ -22,11 +22,23 @@ object ScheduledNotificationRunner {
             Logger.warn(s"Failed to get Owners ${err.logString}")
         },{
           owners =>
-            val emails = 0//EmailFormatter()
-              emails
-          //            notifyOwnersAgent.send(emails.toSet)
+            owners.map { owner =>
+              val email = infoForOwner(owner, oldInstances)
+              mailClient.send(email)
+            }
         })
       }
     )
+  }
+
+  def infoForOwner(owner: Owner, oldInstances: List[Instance]): Email = {
+    val ssas = owner.stacks
+    val oldInstancesForOwner = oldInstances.filter(i => ssas.contains(SSA(i.stack, i.stage, i.app.headOption)))
+    val ownerAddress = s"${owner.id}@guardian.co.uk"
+    Email(ownerAddress, "Report: Outdated instances running on PROD", createReport(oldInstancesForOwner))
+  }
+
+  def createReport(oldInstances: List[Instance]) :String = {
+    "The following instances are running using old AMIs (older than 30 days):\n" + oldInstances.mkString(",\n")
   }
 }
