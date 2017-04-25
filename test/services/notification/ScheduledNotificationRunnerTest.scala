@@ -6,15 +6,17 @@ import util.Fixtures
 
 class ScheduledNotificationRunnerTest extends FreeSpec with Matchers {
 
-  "infoForOwner should extract information about stacks that are owned by the specific owner" in {
+  "infoForOwner should extract the stacks that are owned by the specific owner" in {
       val owner = Owner ("discussiondev", List(SSA(Some("capi"), Some("PROD")), SSA(Some("discussion"), Some("PROD"), Some("api"))))
 
-      val instances = List(
+    val capiProd = Fixtures.instanceWithSSA("arn2", SSA(Some("capi"), Some("PROD")))
+    val discussionApiProd = Fixtures.instanceWithSSA("arn3", SSA(Some("discussion"), Some("PROD"), Some("api")))
+
+    val instances = List(
         Fixtures.instanceWithSSA("arn1", SSA(Some("frontend"))),
-        Fixtures.instanceWithSSA("arn2", SSA(Some("capi"), Some("PROD"))),
-        Fixtures.instanceWithSSA ("arn3", SSA(Some("discussion"), Some("PROD"), Some("api")))
+        capiProd,
+        discussionApiProd
       )
-      ScheduledNotificationRunner.infoForOwner(owner, instances).address should startWith (owner.id)
-      ScheduledNotificationRunner.infoForOwner(owner, instances).message should (include("arn2") and include("arn3"))
+      ScheduledNotificationRunner.instancesForOwner(owner, instances) should contain theSameElementsAs List(capiProd, discussionApiProd)
   }
 }

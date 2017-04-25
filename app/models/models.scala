@@ -133,8 +133,6 @@ object LaunchConfiguration {
   implicit val jsonFormat = Json.format[LaunchConfiguration]
 }
 
-case class Email(address: String, subject: String, message: String)
-
 case class Owner(id: String, stacks: List[SSA])
 
 object Owner {
