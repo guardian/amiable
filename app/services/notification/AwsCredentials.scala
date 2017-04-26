@@ -1,9 +1,12 @@
 package services.notification
 
-import com.amazonaws.auth.{AWSCredentialsProviderChain, DefaultAWSCredentialsProviderChain}
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import javax.inject.Singleton
 
-object AwsCredentials {
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.auth.{AWSCredentialsProviderChain, DefaultAWSCredentialsProviderChain}
+
+@Singleton
+class AwsCredentials {
   val provider = new AWSCredentialsProviderChain(
     new ProfileCredentialsProvider("deployTools"),
     new DefaultAWSCredentialsProviderChain()
