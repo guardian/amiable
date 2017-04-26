@@ -1,5 +1,6 @@
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync
 import com.google.inject.AbstractModule
-import services.notification.{AWSMailClient, MailClient, Notifications}
+import services.notification.{AWSMailClient, AmazonSimpleEmailServiceAsyncFactory, Notifications}
 import services.{Agents, Metrics}
 
 
@@ -16,8 +17,9 @@ import services.{Agents, Metrics}
 class Module extends AbstractModule {
   override def configure() = {
     bind(classOf[Agents]).asEagerSingleton()
-    bind(classOf[MailClient]).asEagerSingleton()
     bind(classOf[Metrics]).asEagerSingleton()
+    bind(classOf[AmazonSimpleEmailServiceAsync]).toProvider(classOf[AmazonSimpleEmailServiceAsyncFactory])
+    bind(classOf[AWSMailClient]).asEagerSingleton()
     bind(classOf[Notifications]).asEagerSingleton()
   }
 }

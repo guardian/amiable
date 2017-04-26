@@ -19,7 +19,7 @@ class NotificationScheduler {
 
   def shutdown(): Unit = scheduler.shutdown()
 
-  def setupSchedule(mailClient: MailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Unit = {
+  def setupSchedule(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Unit = {
     scheduler.getContext.put("MailClient", mailClient)
     scheduler.getContext.put("AMIableConfig", config)
     scheduler.getContext.put("ExecutionContext", ec)

@@ -3,7 +3,7 @@ package services.notification
 import javax.inject.Inject
 
 import com.amazonaws.handlers.AsyncHandler
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient
+import com.amazonaws.services.simpleemail.{AmazonSimpleEmailService, AmazonSimpleEmailServiceAsync, AmazonSimpleEmailServiceAsyncClient}
 import com.amazonaws.services.simpleemail.model._
 import com.google.inject.ImplementedBy
 import models.Instance
@@ -12,12 +12,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 import scala.concurrent.{Future, Promise}
 
-@ImplementedBy(classOf[AWSMailClient])
-trait MailClient {
-  def send(ownerId: String, instances: Seq[Instance]): Future[String]
-}
-
-class AWSMailClient @Inject()(amazonMailClient: AmazonSimpleEmailServiceAsyncClient, configuration: Configuration) extends MailClient {
+class AWSMailClient @Inject()(amazonMailClient: AmazonSimpleEmailServiceAsync, configuration: Configuration) {
 
   def send(ownerId: String, instances: Seq[Instance]): Future[String] = {
     val request: SendEmailRequest = createEmailRequest(ownerId, instances)
@@ -41,7 +36,7 @@ class AWSMailClient @Inject()(amazonMailClient: AmazonSimpleEmailServiceAsyncCli
 
   private def createEmailRequest(ownerId: String, instances: Seq[Instance]) = {
     val fromAddress = configuration.getString("amiable.mailClient.fromAddress").get
-    val destination = new Destination().withToAddresses(s"$ownerId@guardian.co.uk")
+    val destination = new Destination().withToAddresses("thomas.kaliakos@guardian.co.uk")
     val emailSubject = new Content().withData("Instances running using old AMIs (older than 30 days)")
     val htmlBody = new Content().withData(views.html.email(instances).toString())
     val body = new Body().withHtml(htmlBody)

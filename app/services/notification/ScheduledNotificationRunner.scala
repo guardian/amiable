@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object ScheduledNotificationRunner {
 
-  def run(mailClient: MailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Future[Any] = {
+  def run(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Future[Any] = {
     Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
       { err =>
         Logger.warn(s"Failed to retrieve instance info ${err.logString}")
