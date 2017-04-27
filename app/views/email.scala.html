@@ -1,39 +1,69 @@
 @import utils.DateUtils
 @import views.html.fragments.heading
 
-@(instances: Seq[Instance], emptyChar: String = "-")
+@(instances: Seq[Instance], stack: Owner,emptyChar: String = "-")
 
-@main("AMI") {
-    @heading("Instances running using old AMIs (older than 30 days)")
-    <div class="container">
-    @if(instances.nonEmpty) {
-        <div class="ami-usage--message">Instances</div>
-        <table class="striped responsive-table ami-usage--table">
-            <thead>
-                <tr>
-                    <th class="instance-details-table__heading">Stack</th>
-                    <th class="instance-details-table__heading">Stage</th>
-                    <th class="instance-details-table__heading">App</th>
-                    <th class="instance-details-table__heading">State</th>
-                    <th class="instance-details-table__heading">Instance name</th>
-                    <th class="instance-details-table__heading">IP</th>
-                    <th class="instance-details-table__heading">Creation date</th>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Instances with old AMIs</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        @if(instances.nonEmpty) {
+            <table style="margin-top: 10px; margin-bottom: 40px;" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr bgcolor="#aabbd9">
+                        <td colspan="7" bgcolor="#eeeeee" style="font-size: xx-large; color: #3661B0 !important; padding: 40px 40px 30px 40px;">
+                            The following instances are running using old (more than 30 days) AMIs
+                        </td>
+                    </tr>
+                    <tr bgcolor="#26a69a">
+                        <th align="left" style="padding: 15px 5px;">Stack</th>
+                        <th align="left" style="padding: 15px 5px;">Stage</th>
+                        <th align="left" style="padding: 15px 5px;">App</th>
+                        <th align="left" style="padding: 15px 5px;">State</th>
+                        <th align="left" style="padding: 15px 5px;">Instance name</th>
+                        <th align="left" style="padding: 15px 5px;">IP</th>
+                        <th align="left" style="padding: 15px 5px;">Creation date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(instance <- instances) {
+                    <tr>
+                        <td style="padding: 15px 5px;">@instance.stack.getOrElse(emptyChar)</td>
+                        <td style="padding: 15px 5px;">@instance.stage.getOrElse(emptyChar)</td>
+                        <td style="padding: 15px 5px;">@instance.app</td>
+                        <td style="padding: 15px 5px;">@instance.vendorState</td>
+                        <td style="padding: 15px 5px;">@instance.instanceName</td>
+                        <td style="padding: 15px 5px;">@instance.ip</td>
+                        <td style="padding: 15px 5px;">@DateUtils.readableDateTime.print(instance.createdAt)</td>
+                    </tr>
+                }
+                <tr colspan="7" bgcolor="#212121 !important;" style="color: #FFFFFF !important; padding: 30px 30px 30px 30px;">
+                    You are receiving this email because you are listed as the Owner of the stacks:
+                    <table cellpadding="5px">
+                        <thead>
+                            <tr>
+                                <th class="ssa-table__heading">Stack</th>
+                                <th class="ssa-table__heading">Stage</th>
+                                <th class="ssa-table__heading">App</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @for(ssa <- stack.stacks) {
+                            <tr>
+                                <td class="ssa-table__entry">@ssa.stack.getOrElse(emptyChar)</td>
+                                <td class="ssa-table__entry">@ssa.stage.getOrElse(emptyChar)</td>
+                                <td class="ssa-table__entry">@ssa.app.getOrElse(emptyChar)</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
                 </tr>
-            </thead>
-            <tbody>
-            @for(instance <- instances) {
-                <tr>
-                    <td class="instance-details-table__entry">@instance.stack.getOrElse(emptyChar)</td>
-                    <td class="instance-details-table__entry">@instance.stage.getOrElse(emptyChar)</td>
-                    <td class="instance-details-table__entry">@instance.app</td>
-                    <td class="instance-details-table__entry">@instance.vendorState</td>
-                    <td class="instance-details-table__entry">@instance.instanceName</td>
-                    <td class="instance-details-table__entry">@instance.ip</td>
-                    <td class="instance-details-table__entry">@DateUtils.readableDateTime.print(instance.createdAt)</td>
-                </tr>
-            }
-            </tbody>
-        </table>
-    }
-    </div>
-}()
+                </tbody>
+            </table>
+        }
+    </body>
+</html>

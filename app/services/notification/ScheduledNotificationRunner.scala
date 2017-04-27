@@ -23,7 +23,7 @@ object ScheduledNotificationRunner {
         },{
           owners =>
             owners.map { owner =>
-              mailClient.send(owner.id, instancesForOwner(owner, oldInstances))
+              mailClient.send(owner, instancesForOwner(owner, oldInstances))
             }
         })
       }
