@@ -41,26 +41,28 @@
                         <td style="padding: 15px 5px;">@DateUtils.readableDateTime.print(instance.createdAt)</td>
                     </tr>
                 }
-                <tr colspan="7" bgcolor="#212121 !important;" style="color: #FFFFFF !important; padding: 30px 30px 30px 30px;">
-                    You are receiving this email because you are listed as the Owner of the stacks:
-                    <table cellpadding="5px">
-                        <thead>
-                            <tr>
-                                <th class="ssa-table__heading">Stack</th>
-                                <th class="ssa-table__heading">Stage</th>
-                                <th class="ssa-table__heading">App</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @for(ssa <- stack.stacks) {
-                            <tr>
-                                <td class="ssa-table__entry">@ssa.stack.getOrElse(emptyChar)</td>
-                                <td class="ssa-table__entry">@ssa.stage.getOrElse(emptyChar)</td>
-                                <td class="ssa-table__entry">@ssa.app.getOrElse(emptyChar)</td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
+                <tr bgcolor="#212121" style="color: #FFFFFF !important; padding: 30px 30px 30px 30px;">
+                    <td colspan="7" style="padding: 15px 5px;">
+                        You are receiving this email because you are listed as the Owner of the following stacks:
+                        <table cellpadding="5px">
+                            <thead>
+                                <tr>
+                                    <th class="ssa-table__heading">Stack</th>
+                                    <th class="ssa-table__heading">Stage</th>
+                                    <th class="ssa-table__heading">App</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @for(ssa <- stack.stacks) {
+                                <tr>
+                                    <td class="ssa-table__entry">@ssa.stack.getOrElse(emptyChar)</td>
+                                    <td class="ssa-table__entry">@ssa.stage.getOrElse(emptyChar)</td>
+                                    <td class="ssa-table__entry">@ssa.app.getOrElse(emptyChar)</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </td>
                 </tr>
                 </tbody>
             </table>

@@ -31,6 +31,10 @@ object ScheduledNotificationRunner {
   }
 
   def instancesForOwner(owner: Owner, oldInstances: List[Instance]): List[Instance] = {
-    oldInstances.filter(i => owner.stacks.contains(SSA(i.stack, i.stage, i.app.headOption)))
+    oldInstances.filter(i => {
+      owner.stacks.exists(ssa => ssa == SSA(i.stack, i.stage, i.app.headOption) || ssa == SSA(i.stack, stage = None, i.app.headOption) ||
+        ssa == SSA(i.stack, i.stage, app = None) || ssa == SSA(i.stack))
+
+    })
   }
 }

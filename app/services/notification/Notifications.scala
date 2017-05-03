@@ -9,7 +9,7 @@ import play.api.{Environment, Logger, Mode}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Notifications @Inject()(amiableConfigProvider: AmiableConfigProvider, environment: Environment, lifecycle: ApplicationLifecycle, mailClient: MailClient)(implicit exec: ExecutionContext) {
+class Notifications @Inject()(amiableConfigProvider: AmiableConfigProvider, environment: Environment, lifecycle: ApplicationLifecycle, mailClient: AWSMailClient)(implicit exec: ExecutionContext) {
    implicit val conf: AMIableConfig = amiableConfigProvider.conf
 
   // send notifications only in PROD

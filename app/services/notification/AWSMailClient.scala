@@ -35,7 +35,7 @@ class AWSMailClient @Inject()(amazonMailClient: AmazonSimpleEmailServiceAsync, c
 
   private def createEmailRequest(owner: Owner, instances: Seq[Instance]) = {
     val fromAddress = configuration.getString("amiable.mailClient.fromAddress").get
-    val destination = new Destination().withToAddresses("thomas.kaliakos@guardian.co.uk")
+    val destination = new Destination().withToAddresses(s"${owner.id}@guardian.co.uk")
     val emailSubject = new Content().withData("Instances running using old AMIs (older than 30 days)")
     val htmlBody = new Content().withData(views.html.email(instances, owner).toString())
     val body = new Body().withHtml(htmlBody)
