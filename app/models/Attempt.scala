@@ -20,6 +20,13 @@ case class Attempt[A] private (underlying: Future[Either[AMIableErrors, A]]) {
     asFuture.map(_.fold(failure, success))
   }
 
+  def map2[B, C](bAttempt: Attempt[B])(f: (A, B) => C)(implicit ec: ExecutionContext): Attempt[C] = {
+    for {
+      a <- this
+      b <- bAttempt
+    } yield f(a, b)
+  }
+
   /**
     * If there is an error in the Future itself (e.g. a timeout) we convert it to a
     * Left so we have a consistent error representation. This would likely have
@@ -38,17 +45,19 @@ object Attempt {
   /**
     * As with `Future.sequence`, changes `List[Attempt[A]]` to `Attempt[List[A]]`.
     *
-    * This implementation takes the first failure for simplicity, it's possible
-    * to collect all the failures when that's required.
+    * This implementation returns the first failure in the list, or the successful result.
     */
-  def sequence[A](responses: List[Attempt[A]])(implicit ec: ExecutionContext): Attempt[List[A]] = Attempt {
-    Future.sequence(responses.map(_.underlying)).map { eithers =>
-      eithers
-        .collectFirst { case scala.Left(x) => scala.Left(x): Either[AMIableErrors, List[A]]}
-        .getOrElse {
-          scala.Right(eithers collect { case Right(x) => x})
-        }
-    }
+  def sequence[A](responses: List[Attempt[A]])(implicit ec: ExecutionContext): Attempt[List[A]] = {
+    traverse(responses)(identity)
+  }
+
+  /**
+    * Changes generated `List[Attempt[A]]` to `Attempt[List[A]]` via provided function (like `Future.traverse`).
+    *
+    * This implementation returns the first failure in the list, or the successful result.
+    */
+  def traverse[A, B](as: List[A])(f: A => Attempt[B])(implicit ec: ExecutionContext): Attempt[List[B]] = {
+    as.foldRight[Attempt[List[B]]](Right(Nil))(f(_).map2(_)(_ :: _))
   }
 
   /**
@@ -56,7 +65,7 @@ object Attempt {
     * failures. This is useful if failure is acceptable in part of the application.
     */
   def sequenceFutures[A](response: List[Attempt[A]])(implicit ec: ExecutionContext): Attempt[List[Either[AMIableErrors, A]]] = {
-    Async.Right(Future.sequence(response.map(_.asFuture)))
+    Async.Right(Future.traverse(response)(_.asFuture))
   }
 
   def fromEither[A](e: Either[AMIableErrors, A]): Attempt[A] =
@@ -79,9 +88,7 @@ object Attempt {
     */
   def successfulAttempts[A](attempts: List[Attempt[A]])(implicit ec: ExecutionContext): Attempt[List[A]] = {
     Attempt.Async.Right {
-      Future.sequence(attempts.map { attempt =>
-        attempt.fold(_ => None, a => Some(a))
-      }).map(_.flatten)
+      Future.traverse(attempts)(_.asFuture).map(_.collect { case Right(a) => a })
     }
   }
 
@@ -92,10 +99,15 @@ object Attempt {
     Attempt(Future.successful(scala.Right(a)))
 
   /**
-    * Create an Attempt failure from an AMIableErrors instance.
+    * Create an Attempt failure from an AMIableErrors instance, representing the possibility of multiple failures.
     */
-  def Left[A](err: AMIableErrors): Attempt[A] =
-    Attempt(Future.successful(scala.Left(err)))
+  def Left[A](errs: AMIableErrors): Attempt[A] =
+    Attempt(Future.successful(scala.Left(errs)))
+  /**
+    * Create an Attempt failure if there's only a single error.
+    */
+  def Left[A](err: AMIableError): Attempt[A] =
+    Attempt(Future.successful(scala.Left(AMIableErrors(err))))
 
   /**
     * Asyncronous versions of the Attempt Right/Left helpers for when you have
