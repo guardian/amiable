@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object ScheduledNotificationRunner {
 
-  def run(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Future[Any] = {
+  def run(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Unit = {
     Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
       { err =>
         Logger.warn(s"Failed to retrieve instance info ${err.logString}")
@@ -23,7 +23,9 @@ object ScheduledNotificationRunner {
         },{
           owners =>
             owners.map { owner =>
-              mailClient.send(owner, instancesForOwner(owner, oldInstances))
+              val ownersOldInstances = instancesForOwner(owner, oldInstances)
+              if(ownersOldInstances.nonEmpty)
+                mailClient.send(owner, ownersOldInstances)
             }
         })
       }

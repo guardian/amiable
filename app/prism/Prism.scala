@@ -16,7 +16,7 @@ object Prism {
     for {
       response <- Http.response(config.wsClient.url(url).get(), "Unable to fetch Owners", url)
       jsons <- ownersResponseJson(response)
-      owners <- Attempt.sequence(jsons.map(extractOwner))
+      owners <- Attempt.traverse(jsons)(extractOwner)
     } yield owners
   }
 
