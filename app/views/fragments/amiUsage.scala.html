@@ -2,7 +2,7 @@
 @(instances: List[Instance], launchConfigs: List[LaunchConfiguration], emptyChar: String = "-")
 
 @if(instances.nonEmpty || launchConfigs.nonEmpty) {
-    <div class="ami-usage-title">
+    <div id="ami-usage" class="ami-usage-title">
     <span class="ami-usage-title--label">AMI Usage: </span>
         <span class="ami-usage-title--info">@instances.length instances, @launchConfigs.length launch configurations</span>
     </div>
