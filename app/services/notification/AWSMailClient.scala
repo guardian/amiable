@@ -2,20 +2,23 @@ package services.notification
 
 import javax.inject.Inject
 
-import com.amazonaws.handlers.AsyncHandler
+import aws.AwsAsyncHandler.awsToScala
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync
 import com.amazonaws.services.simpleemail.model._
-import models.{Instance, Owner}
+import models.{Attempt, Instance, Owner}
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.{Configuration, Logger}
-import aws.AwsAsyncHandler.awsToScala
-import scala.concurrent.{Future, Promise}
 
 class AWSMailClient @Inject()(amazonMailClient: AmazonSimpleEmailServiceAsync, configuration: Configuration) {
 
-  def send(owner: Owner, instances: Seq[Instance]): Future[String] = {
+  def send(owner: Owner, instances: Seq[Instance]): Attempt[Option[String]] = {
     val request: SendEmailRequest = createEmailRequest(owner, instances)
-    awsToScala(amazonMailClient.sendEmailAsync)(request).map(_.getMessageId)
+    val messageId = awsToScala(amazonMailClient.sendEmailAsync)(request).map(_.getMessageId)
+    Attempt.fromFuture[Option[String]]( messageId.map(m => Right(Some(m)))  ) {
+      case e =>
+        Logger.warn("Failed to send email", e)
+        Right(None)
+    }
   }
 
   private def createEmailRequest(owner: Owner, instances: Seq[Instance]) = {

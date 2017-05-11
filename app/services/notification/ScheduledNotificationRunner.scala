@@ -1,7 +1,7 @@
 package services.notification
 
 import config.AMIableConfig
-import models.{Instance, Owner, SSA}
+import models.{Attempt, Instance, Owner, SSA}
 import play.api.Logger
 import prism.{Prism, PrismLogic}
 
@@ -9,27 +9,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object ScheduledNotificationRunner {
 
-  def run(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Unit = {
-    Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
-      { err =>
-        Logger.warn(s"Failed to retrieve instance info ${err.logString}")
-      },
-      { instancesWithAmis =>
-        val oldInstances = PrismLogic.oldInstances(instancesWithAmis)
-        Logger.debug(s"Found ${oldInstances.size} PROD instances running on an out-of-date AMI")
-        Prism.getOwners.fold ({
-          err =>
-            Logger.warn(s"Failed to get Owners ${err.logString}")
-        },{
-          owners =>
-            owners.map { owner =>
-              val ownersOldInstances = instancesForOwner(owner, oldInstances)
-              if(ownersOldInstances.nonEmpty)
-                mailClient.send(owner, ownersOldInstances)
-            }
-        })
-      }
-    )
+  def run(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[String]] = {
+    for {
+      instancesWithAmis <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
+      oldInstances = PrismLogic.oldInstances(instancesWithAmis)
+      _ = Logger.debug(s"Found ${oldInstances.size} PROD instances running on an out-of-date AMI")
+      owners <- Prism.getOwners
+      mailIds <- Attempt.traverse(owners)(owner => mailClient.send(owner, instancesForOwner(owner, oldInstances)))
+    } yield mailIds.collect { case Some(m) => m }
   }
 
   def instancesForOwner(owner: Owner, oldInstances: List[Instance]): List[Instance] = {
