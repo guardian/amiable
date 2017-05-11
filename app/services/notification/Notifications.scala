@@ -18,9 +18,9 @@ class Notifications @Inject()(
                                amiableConfigProvider: AmiableConfigProvider,
                                environment: Environment,
                                lifecycle: ApplicationLifecycle,
-                               mailClient: AWSMailClient,
-                               configuration: Configuration)
-                             (implicit exec: ExecutionContext) {
+                               mailClient: AWSMailClient)
+                             (implicit exec: ExecutionContext,
+                              configuration: Configuration) {
   implicit val conf: AMIableConfig = amiableConfigProvider.conf
   /**
     * a Quartz cron expression,
@@ -41,10 +41,11 @@ class Notifications @Inject()(
     }
   }
 
-  def setupSchedule(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Unit = {
+  def setupSchedule(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext, configuration: Configuration): Unit = {
     scheduler.getContext.put("MailClient", mailClient)
     scheduler.getContext.put("AMIableConfig", config)
     scheduler.getContext.put("ExecutionContext", ec)
+    scheduler.getContext.put("Configuration", configuration)
     val jobDetail = newJob(classOf[NotificationJob])
       .withIdentity(jobKey("notificationJob"))
       .build()
