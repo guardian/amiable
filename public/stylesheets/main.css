@@ -196,10 +196,6 @@ h1 {
     padding: 12px;
 }
 
-.modal.ami-modal .modal-btn {
-    margin-right: 5px;
-}
-
 .ami-details__container {
     display: flex;
 }
