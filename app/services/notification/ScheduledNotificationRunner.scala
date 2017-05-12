@@ -6,28 +6,34 @@ import models.{Attempt, Instance, Owner, SSA}
 import play.api.{Configuration, Logger}
 import prism.{Prism, PrismLogic}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 object ScheduledNotificationRunner {
+  // Message id used if an owner doesn't have any old instances, or doesn't own any instances at all
+  val MessageNotSent = "0"
 
   def run(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext, configuration: Configuration): Attempt[List[String]] = {
     for {
       instancesWithAmis <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
       oldInstances = PrismLogic.oldInstances(instancesWithAmis)
-      _ = Logger.debug(s"Found ${oldInstances.size} PROD instances running on an out-of-date AMI")
       owners <- Prism.getOwners
-      mailIds <- Attempt.traverse(owners)(owner => {
-        val request = createEmailRequest(owner, instancesForOwner(owner, oldInstances), configuration)
-        mailClient.send(owner, request)
-      })
-    } yield mailIds.collect { case Some(m) => m }
+      mailIds <- Attempt.traverse(owners) { owner =>
+        val ownerOldInstances = instancesForOwner(owner, oldInstances)
+        if (ownerOldInstances.nonEmpty) {
+          val request = createEmailRequest(owner, ownerOldInstances, configuration)
+          mailClient.send(owner, request)
+        } else {
+          Logger.info(s"No old instances for owner ${owner.id}")
+          Attempt.Right(MessageNotSent)
+        }
+      }
+    } yield mailIds
   }
 
   def instancesForOwner(owner: Owner, oldInstances: List[Instance]): List[Instance] = {
     oldInstances.filter(i => {
       owner.stacks.exists(ssa => ssa == SSA(i.stack, i.stage, i.app.headOption) || ssa == SSA(i.stack, stage = None, i.app.headOption) ||
         ssa == SSA(i.stack, i.stage, app = None) || ssa == SSA(i.stack))
-
     })
   }
 
