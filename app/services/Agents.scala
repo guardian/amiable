@@ -1,7 +1,5 @@
 package services
 
-import javax.inject.{Inject, Singleton}
-
 import akka.actor.ActorSystem
 import akka.agent.Agent
 import config.AmiableConfigProvider
@@ -18,8 +16,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 
-@Singleton
-class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: ApplicationLifecycle, system: ActorSystem, environment: Environment)(implicit exec: ExecutionContext) {
+class Agents(amiableConfigProvider: AmiableConfigProvider, lifecycle: ApplicationLifecycle, system: ActorSystem, environment: Environment)(implicit exec: ExecutionContext) {
   lazy implicit val conf = amiableConfigProvider.conf
   val refreshInterval = 5.minutes
 

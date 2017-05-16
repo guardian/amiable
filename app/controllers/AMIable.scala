@@ -1,7 +1,5 @@
 package controllers
 
-import javax.inject.Inject
-
 import auth.AuthActions
 import config.AmiableConfigProvider
 import metrics.Charts
@@ -14,9 +12,8 @@ import services.notification.Notifications
 
 import scala.concurrent.ExecutionContext
 
-
-class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvider, agents: Agents, notifications: Notifications)
-                       (implicit exec: ExecutionContext) extends Controller with AuthActions {
+class AMIable(override val amiableConfigProvider: AmiableConfigProvider, agents: Agents, notifications: Notifications)
+             (implicit exec: ExecutionContext) extends Controller with AuthActions {
   implicit val conf = amiableConfigProvider.conf
 
   def index = AuthAction.async { implicit request =>

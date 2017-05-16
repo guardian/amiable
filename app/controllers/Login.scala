@@ -1,7 +1,5 @@
 package controllers
 
-import javax.inject.Inject
-
 import auth.AuthActions
 import config.AmiableConfigProvider
 import play.api.libs.ws.WSClient
@@ -10,7 +8,7 @@ import play.api.mvc.{Action, Controller}
 import scala.concurrent.ExecutionContext
 
 
-class Login @Inject()(override val amiableConfigProvider: AmiableConfigProvider, override val wsClient: WSClient)
+class Login (override val amiableConfigProvider: AmiableConfigProvider, override val wsClient: WSClient)
                      (implicit exec: ExecutionContext) extends Controller with AuthActions {
 
   val requiredGroups = amiableConfigProvider.requiredGoogleGroups

@@ -1,7 +1,6 @@
 package config
 
 import java.io.FileInputStream
-import javax.inject.{Inject, Singleton}
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.gu.googleauth.{GoogleAuthConfig, GoogleGroupChecker, GoogleServiceAccount}
@@ -10,7 +9,6 @@ import play.api.Configuration
 import play.api.libs.ws.WSClient
 
 import scala.util.Try
-
 
 case class AMIableConfig(
                           prismUrl: String,
@@ -23,9 +21,7 @@ case class AMIableConfig(
 
 case class AuthConfig(googleAuthConfig: GoogleAuthConfig, googleGroupChecker: GoogleGroupChecker, requiredGoogleGroups: Set[String])
 
-@Singleton
-class AmiableConfigProvider @Inject()(val ws: WSClient, val playConfig: Configuration) {
-
+class AmiableConfigProvider(val ws: WSClient, val playConfig: Configuration) {
   val amiableUrl = requiredString(playConfig, "host")
 
   val conf = AMIableConfig(
