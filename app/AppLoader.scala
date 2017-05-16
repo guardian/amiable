@@ -39,27 +39,27 @@ class AppLoader extends ApplicationLoader {
 }
 
 class AppComponents(context: Context) extends BuiltInComponentsFromContext(context) with AhcWSComponents {
-  def agents = new Agents(amiableConfigProvider, applicationLifecycle, actorSystem, environment)
+  lazy val agents = new Agents(amiableConfigProvider, applicationLifecycle, actorSystem, environment)
 
-  def metrics = new Metrics(environment, agents, applicationLifecycle)
+  lazy val metrics = new Metrics(environment, agents, applicationLifecycle)
 
-  def messagesApi: MessagesApi = new DefaultMessagesApi(environment, configuration, new DefaultLangs(configuration))
+  lazy val messagesApi: MessagesApi = new DefaultMessagesApi(environment, configuration, new DefaultLangs(configuration))
 
-  def amiableConfigProvider = new AmiableConfigProvider(wsClient, configuration)
+  lazy val amiableConfigProvider = new AmiableConfigProvider(wsClient, configuration)
 
-  def awsMailClient = new AWSMailClient(amazonSimpleEmailServiceAsync)
+  lazy val awsMailClient = new AWSMailClient(amazonSimpleEmailServiceAsync)
 
-  def scheduledNotificationRunner = new ScheduledNotificationRunner(awsMailClient, environment, amiableConfigProvider)
+  lazy val scheduledNotificationRunner = new ScheduledNotificationRunner(awsMailClient, environment, amiableConfigProvider)
 
-  def notifications = new Notifications(amiableConfigProvider, environment, applicationLifecycle, scheduledNotificationRunner)
+  lazy val notifications = new Notifications(amiableConfigProvider, environment, applicationLifecycle, scheduledNotificationRunner)
 
-  def amiableController = new AMIable(amiableConfigProvider, agents, notifications)(defaultContext)
+  lazy val amiableController = new AMIable(amiableConfigProvider, agents, notifications)(defaultContext)
 
-  def healthCheckController = new Healthcheck
+  lazy val healthCheckController = new Healthcheck
 
-  def loginController = new Login(amiableConfigProvider, wsClient)(defaultContext)
+  lazy val loginController = new Login(amiableConfigProvider, wsClient)(defaultContext)
 
-  def assets = new Assets(httpErrorHandler)
+  lazy val assets = new Assets(httpErrorHandler)
 
   lazy val router = new Routes(httpErrorHandler, amiableController, healthCheckController, loginController, assets)
 }
