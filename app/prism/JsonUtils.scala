@@ -70,7 +70,7 @@ object JsonUtils {
   }
 
   def ownersResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
-    JsonUtils.jsResultToAttempt("Could not get Launch Configuration from response JSON"){
+    JsonUtils.jsResultToAttempt("Could not get Owners from response JSON"){
       (response.json \ "data" \ "owners").validate[List[JsValue]]
     }
   }

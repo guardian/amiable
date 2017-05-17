@@ -1,7 +1,7 @@
 @import utils.DateUtils
 @import views.html.fragments.heading
 
-@(instances: Seq[Instance], stack: Owner,emptyChar: String = "-")
+@(instances: Seq[Instance], owner: Owner, emptyChar: String = "-")
 
 <!DOCTYPE html>
 <html lang="en">
@@ -53,7 +53,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @for(ssa <- stack.stacks) {
+                            @for(ssa <- owner.stacks) {
                                 <tr>
                                     <td class="ssa-table__entry">@ssa.stack.getOrElse(emptyChar)</td>
                                     <td class="ssa-table__entry">@ssa.stage.getOrElse(emptyChar)</td>
