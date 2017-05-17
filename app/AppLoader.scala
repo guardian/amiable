@@ -39,26 +39,20 @@ class AppLoader extends ApplicationLoader {
 }
 
 class AppComponents(context: Context) extends BuiltInComponentsFromContext(context) with AhcWSComponents {
-  lazy val agents = new Agents(amiableConfigProvider, applicationLifecycle, actorSystem, environment)
-
-  lazy val metrics = new Metrics(environment, agents, applicationLifecycle)
+  val agents = new Agents(amiableConfigProvider, applicationLifecycle, actorSystem, environment)
+  val metrics = new Metrics(environment, agents, applicationLifecycle)
 
   lazy val messagesApi: MessagesApi = new DefaultMessagesApi(environment, configuration, new DefaultLangs(configuration))
-
   lazy val amiableConfigProvider = new AmiableConfigProvider(wsClient, configuration)
 
   lazy val awsMailClient = new AWSMailClient(amazonSimpleEmailServiceAsync)
-
   lazy val scheduledNotificationRunner = new ScheduledNotificationRunner(awsMailClient, environment, amiableConfigProvider)
-
   lazy val notifications = new Notifications(amiableConfigProvider, environment, applicationLifecycle, scheduledNotificationRunner)
 
   lazy val amiableController = new AMIable(amiableConfigProvider, agents, notifications)(defaultContext)
 
   lazy val healthCheckController = new Healthcheck
-
   lazy val loginController = new Login(amiableConfigProvider, wsClient)(defaultContext)
-
   lazy val assets = new Assets(httpErrorHandler)
 
   lazy val router = new Routes(httpErrorHandler, amiableController, healthCheckController, loginController, assets)
