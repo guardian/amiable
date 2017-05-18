@@ -13,7 +13,7 @@ class AmazonSimpleEmailServiceAsyncFactory extends Provider[AmazonSimpleEmailSer
 
   private lazy val provider = new AWSCredentialsProviderChain(
     new ProfileCredentialsProvider("deployTools"),
-    new InstanceProfileCredentialsProvider(true))
+    new InstanceProfileCredentialsProvider(false))
 
   private val region: Region = Option(Regions.getCurrentRegion).getOrElse(Region.getRegion(Regions.EU_WEST_1))
 
