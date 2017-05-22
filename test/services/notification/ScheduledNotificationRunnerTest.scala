@@ -1,38 +1,50 @@
 package services.notification
 
-import models.{Owner, SSA}
+import models.{Owner, Owners, SSA}
 import org.scalatest.{FreeSpec, Matchers}
 import util.Fixtures
 
 class ScheduledNotificationRunnerTest extends FreeSpec with Matchers {
 
-  "infoForOwner should extract the stacks that are owned by the specific owner" in {
-      val owner = Owner ("discussiondev", List(SSA(Some("capi"), Some("PROD")), SSA(Some("discussion"), Some("PROD"), Some("api"))))
+  val defaultOwner = Owner("Director of Engineering", List.empty)
 
-    val frontend = Fixtures.instanceWithSSA("arn1", SSA(Some("frontend")))
-    val capiProd = Fixtures.instanceWithSSA("arn2", SSA(Some("capi"), Some("PROD")))
+  "ownerForInstance should return the owner of an instance" in {
+    val discussion = Owner ("discussiondev", List(SSA(Some("discussion"), Some("PROD"), Some("api"))))
+    val capi = Owner ("capi", List(SSA(Some("capi"), Some("PROD"))))
+    val owners = List (discussion, capi)
+
     val discussionApiProd = Fixtures.instanceWithSSA("arn3", SSA(Some("discussion"), Some("PROD"), Some("api")))
 
-    val instances = List(
-        frontend,
-        capiProd,
-        discussionApiProd
-      )
-      ScheduledNotificationRunner.instancesForOwner(owner, instances) should contain theSameElementsAs List(capiProd, discussionApiProd)
+    ScheduledNotificationRunner.ownerForInstance(discussionApiProd, Owners(owners ,defaultOwner)) should be (discussion)
   }
 
-  "infoForOwner should extract the instances that belong to a specific stack" in {
-    val owner = Owner ("discussiondev", List(SSA(Some("discussion"))))
+  "ownerForInstance should return the most specific owner of an instance" in {
+    val amigoOwner = Owner ("amigoOwner", List(SSA(Some("devtools"), app = Some("amigo"))))
+    val amigoProdOwner = Owner ("amigoProdOwner", List(SSA(Some("devtools"), Some("PROD"), Some("amigo"))))
+    val owners = List (amigoOwner, amigoProdOwner)
 
-    val discussionModtools = Fixtures.instanceWithSSA("arn1", SSA(Some("discussion"), app = Some("modtools")))
-    val capiProd = Fixtures.instanceWithSSA("arn2", SSA(Some("capi"), Some("PROD")))
-    val discussionApiProd = Fixtures.instanceWithSSA("arn3", SSA(Some("discussion"), Some("PROD"), Some("api")))
+    val amigoProd = Fixtures.instanceWithSSA("arn3", SSA(Some("devtools"), Some("PROD"), Some("amigo")))
 
-    val instances = List(
-      discussionModtools,
-      capiProd,
-      discussionApiProd
-    )
-    ScheduledNotificationRunner.instancesForOwner(owner, instances) should contain theSameElementsAs List(discussionModtools, discussionApiProd)
+    ScheduledNotificationRunner.ownerForInstance(amigoProd, Owners(owners ,defaultOwner)) should be (amigoProdOwner)
+  }
+
+  "ownerForInstance should return the most specific owner of an instance 2" in {
+    val amigoOwner = Owner ("devtools", List(SSA(Some("devtools"),app = Some("amigo"))))
+    val devtoolsProd = Owner ("capi", List(SSA(Some("devtools"), Some("PROD"))))
+    val owners = List (amigoOwner, devtoolsProd)
+
+    val amigoProd = Fixtures.instanceWithSSA("arn3", SSA(Some("devtools"), Some("PROD"), Some("amigo")))
+
+    ScheduledNotificationRunner.ownerForInstance(amigoProd, Owners(owners ,defaultOwner)) should be (amigoOwner)
+  }
+
+  "ownerForInstance should return the default Owner if no other owner is found" in {
+    val amigoOwner = Owner ("devtools", List(SSA(Some("devtools"), Some("amigo"))))
+    val devtoolsProd = Owner ("capi", List(SSA(Some("devtools"), Some("PROD"))))
+    val owners = List (amigoOwner, devtoolsProd)
+
+    val capiProd = Fixtures.instanceWithSSA("arn3", SSA(Some("capi"), Some("PROD")))
+
+    ScheduledNotificationRunner.ownerForInstance(capiProd, Owners(owners ,defaultOwner)) should be (defaultOwner)
   }
 }

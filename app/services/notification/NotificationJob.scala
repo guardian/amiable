@@ -16,10 +16,9 @@ class NotificationJob extends Job {
     implicit val amiableConfig = schedulerContext.get("AMIableConfig").asInstanceOf[AMIableConfig]
     implicit val ec = schedulerContext.get("ExecutionContext").asInstanceOf[ExecutionContext]
     val result = ScheduledNotificationRunner.run(mailClient)
-    Await.result(result.asFuture, 1.minute).fold(
+    Await.result(result.asFuture, 10.minutes).fold(
       err => Logger.error(s"Failed to send scheduled notifications: ${err.logString}"), { msgs =>
-        val (notSent, sent) = msgs.partition(_ == ScheduledNotificationRunner.MessageNotSent)
-        Logger.info(s"Email notifications: ${sent.size} sent, ${notSent.size} not sent")
+        Logger.info(s"Email notifications: ${msgs.size} sent")
       }
     )
   }

@@ -11,12 +11,12 @@ import scala.concurrent.ExecutionContext
 object Prism {
   import PrismLogic._
 
-  def getOwners(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Owner]] = {
+  def getOwners(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[Owners] = {
     val url = ownersUrl(config.prismUrl)
     for {
       response <- Http.response(config.wsClient.url(url).get(), "Unable to fetch Owners", url)
-      jsons <- ownersResponseJson(response)
-      owners <- Attempt.traverse(jsons)(extractOwner)
+      ownersJson <- ownersResponseJson(response)
+      owners <- extractOwners(ownersJson)
     } yield owners
   }
 

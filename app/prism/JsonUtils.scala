@@ -5,8 +5,10 @@ import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.ws.WSResponse
 
+import scala.concurrent.ExecutionContext
 
 object JsonUtils {
+
   import Serialisation._
 
   def jsResultToAttempt(errMessage: String)(jsResult: JsResult[List[JsValue]]): Attempt[List[JsValue]] = {
@@ -46,7 +48,7 @@ object JsonUtils {
   }
 
   def amisResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
-    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON"){
+    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON") {
       (response.json \ "data" \ "images").validate[List[JsValue]]
     }
   }
@@ -58,20 +60,20 @@ object JsonUtils {
   }
 
   def instancesResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
-    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON"){
+    JsonUtils.jsResultToAttempt("Could not get AMI from response JSON") {
       (response.json \ "data" \ "instances").validate[List[JsValue]]
     }
   }
 
   def launchConfigurationResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
-    JsonUtils.jsResultToAttempt("Could not get Launch Configuration from response JSON"){
+    JsonUtils.jsResultToAttempt("Could not get Launch Configuration from response JSON") {
       (response.json \ "data" \ "launch-configurations").validate[List[JsValue]]
     }
   }
 
-  def ownersResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
-    JsonUtils.jsResultToAttempt("Could not get Owners from response JSON"){
-      (response.json \ "data" \ "owners").validate[List[JsValue]]
+  def ownersResponseJson(response: WSResponse)(implicit ec: ExecutionContext): Attempt[JsValue] = {
+    JsonUtils.extractToAttempt("Could not get Owners from response JSON") {
+      (response.json \ "data").validate[JsValue]
     }
   }
 
@@ -87,9 +89,9 @@ object JsonUtils {
     }
   }
 
-  def extractOwner(json: JsValue): Attempt[Owner] = {
-    JsonUtils.extractToAttempt[Owner]("Could not get Owner from response JSON") {
-      json.validate[Owner]
+  def extractOwners(json: JsValue): Attempt[Owners] = {
+    JsonUtils.extractToAttempt[Owners]("Could not get owners from response JSON") {
+      json.validate[Owners]
     }
   }
 }

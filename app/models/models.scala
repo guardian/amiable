@@ -133,8 +133,16 @@ object LaunchConfiguration {
   implicit val jsonFormat = Json.format[LaunchConfiguration]
 }
 
-case class Owner(id: String, stacks: List[SSA])
+case class Owner(id: String, stacks: List[SSA]) {
+  def hasSSA(ssa: SSA): Boolean = stacks.contains(ssa)
+}
 
 object Owner {
   implicit val jsonFormat = Json.format[Owner]
+}
+
+case class Owners(owners: List[Owner], defaultOwner: Owner)
+
+object Owners {
+  implicit val jsonFormat = Json.format[Owners]
 }

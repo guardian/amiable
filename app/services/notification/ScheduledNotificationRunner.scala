@@ -2,39 +2,35 @@ package services.notification
 
 import com.amazonaws.services.simpleemail.model._
 import config.AMIableConfig
-import models.{Attempt, Instance, Owner, SSA}
-import play.api.{Configuration, Logger}
+import models._
 import prism.{Prism, PrismLogic}
 
 import scala.concurrent.ExecutionContext
 
 object ScheduledNotificationRunner {
-  // Message id used if an owner doesn't have any old instances, or doesn't own any instances at all
-  val MessageNotSent = "0"
-
   def run(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[String]] = {
     for {
       instancesWithAmis <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
       oldInstances = PrismLogic.oldInstances(instancesWithAmis)
-      owners <- Prism.getOwners
-      mailIds <- Attempt.traverse(owners) { owner =>
-        val ownerOldInstances = instancesForOwner(owner, oldInstances)
-        if (ownerOldInstances.nonEmpty) {
-          val request = createEmailRequest(owner, ownerOldInstances)
-          mailClient.send(owner, request)
-        } else {
-          Logger.info(s"No old instances for owner ${owner.id}")
-          Attempt.Right(MessageNotSent)
-        }
+      ownersWithDefault <- Prism.getOwners
+      ownersAndOldInstances = findInstanceOwners(oldInstances, ownersWithDefault)
+      mailIds <- Attempt.traverse(ownersAndOldInstances.toList) { case (owner, oldInstancesForOwner) =>
+        val request = createEmailRequest(owner, oldInstancesForOwner)
+        mailClient.send(owner, request)
       }
     } yield mailIds
   }
 
-  def instancesForOwner(owner: Owner, oldInstances: List[Instance]): List[Instance] = {
-    oldInstances.filter(i => {
-      owner.stacks.exists(ssa => ssa == SSA(i.stack, i.stage, i.app.headOption) || ssa == SSA(i.stack, stage = None, i.app.headOption) ||
-        ssa == SSA(i.stack, i.stage, app = None) || ssa == SSA(i.stack))
-    })
+  def findInstanceOwners(instances: List[Instance], owners: Owners): Map[Owner, List[Instance]] = {
+    instances.map { i => (i, ownerForInstance(i, owners)) }.groupBy(_._2).mapValues(_.map(_._1))
+  }
+
+  def ownerForInstance(i: Instance, owners: Owners): Owner = {
+    owners.owners.find(_.hasSSA(SSA(i.stack, i.stage, i.app.headOption)))
+      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack, app = i.app.headOption))))
+      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack, i.stage))))
+      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack))))
+      .getOrElse(owners.defaultOwner)
   }
 
   private def createEmailRequest(owner: Owner, instances: Seq[Instance])(implicit config: AMIableConfig) = {
