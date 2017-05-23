@@ -87,6 +87,8 @@ case class SSA (
   override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}>"
 }
 object SSA {
+  implicit val jsonFormat = Json.format[SSA]
+
   /**
     * Filters empty strings to None, such as those provided by request parameters.
     */
@@ -129,4 +131,18 @@ case class LaunchConfiguration(
 object LaunchConfiguration {
   import utils.DateUtils._
   implicit val jsonFormat = Json.format[LaunchConfiguration]
+}
+
+case class Owner(id: String, stacks: List[SSA]) {
+  def hasSSA(ssa: SSA): Boolean = stacks.contains(ssa)
+}
+
+object Owner {
+  implicit val jsonFormat = Json.format[Owner]
+}
+
+case class Owners(owners: List[Owner], defaultOwner: Owner)
+
+object Owners {
+  implicit val jsonFormat = Json.format[Owners]
 }

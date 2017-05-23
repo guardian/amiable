@@ -81,6 +81,10 @@ object Attempt {
     Attempt(future recover recovery)
   }
 
+  def future[A](future: Future[A])(recovery: PartialFunction[Throwable, Either[AMIableErrors, A]])(implicit ec: ExecutionContext): Attempt[A] = {
+    Attempt(future.map(scala.Right(_)) recover recovery)
+  }
+
   /**
     * Discard failures from a list of attempts.
     *

@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.agent.Agent
 import config.AmiableConfigProvider
 import metrics.{CloudWatch, CloudWatchMetrics}
-import models.{AMI, SSA}
+import models._
 import org.joda.time.DateTime
 import play.api.inject.ApplicationLifecycle
 import play.api.{Environment, Logger, Mode}
@@ -53,6 +53,7 @@ class Agents @Inject()(amiableConfigProvider: AmiableConfigProvider, lifecycle: 
       refreshSSAs()
       refreshInstancesInfo()
     }
+
     val cloudwatchDataSubscription = Observable.interval(1.hour).subscribe { i =>
       refreshHistory()
     }

@@ -4,7 +4,8 @@
 @if(instances.nonEmpty || launchConfigs.nonEmpty) {
     <div id="ami-usage" class="ami-usage-title">
     <span class="ami-usage-title--label">AMI Usage: </span>
-        <span class="ami-usage-title--info">@instances.length instances, @launchConfigs.length launch configurations</span>
+        <span class="ami-usage-title--info">@instances.length @if(instances.length == 1) {instance} else {instances},
+            @launchConfigs.length @if(launchConfigs.length == 1) {launch configuration} else {launch configurations}</span>
     </div>
 } else {
     <div class="ami-usage--message">No instances or launch configurations are using this AMI</div>
