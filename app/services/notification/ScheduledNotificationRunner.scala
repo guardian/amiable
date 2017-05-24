@@ -33,15 +33,7 @@ class ScheduledNotificationRunner@Inject()(mailClient: AWSMailClient, environmen
   }
 
   def findInstanceOwners(instances: List[Instance], owners: Owners): Map[Owner, List[Instance]] = {
-    instances.map { i => (i, ownerForInstance(i, owners)) }.groupBy(_._2).mapValues(_.map(_._1))
-  }
-
-  def ownerForInstance(i: Instance, owners: Owners): Owner = {
-    owners.owners.find(_.hasSSA(SSA(i.stack, i.stage, i.app.headOption)))
-      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack, app = i.app.headOption))))
-      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack, i.stage))))
-      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack))))
-      .getOrElse(owners.defaultOwner)
+    instances.map { i => (i, ScheduledNotificationRunner.ownerForInstance(i, owners)) }.groupBy(_._2).mapValues(_.map(_._1))
   }
 
   private def createEmailRequest(owner: Owner, instances: Seq[Instance], config: AMIableConfig) = {
@@ -53,5 +45,15 @@ class ScheduledNotificationRunner@Inject()(mailClient: AWSMailClient, environmen
     val emailMessage = new Message().withSubject(emailSubject).withBody(body)
     val request = new SendEmailRequest().withSource(config.mailAddress).withDestination(destination).withMessage(emailMessage)
     request
+  }
+}
+
+object ScheduledNotificationRunner {
+  def ownerForInstance(i: Instance, owners: Owners): Owner = {
+    owners.owners.find(_.hasSSA(SSA(i.stack, i.stage, i.app.headOption)))
+      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack, app = i.app.headOption))))
+      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack, i.stage))))
+      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack))))
+      .getOrElse(owners.defaultOwner)
   }
 }
