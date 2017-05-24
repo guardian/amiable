@@ -10,12 +10,12 @@ import play.api._
 import play.api.mvc._
 import prism.{Prism, PrismLogic, Recommendations}
 import services.Agents
-import utils.DateUtils
+import services.notification.Notifications
 
 import scala.concurrent.ExecutionContext
 
 
-class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvider, agents: Agents)
+class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvider, agents: Agents, notifications: Notifications)
                        (implicit exec: ExecutionContext) extends Controller with AuthActions {
   implicit val conf = amiableConfigProvider.conf
 
@@ -78,6 +78,14 @@ class AMIable @Inject()(override val amiableConfigProvider: AmiableConfigProvide
         PrismLogic.sortSSAAmisByAge(amiSSAs),
         instancesCount
       ))
+    }
+  }
+
+  def sendEmail = AuthAction.async {
+    attempt {
+      for {
+        emailIds <- notifications.sendEmail()
+      } yield Ok(s"Emails sent (ids):\n ${emailIds.mkString("\n")}")
     }
   }
 

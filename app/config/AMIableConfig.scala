@@ -12,7 +12,7 @@ import play.api.libs.ws.WSClient
 import scala.util.Try
 
 
-case class AMIableConfig(prismUrl: String, wsClient: WSClient, mailAddress: String, ownerNotificationCron: String)
+case class AMIableConfig(prismUrl: String, wsClient: WSClient, mailAddress: String, ownerNotificationCron: Option[String], overrideToAddress: Option[String])
 
 case class AuthConfig(googleAuthConfig: GoogleAuthConfig, googleGroupChecker: GoogleGroupChecker, requiredGoogleGroups: Set[String])
 
@@ -22,7 +22,8 @@ class AmiableConfigProvider @Inject()(val ws: WSClient, val playConfig: Configur
   val conf = AMIableConfig(playConfig.getString("prism.url").get,
                             ws,
                             playConfig.getString("amiable.mailClient.fromAddress").get,
-                            playConfig.getString("amiable.owner.notification.cron").get)
+                            playConfig.getString("amiable.owner.notification.cron").filter(_.nonEmpty),
+                            playConfig.getString("amiable.owner.notification.overrideToAddress").filter(_.nonEmpty))
 
   val requiredGoogleGroups = Set(requiredString(playConfig, "auth.google.2faGroupId"))
 

@@ -1,22 +1,33 @@
 package services.notification
 
+import javax.inject.{Inject, Singleton}
+
 import com.amazonaws.services.simpleemail.model._
-import config.AMIableConfig
+import config.{AMIableConfig, AmiableConfigProvider}
 import models._
+import play.api.{Environment, Logger, Mode}
 import prism.{Prism, PrismLogic}
 
 import scala.concurrent.ExecutionContext
 
-object ScheduledNotificationRunner {
-  def run(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[String]] = {
+@Singleton
+class ScheduledNotificationRunner@Inject()(mailClient: AWSMailClient, environment: Environment, amiableConfigProvider: AmiableConfigProvider)(implicit ec: ExecutionContext) {
+  implicit val config = amiableConfigProvider.conf
+
+  def run(): Attempt[List[String]] = {
     for {
       instancesWithAmis <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
       oldInstances = PrismLogic.oldInstances(instancesWithAmis)
       ownersWithDefault <- Prism.getOwners
       ownersAndOldInstances = findInstanceOwners(oldInstances, ownersWithDefault)
       mailIds <- Attempt.traverse(ownersAndOldInstances.toList) { case (owner, oldInstancesForOwner) =>
-        val request = createEmailRequest(owner, oldInstancesForOwner)
-        mailClient.send(owner, request)
+        val instances = oldInstancesForOwner.sortBy(i => (i.stack, i.stage, i.app.headOption))
+        val request = createEmailRequest(owner, instances, config)
+        if(environment.mode == Mode.Prod || config.overrideToAddress.nonEmpty)
+          mailClient.send(owner, request)
+        else
+          Logger.info(s"Not in Prod and no override To Address set. Would have sent email to ${owner.id}, request: $request")
+          Attempt.Right("")
       }
     } yield mailIds
   }
@@ -33,8 +44,9 @@ object ScheduledNotificationRunner {
       .getOrElse(owners.defaultOwner)
   }
 
-  private def createEmailRequest(owner: Owner, instances: Seq[Instance])(implicit config: AMIableConfig) = {
-    val destination = new Destination().withToAddresses(s"${owner.id}@guardian.co.uk")
+  private def createEmailRequest(owner: Owner, instances: Seq[Instance], config: AMIableConfig) = {
+    val toAddress = config.overrideToAddress.getOrElse(s"${owner.id}@guardian.co.uk")
+    val destination = new Destination().withToAddresses(toAddress)
     val emailSubject = new Content().withData("Instances running using old AMIs (older than 30 days)")
     val htmlBody = new Content().withData(views.html.email(instances, owner).toString())
     val body = new Body().withHtml(htmlBody)
