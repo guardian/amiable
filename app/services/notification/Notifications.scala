@@ -3,6 +3,7 @@ package services.notification
 import javax.inject.{Inject, Singleton}
 
 import config.{AMIableConfig, AmiableConfigProvider}
+import models.Attempt
 import org.quartz.CronScheduleBuilder.cronSchedule
 import org.quartz.JobBuilder.newJob
 import org.quartz.{JobKey, TriggerKey}
@@ -17,31 +18,36 @@ import scala.concurrent.{ExecutionContext, Future}
 class Notifications @Inject()(amiableConfigProvider: AmiableConfigProvider,
                               environment: Environment,
                               lifecycle: ApplicationLifecycle,
-                              mailClient: AWSMailClient)
+                              scheduledNotificationRunner: ScheduledNotificationRunner)
                              (implicit exec: ExecutionContext) {
-  implicit val conf: AMIableConfig = amiableConfigProvider.conf
+  val conf: AMIableConfig = amiableConfigProvider.conf
   /**
     * a Quartz cron expression,
     * e.g. "0 0 3 * * ? *" to run at 3am every day
     * See http://www.quartz-scheduler.org/documentation/quartz-2.2.x/tutorials/crontrigger.html
     */
-  private val ownerSchdlCron = conf.ownerNotificationCron
   private val scheduler = StdSchedulerFactory.getDefaultScheduler
-
-  // send notifications only in PROD
-  if (environment.mode == Mode.Prod) {
-    Logger.info("Starting the scheduler for sending notifications to stack owners")
-    scheduler.start()
-    setupSchedule(mailClient)
-    lifecycle.addStopHook { () =>
-      Logger.info("Shutting down scheduler")
-      Future.successful(scheduler.shutdown())
-    }
+  conf.overrideToAddress match {
+    case Some(address) => Logger.info(s"To address is overridden for sending notifications. Notifications will be sent to: $address")
+    case None => Logger.info(s"No to address override configured for sending notifications. Using addresses from Prism")
   }
 
-  def setupSchedule(mailClient: AWSMailClient)(implicit config: AMIableConfig, ec: ExecutionContext): Unit = {
-    scheduler.getContext.put("MailClient", mailClient)
-    scheduler.getContext.put("AMIableConfig", config)
+  conf.ownerNotificationCron match {
+    case Some(cron) =>
+      Logger.info(s"Starting the scheduler for sending notifications to stack owners")
+      scheduler.start()
+      setupSchedule(cron)
+      lifecycle.addStopHook { () =>
+        Logger.info("Shutting down scheduler")
+        Future.successful(scheduler.shutdown())
+      }
+    case None =>
+      Logger.info("No cron expression. Not starting scheduler for sending notifications to stack owners")
+  }
+
+
+  def setupSchedule(ownerSchdlCron: String)(implicit ec: ExecutionContext): Unit = {
+    scheduler.getContext.put("ScheduledNotificationRunner", scheduledNotificationRunner)
     scheduler.getContext.put("ExecutionContext", ec)
     val jobDetail = newJob(classOf[NotificationJob])
       .withIdentity(new JobKey("notificationJob"))
@@ -52,5 +58,9 @@ class Notifications @Inject()(amiableConfigProvider: AmiableConfigProvider,
       .build()
     scheduler.scheduleJob(jobDetail, trigger)
     Logger.info(s"Scheduled owner notification with schedule [$ownerSchdlCron]")
+  }
+
+  def sendEmail(): Attempt[List[String]] = {
+    scheduledNotificationRunner.run()
   }
 }
