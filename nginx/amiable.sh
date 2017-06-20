@@ -5,13 +5,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 nginxHome=`nginx -V 2>&1 | grep "configure arguments:" | sed 's/[^*]*conf-path=\([^ ]*\)\/nginx\.conf.*/\1/g'`
 
-SYSTEM=$(uname -s)
-if [ $SYSTEM == "Darwin" ]; then
-    # Mac OS X platform
-    confDir=servers
-elif [ $SYSTEM == "Linux" ]; then
-    confDir=sites-enabled
-fi
+confDir=sites-enabled
 
 sudo ln -fs $DIR/amiable.conf $nginxHome/$confDir/amiable.conf
 sudo ln -fs $DIR/amiable.crt $nginxHome/amiable.crt

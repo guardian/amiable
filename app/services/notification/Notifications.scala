@@ -4,13 +4,14 @@ import javax.inject.{Inject, Singleton}
 
 import config.{AMIableConfig, AmiableConfigProvider}
 import models.Attempt
+import org.joda.time.DateTime
+import org.quartz.{JobKey, TriggerKey}
 import org.quartz.CronScheduleBuilder.cronSchedule
 import org.quartz.JobBuilder.newJob
-import org.quartz.{JobKey, TriggerKey}
 import org.quartz.TriggerBuilder.newTrigger
 import org.quartz.impl.StdSchedulerFactory
+import play.api.{Environment, Logger}
 import play.api.inject.ApplicationLifecycle
-import play.api.{Configuration, Environment, Logger, Mode}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -61,6 +62,6 @@ class Notifications @Inject()(amiableConfigProvider: AmiableConfigProvider,
   }
 
   def sendEmail(): Attempt[List[String]] = {
-    scheduledNotificationRunner.run()
+    scheduledNotificationRunner.run(new DateTime())
   }
 }

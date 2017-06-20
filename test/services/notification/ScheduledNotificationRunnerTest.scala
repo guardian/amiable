@@ -3,12 +3,13 @@ package services.notification
 import com.amazonaws.services.simpleemail.model.SendEmailRequest
 import config.AMIableConfig
 import models._
+import org.joda.time.DateTime
+import org.mockito.Matchers._
+import org.mockito.Mockito._
 import org.scalatest.{EitherValues, FreeSpec, Matchers}
+import org.scalatest.mock.MockitoSugar
 import play.api.Mode
 import util.{AttemptValues, Fixtures}
-import org.mockito.Mockito._
-import org.mockito.Matchers._
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -57,16 +58,26 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
   }
 
   "createEmailRequest should use the override To address if it is defined" in {
+    val date = new DateTime(2017,6,1,11,0,0)
     val owner = Owner("john.doe", List.empty)
-    val config = AMIableConfig("prismUrl", null, "fromAddress", None, overrideToAddress = Some("admin@guardian.co.uk"))
-    val req = ScheduledNotificationRunner.createEmailRequest(owner, List.empty, config)
+    val config = AMIableConfig("prismUrl", null, "fromAddress", None, overrideToAddress = Some("admin@guardian.co.uk"), "http://test-url")
+    val req = ScheduledNotificationRunner.createEmailRequest(owner, List.empty, config, date)
     req.getDestination.getToAddresses.get(0) should be("admin@guardian.co.uk")
   }
 
-  "createEmailRequest should use the owner's id in the To address if the override address is not defined" in {
+  "createEmailRequest should use the date in the subject line" in {
+    val date = new DateTime(2017,6,1,11,0,0)
     val owner = Owner("john.doe", List.empty)
-    val config = AMIableConfig("prismUrl", null, "fromAddress", None, overrideToAddress = None)
-    val req = ScheduledNotificationRunner.createEmailRequest(owner, List.empty, config)
+    val config = AMIableConfig("prismUrl", null, "fromAddress", None, overrideToAddress = None, "http://test-url")
+    val req = ScheduledNotificationRunner.createEmailRequest(owner, List.empty, config, date)
+    req.getMessage.getSubject.getData should include ("2017-06-01")
+  }
+
+  "createEmailRequest should use the owner's id in the To address if the override address is not defined" in {
+    val date = new DateTime(2017,6,1,11,0,0)
+    val owner = Owner("john.doe", List.empty)
+    val config = AMIableConfig("prismUrl", null, "fromAddress", None, overrideToAddress = None, "http://test-url")
+    val req = ScheduledNotificationRunner.createEmailRequest(owner, List.empty, config, date)
     req.getDestination.getToAddresses.get(0) should be("john.doe@guardian.co.uk")
   }
 
@@ -96,5 +107,29 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
     val res = ScheduledNotificationRunner.conditionallySendEmail(Mode.Dev, None, mailClient, owner, request)
     res.awaitEither.right.value shouldBe ""
     verify(mailClient, never()).send(anyString(), anyObject())
+  }
+
+  "pairInstancesWithAmiAge should order unknown ages first and then decreasing age second" in {
+    val noAmiAge = Fixtures.emptyInstance("I:no ami age")
+    val longAge = Fixtures.emptyInstance("I:long ami age")
+    val medAge = Fixtures.emptyInstance("I:shorter ami age")
+    val shortAge = Fixtures.emptyInstance("I:short ami age")
+    val noAmi = Fixtures.emptyAmi("AMI:no ami age")
+    val longAmi = Fixtures.emptyAmi("AMI:long ami age").copy(creationDate = Some(new DateTime().minusDays(500)))
+    val medAmi = Fixtures.emptyAmi("AMI:shorter ami age").copy(creationDate = Some(new DateTime().minusDays(100)))
+    val shortAmi = Fixtures.emptyAmi("AMI:short ami age").copy(creationDate = Some(new DateTime().minusDays(10)))
+    val instances = Map(
+      medAge -> medAmi,
+      longAge -> longAmi,
+      noAmiAge -> noAmi,
+      shortAge -> shortAmi
+    )
+    val results = ScheduledNotificationRunner.pairInstancesWithAmi(instances.keys.toList, instances)
+    results shouldBe List(
+      noAmiAge -> Some(noAmi),
+      longAge -> Some(longAmi),
+      medAge -> Some(medAmi),
+      shortAge -> Some(shortAmi)
+    )
   }
 }
