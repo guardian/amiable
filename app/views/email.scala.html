@@ -1,7 +1,8 @@
 @import utils.DateUtils
 @import views.html.fragments.heading
 
-@(instances: Seq[Instance], owner: Owner, emptyChar: String = "-")
+@import org.joda.time.DateTime
+@(amiableUrl: String, instances: Seq[(Instance, Option[AMI])], owner: Owner, emptyChar: String = "-")
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,34 +17,49 @@
                 <thead>
                     <tr bgcolor="#aabbd9">
                         <td colspan="7" bgcolor="#eeeeee" style="font-size: xx-large; color: #3661B0 !important; padding: 40px 40px 30px 40px;">
-                            @{instances.size} instances are running using old (>30 days) AMIs
+                            <div>@{instances.size} instances running old AMIs</div>
+                            <div><small>(AMIs built more than 30 days ago)</small></div>
                         </td>
                     </tr>
                     <tr bgcolor="#26a69a">
                         <th align="left" style="padding: 15px 5px;">Stack</th>
                         <th align="left" style="padding: 15px 5px;">Stage</th>
                         <th align="left" style="padding: 15px 5px;">App</th>
-                        <th align="left" style="padding: 15px 5px;">State</th>
-                        <th align="left" style="padding: 15px 5px;">Instance name</th>
-                        <th align="left" style="padding: 15px 5px;">IP</th>
-                        <th align="left" style="padding: 15px 5px;">Creation date</th>
+                        <th align="left" style="padding: 15px 5px;">Instance</th>
+                        <th align="left" style="padding: 15px 5px;">AMI</th>
+                        <th align="left" style="padding: 15px 5px;">AMI age</th>
                     </tr>
                 </thead>
                 <tbody>
-                @for(instance <- instances) {
-                    <tr>
-                        <td style="padding: 15px 5px;">@instance.stack.getOrElse(emptyChar)</td>
-                        <td style="padding: 15px 5px;">@instance.stage.getOrElse(emptyChar)</td>
-                        <td style="padding: 15px 5px;">@instance.app</td>
-                        <td style="padding: 15px 5px;">@instance.vendorState</td>
-                        <td style="padding: 15px 5px;">@instance.instanceName</td>
-                        <td style="padding: 15px 5px;">@instance.ip</td>
-                        <td style="padding: 15px 5px;">@DateUtils.readableDateTime.print(instance.createdAt)</td>
-                    </tr>
+                @for((instance, maybeAmi) <- instances) {
+                        <tr>
+                            <td style="padding: 5px 5px;">
+                                <a href="@{amiableUrl+routes.AMIable.ssaInstanceAMIs(instance.stack, None, None).path}">
+                                    @instance.stack.getOrElse(emptyChar)
+                                </a>
+                            </td>
+                            <td style="padding: 5px 5px;">
+                                <a href="@{amiableUrl+routes.AMIable.ssaInstanceAMIs(instance.stack, instance.stage, None).path}">@instance.stage.getOrElse(emptyChar)</a>
+                            </td>
+                            <td style="padding: 5px 5px;">
+                                <a href="@{amiableUrl+routes.AMIable.ssaInstanceAMIs(instance.stack, instance.stage, instance.app.headOption).path}">@instance.app</a>
+                            </td>
+                            <td style="padding: 5px 5px;">@instance.instanceName</td>
+                            <td style="padding: 5px 5px;">
+                                @maybeAmi.map { ami =>
+                                    <a href="@{amiableUrl + routes.AMIable.ami(ami.imageId).path}">@ami.imageId</a>
+                                }
+                            </td>
+                            <td style="padding: 5px 5px;">@maybeAmi.flatMap(_.creationDate).map { i => @DateUtils.daysAgo(i)
+                                days
+                            }</td>
+                        </tr>
                 }
                 <tr bgcolor="#212121" style="color: #FFFFFF !important; padding: 30px 30px 30px 30px;">
                     <td colspan="7" style="padding: 15px 5px;">
-                        You are receiving this email because you are listed as the Owner of the following stacks:
+                        You are receiving this email because you are listed as the Owner of the stacks listed below.
+                        This is determined by the Owners in prism (see
+                            <a href="https://github.com/guardian/prism/blob/master/app/data/Owners.scala">GitHub</a>).
                         <table cellpadding="5px">
                             <thead>
                                 <tr>

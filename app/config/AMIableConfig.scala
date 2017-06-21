@@ -12,27 +12,39 @@ import play.api.libs.ws.WSClient
 import scala.util.Try
 
 
-case class AMIableConfig(prismUrl: String, wsClient: WSClient, mailAddress: String, ownerNotificationCron: Option[String], overrideToAddress: Option[String])
+case class AMIableConfig(
+                          prismUrl: String,
+                          wsClient: WSClient,
+                          mailAddress: String,
+                          ownerNotificationCron: Option[String],
+                          overrideToAddress: Option[String],
+                          amiableUrl: String
+                        )
 
 case class AuthConfig(googleAuthConfig: GoogleAuthConfig, googleGroupChecker: GoogleGroupChecker, requiredGoogleGroups: Set[String])
 
 @Singleton
 class AmiableConfigProvider @Inject()(val ws: WSClient, val playConfig: Configuration) {
 
-  val conf = AMIableConfig(playConfig.getString("prism.url").get,
-                            ws,
-                            playConfig.getString("amiable.mailClient.fromAddress").get,
-                            playConfig.getString("amiable.owner.notification.cron").filter(_.nonEmpty),
-                            playConfig.getString("amiable.owner.notification.overrideToAddress").filter(_.nonEmpty))
+  val amiableUrl = requiredString(playConfig, "host")
+
+  val conf = AMIableConfig(
+    playConfig.getString("prism.url").get,
+    ws,
+    playConfig.getString("amiable.mailClient.fromAddress").get,
+    playConfig.getString("amiable.owner.notification.cron").filter(_.nonEmpty),
+    playConfig.getString("amiable.owner.notification.overrideToAddress").filter(_.nonEmpty),
+    amiableUrl
+  )
 
   val requiredGoogleGroups = Set(requiredString(playConfig, "auth.google.2faGroupId"))
 
   val googleAuthConfig: GoogleAuthConfig = {
     GoogleAuthConfig(
-      clientId     = requiredString(playConfig, "auth.google.clientId"),
+      clientId = requiredString(playConfig, "auth.google.clientId"),
       clientSecret = requiredString(playConfig, "auth.google.clientSecret"),
-      redirectUrl  = s"${requiredString(playConfig, "host")}${routes.Login.oauth2Callback().url}",
-      domain       = playConfig.getString("auth.google.apps-domain")
+      redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback().url}",
+      domain = playConfig.getString("auth.google.apps-domain")
     )
   }
 

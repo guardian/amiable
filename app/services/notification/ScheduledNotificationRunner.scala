@@ -5,9 +5,11 @@ import javax.inject.{Inject, Singleton}
 import com.amazonaws.services.simpleemail.model._
 import config.{AMIableConfig, AmiableConfigProvider}
 import models._
-import play.api.Mode.Mode
+import org.joda.time.DateTime
 import play.api.{Environment, Logger, Mode}
+import play.api.Mode.Mode
 import prism.{Prism, PrismLogic}
+import utils.DateUtils
 
 import scala.concurrent.ExecutionContext
 
@@ -15,22 +17,19 @@ import scala.concurrent.ExecutionContext
 class ScheduledNotificationRunner @Inject()(mailClient: AWSMailClient, environment: Environment, amiableConfigProvider: AmiableConfigProvider)(implicit ec: ExecutionContext) {
   implicit val config = amiableConfigProvider.conf
 
-  def run(): Attempt[List[String]] = {
+  def run(today: DateTime): Attempt[List[String]] = {
     for {
       instancesWithAmis <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
       oldInstances = PrismLogic.oldInstances(instancesWithAmis)
+      instanceAmiMap = ScheduledNotificationRunner.makeInstanceAmiMap(instancesWithAmis)
       ownersWithDefault <- Prism.getOwners
-      ownersAndOldInstances = findInstanceOwners(oldInstances, ownersWithDefault)
+      ownersAndOldInstances = ScheduledNotificationRunner.findInstanceOwners(oldInstances, ownersWithDefault)
       mailIds <- Attempt.traverse(ownersAndOldInstances.toList) { case (owner, oldInstancesForOwner) =>
-        val instances = oldInstancesForOwner.sortBy(i => (i.stack, i.stage, i.app.headOption))
-        val request = ScheduledNotificationRunner.createEmailRequest(owner, instances, config)
+        val instances = ScheduledNotificationRunner.pairInstancesWithAmi(oldInstancesForOwner, instanceAmiMap)
+        val request = ScheduledNotificationRunner.createEmailRequest(owner, instances, config, today)
         ScheduledNotificationRunner.conditionallySendEmail(environment.mode, config.overrideToAddress, mailClient, owner, request)
       }
     } yield mailIds
-  }
-
-  def findInstanceOwners(instances: List[Instance], owners: Owners): Map[Owner, List[Instance]] = {
-    instances.map { i => (i, ScheduledNotificationRunner.ownerForInstance(i, owners)) }.groupBy(_._2).mapValues(_.map(_._1))
   }
 }
 
@@ -43,11 +42,28 @@ object ScheduledNotificationRunner {
       .getOrElse(owners.defaultOwner)
   }
 
-  def createEmailRequest(owner: Owner, instances: Seq[Instance], config: AMIableConfig): SendEmailRequest = {
+  def makeInstanceAmiMap(instancesWithAmis: List[(Instance, Option[AMI])]): Map[Instance, AMI] =
+    instancesWithAmis.collect{ case (i, Some(ami)) => i -> ami }.toMap
+
+  def pairInstancesWithAmi(instances: List[Instance], instanceAmiMap: Map[Instance, AMI]): List[(Instance, Option[AMI])] = {
+    instances
+      .map(i => i -> instanceAmiMap.get(i))
+      .sortBy{ case (i, maybeAmi) =>
+        val maybeCreationTimestamp = maybeAmi.flatMap(_.creationDate).map(_.getMillis)
+        (maybeCreationTimestamp, i.stack, i.stage, i.app.headOption)
+      }
+  }
+
+  def findInstanceOwners(instances: List[Instance], owners: Owners): Map[Owner, List[Instance]] = {
+    instances.map { i => (i, ScheduledNotificationRunner.ownerForInstance(i, owners)) }.groupBy(_._2).mapValues(_.map(_._1))
+  }
+
+  def createEmailRequest(owner: Owner, instances: Seq[(Instance, Option[AMI])], config: AMIableConfig, today: DateTime): SendEmailRequest = {
     val toAddress = config.overrideToAddress.getOrElse(s"${owner.id}@guardian.co.uk")
+    val todaysDate = DateUtils.yearMonthDay.print(today)
     val destination = new Destination().withToAddresses(toAddress)
-    val emailSubject = new Content().withData("Instances running using old AMIs (older than 30 days)")
-    val htmlBody = new Content().withData(views.html.email(instances, owner).toString())
+    val emailSubject = new Content().withData(s"Instances using out of date AMIs (as of $todaysDate, owned by ${owner.id})")
+    val htmlBody = new Content().withData(views.html.email(config.amiableUrl, instances, owner).toString())
     val body = new Body().withHtml(htmlBody)
     val emailMessage = new Message().withSubject(emailSubject).withBody(body)
     val request = new SendEmailRequest().withSource(config.mailAddress).withDestination(destination).withMessage(emailMessage)
