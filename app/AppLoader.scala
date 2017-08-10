@@ -1,15 +1,15 @@
 import config.AmiableConfigProvider
-import controllers.Assets
-import controllers.{AMIable, Healthcheck, Login}
+import controllers.{AMIable, Assets, Healthcheck, Login}
 import play.api.ApplicationLoader.Context
 import play.api._
 import play.api.i18n.{DefaultLangs, DefaultMessagesApi, MessagesApi}
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.logback.LogbackLoggerConfigurator
 import play.api.libs.ws.ahc.AhcWSComponents
-import services.{Agents, Metrics}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import services.notification.{AWSMailClient, Notifications, ScheduledNotificationRunner}
+import router.Routes
 import services.notification.AmazonSimpleEmailServiceAsyncFactory._
+import services.notification.{AWSMailClient, Notifications, ScheduledNotificationRunner}
+import services.{Agents, Metrics}
 
 class AppLoader extends ApplicationLoader {
   override def load(context: Context): Application = {
