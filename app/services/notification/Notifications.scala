@@ -1,7 +1,5 @@
 package services.notification
 
-import javax.inject.{Inject, Singleton}
-
 import config.{AMIableConfig, AmiableConfigProvider}
 import models.Attempt
 import org.joda.time.DateTime
@@ -15,12 +13,11 @@ import play.api.inject.ApplicationLifecycle
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class Notifications @Inject()(amiableConfigProvider: AmiableConfigProvider,
-                              environment: Environment,
-                              lifecycle: ApplicationLifecycle,
-                              scheduledNotificationRunner: ScheduledNotificationRunner)
-                             (implicit exec: ExecutionContext) {
+class Notifications(amiableConfigProvider: AmiableConfigProvider,
+                    environment: Environment,
+                    lifecycle: ApplicationLifecycle,
+                    scheduledNotificationRunner: ScheduledNotificationRunner)
+                   (implicit exec: ExecutionContext) {
   val conf: AMIableConfig = amiableConfigProvider.conf
   /**
     * a Quartz cron expression,

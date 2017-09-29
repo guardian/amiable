@@ -19,6 +19,8 @@ javaOptions in Universal ++= Seq(
 
 javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
 
+routesGenerator := InjectedRoutesGenerator
+
 scalacOptions := Seq(
   "-unchecked",
   "-deprecation",

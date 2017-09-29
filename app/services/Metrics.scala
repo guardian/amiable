@@ -1,17 +1,14 @@
 package services
 
-import javax.inject.{Inject, Singleton}
-
 import metrics.{CloudWatch, CloudWatchMetrics}
 import play.api.inject.ApplicationLifecycle
-import play.api.{Environment, Logger, Mode}
+import play.api.{Environment, Mode}
 import rx.lang.scala.Observable
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-@Singleton
-class Metrics @Inject()(environment: Environment, agents: Agents, lifecycle: ApplicationLifecycle) {
+class Metrics(environment: Environment, agents: Agents, lifecycle: ApplicationLifecycle) {
 
   // only add metrics from PROD
   if (environment.mode == Mode.Prod) {

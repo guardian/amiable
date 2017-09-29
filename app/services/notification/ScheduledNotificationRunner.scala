@@ -1,7 +1,5 @@
 package services.notification
 
-import javax.inject.{Inject, Singleton}
-
 import com.amazonaws.services.simpleemail.model._
 import config.{AMIableConfig, AmiableConfigProvider}
 import models._
@@ -13,8 +11,7 @@ import utils.DateUtils
 
 import scala.concurrent.ExecutionContext
 
-@Singleton
-class ScheduledNotificationRunner @Inject()(mailClient: AWSMailClient, environment: Environment, amiableConfigProvider: AmiableConfigProvider)(implicit ec: ExecutionContext) {
+class ScheduledNotificationRunner(mailClient: AWSMailClient, environment: Environment, amiableConfigProvider: AmiableConfigProvider)(implicit ec: ExecutionContext) {
   implicit val config = amiableConfigProvider.conf
 
   def run(today: DateTime): Attempt[List[String]] = {
