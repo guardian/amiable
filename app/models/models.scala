@@ -125,7 +125,7 @@ case class LaunchConfiguration(
   instanceType: String,
   keyName: String,
   securityGroups: List[String],
-  userData: String,
+  userData: Option[String],
   meta: Meta)
 
 object LaunchConfiguration {
