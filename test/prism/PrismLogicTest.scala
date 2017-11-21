@@ -356,7 +356,7 @@ class PrismLogicTest extends FreeSpec with Matchers {
   "sortLCsByOwner" - {
     "sorts Launch Configurations by account first" in {
       val meta1 = Meta("href", Origin("vendor", "account1", "region", "accountNum"))
-      val lc1 = LaunchConfiguration("arn1", "nameB", "imageId", "region", DateTime.now(), "t1-micro", "key", List.empty, "", meta1)
+      val lc1 = LaunchConfiguration("arn1", "nameB", "imageId", "region", DateTime.now(), "t1-micro", "key", List.empty, None, meta1)
 
       val meta2 = meta1.copy(origin = meta1.origin.copy(accountName = "account2"))
       val lc2 = lc1.copy(name = "nameA", meta = meta2)
@@ -366,7 +366,7 @@ class PrismLogicTest extends FreeSpec with Matchers {
     }
     "sorts Launch Configurations by name when accounts are the same" in {
       val meta1 = Meta("href", Origin("vendor", "account", "region", "accountNum"))
-      val lc1 = models.LaunchConfiguration("arn1", "name1", "imageId1", "region", DateTime.now(), "t1-micro", "key1", List.empty, "", meta1)
+      val lc1 = models.LaunchConfiguration("arn1", "name1", "imageId1", "region", DateTime.now(), "t1-micro", "key1", List.empty, None, meta1)
 
       val lc2 = lc1.copy(name = "name2")
 
