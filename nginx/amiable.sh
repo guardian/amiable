@@ -13,7 +13,7 @@ elif [ $SYSTEM == "Linux" ]; then
     confDir=sites-enabled
 fi
 
-sudo ln -fs $DIR/amiable.conf $nginxHome/$confDir/amiable.conf
+sudo ln -fs $DIR/amiable.conf $nginxHome/sites-enabled/amiable.conf
 sudo ln -fs $DIR/amiable.crt $nginxHome/amiable.crt
 sudo ln -fs $DIR/amiable.key $nginxHome/amiable.key
 sudo nginx -s stop

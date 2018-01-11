@@ -84,6 +84,13 @@ case class SSA (
   app: Option[String] = None
 ) {
   def isEmpty = stack.isEmpty && stage.isEmpty && app.isEmpty
+  def riffRaffLink: Option[String] = for {
+    stackName <- stack
+    stageName <- stage
+    appName <- app
+  } yield {
+    s"https://riffraff.gutools.co.uk/deployment/target/deploy?region=eu-west-1&stack=$stackName&stage=$stageName&app=$appName"
+  }
   override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}>"
 }
 object SSA {

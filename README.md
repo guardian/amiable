@@ -37,3 +37,6 @@ For this reason, in order to set up locally, the following steps must be followe
  
  - `./sbt run` open your browser at `https://amiable.local.dev-gutools.co.uk`!
  
+### Common problems
+ - If when running master you can an error "Could not find a suitable constructor..." it's something wrong with your
+ config file - you probably need to add include "application.conf" to you application.local.conf file.
