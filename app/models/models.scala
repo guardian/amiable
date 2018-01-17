@@ -96,6 +96,14 @@ object SSA {
     SSA(stack.filter(_.nonEmpty), stage.filter(_.nonEmpty), app.filter(_.nonEmpty))
 
   def empty = SSA(None, None, None)
+
+  def riffRaffLink(ssa: SSA, region: String): Option[String] = for {
+    stack <- ssa.stack
+    stage <- ssa.stage
+    app <- ssa.app
+  } yield {
+    s"https://riffraff.gutools.co.uk/deployment/target/deploy?region=$region&stack=$stack&stage=$stage&app=$app"
+  }
 }
 
 case class AMIableError(

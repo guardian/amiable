@@ -58,7 +58,7 @@
                                 <div class="card-content">
                                     @printSSA(ssa)
                                     @for(ami <- amis) {
-                                        @amiOverlay(ami, instancesCount.get(ssa, ami))
+                                        @amiOverlay(ami = ami, instanceCount = instancesCount.get(ssa, ami), stackStageApp = Some(ssa))
                                     }
                                 </div>
                             </div>
