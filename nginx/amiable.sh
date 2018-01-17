@@ -13,7 +13,7 @@ elif [ $SYSTEM == "Linux" ]; then
 fi
 
 echo "If this script fails, it may be that ${nginxHome}/${confDir} is not the correct nginx directory on your
-system, in which case you could try running it again with the 'other' (servers/sites-enabled) value for confDir   "
+system, in which case you could try running it again with the 'other' (servers/sites-enabled) value for confDir"
 
 sudo ln -fs $DIR/amiable.conf $nginxHome/$confDir/amiable.conf
 sudo ln -fs $DIR/amiable.crt $nginxHome/amiable.crt
