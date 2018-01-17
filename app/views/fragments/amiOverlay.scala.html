@@ -69,8 +69,8 @@
         <a href="#!" class="black-text modal-action modal-close waves-effect waves-white btn grey lighten-3">Close</a>
         @if(ami.upgrade.isDefined) {
             @stackStageApp.map { ssa =>
-                @ssa.riffRaffLink.map { link =>
-                    <a href="@link" target="_blank" rel="noopener" class="waves-effect waves-light btn">Redeploy now</a>
+                @SSA.riffRaffLink(ssa, ami.region).map { link =>
+                    <a href="@link" target="_blank" rel="noopener" class="waves-effect waves-light btn">Redeploy</a>
                 }
             }
         }
