@@ -16,3 +16,5 @@ deployments:
       amiTags:
         Recipe: xenial-java8-deploy-infrastructure
         AmigoStage: PROD
+        BuiltBy: amigo
+      amiEncrypted: true
