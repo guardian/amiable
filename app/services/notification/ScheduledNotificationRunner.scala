@@ -2,16 +2,16 @@ package services.notification
 
 import com.amazonaws.services.simpleemail.model._
 import config.{AMIableConfig, AmiableConfigProvider}
+import javax.inject.Inject
 import models._
 import org.joda.time.DateTime
 import play.api.{Environment, Logger, Mode}
-import play.api.Mode.Mode
 import prism.{Prism, PrismLogic}
 import utils.DateUtils
 
 import scala.concurrent.ExecutionContext
 
-class ScheduledNotificationRunner(mailClient: AWSMailClient, environment: Environment, amiableConfigProvider: AmiableConfigProvider)(implicit ec: ExecutionContext) {
+class ScheduledNotificationRunner @Inject() (mailClient: AWSMailClient, environment: Environment, amiableConfigProvider: AmiableConfigProvider)(implicit ec: ExecutionContext) {
   implicit val config = amiableConfigProvider.conf
 
   def run(today: DateTime): Attempt[List[String]] = {

@@ -1,5 +1,5 @@
 // The Play plugin
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.8")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.20")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.1.1")
 addSbtPlugin("com.gu" % "sbt-riffraff-artifact" % "0.9.2")
@@ -17,4 +17,4 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-rjs" % "1.0.7")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.1.0")
 
-addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.2")
+addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.11")
