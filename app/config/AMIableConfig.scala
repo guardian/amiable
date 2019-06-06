@@ -39,13 +39,26 @@ class AmiableConfigProvider @Inject() (val ws: WSClient, val playConfig: Configu
   val requiredGoogleGroups: Set[String] = Set(requiredString(playConfig, "auth.google.2faGroupId"))
 
   val googleAuthConfig: GoogleAuthConfig = {
-    GoogleAuthConfig(
-      clientId = requiredString(playConfig, "auth.google.clientId"),
-      clientSecret = requiredString(playConfig, "auth.google.clientSecret"),
-      redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback().url}",
-      domain = requiredString(playConfig, "auth.google.apps-domain"),
-      antiForgeryChecker = AntiForgeryChecker.borrowSettingsFromPlay(httpConfiguration)
+
+    // Different constructors depending on whether domain is available or not
+
+    playConfig.getOptional[String]("auth.google.apps-domain").map(domain => {
+      GoogleAuthConfig(
+        clientId = requiredString(playConfig, "auth.google.clientId"),
+        clientSecret = requiredString(playConfig, "auth.google.clientSecret"),
+        redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback().url}",
+        domain = domain,
+        antiForgeryChecker = AntiForgeryChecker.borrowSettingsFromPlay(httpConfiguration)
+      )
+    }).getOrElse(
+      GoogleAuthConfig.withNoDomainRestriction(
+        clientId = requiredString(playConfig, "auth.google.clientId"),
+        clientSecret = requiredString(playConfig, "auth.google.clientSecret"),
+        redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback().url}",
+        antiForgeryChecker = AntiForgeryChecker.borrowSettingsFromPlay(httpConfiguration)
+      )
     )
+
   }
 
   val googleGroupChecker: GoogleGroupChecker = {
