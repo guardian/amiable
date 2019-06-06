@@ -1,6 +1,7 @@
 package services.notification
 
 import config.{AMIableConfig, AmiableConfigProvider}
+import javax.inject.Inject
 import models.Attempt
 import org.joda.time.DateTime
 import org.quartz.{JobKey, TriggerKey}
@@ -13,7 +14,7 @@ import play.api.inject.ApplicationLifecycle
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Notifications(amiableConfigProvider: AmiableConfigProvider,
+class Notifications @Inject() (amiableConfigProvider: AmiableConfigProvider,
                     environment: Environment,
                     lifecycle: ApplicationLifecycle,
                     scheduledNotificationRunner: ScheduledNotificationRunner)

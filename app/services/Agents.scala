@@ -3,6 +3,7 @@ package services
 import akka.actor.ActorSystem
 import akka.agent.Agent
 import config.AmiableConfigProvider
+import javax.inject.Inject
 import metrics.{CloudWatch, CloudWatchMetrics}
 import models._
 import org.joda.time.DateTime
@@ -16,7 +17,8 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class Agents(amiableConfigProvider: AmiableConfigProvider, lifecycle: ApplicationLifecycle, system: ActorSystem, environment: Environment)(implicit exec: ExecutionContext) {
+class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle: ApplicationLifecycle, system: ActorSystem, environment: Environment)(implicit exec: ExecutionContext) {
+
   lazy implicit val conf = amiableConfigProvider.conf
   val refreshInterval = 5.minutes
 
