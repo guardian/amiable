@@ -6,6 +6,7 @@
             <th class="ssa-table__heading">Stack</th>
             <th class="ssa-table__heading">Stage</th>
             <th class="ssa-table__heading">App</th>
+            <th class="ssa-table__heading"></th>
         </tr>
     </thead>
     <tbody>
@@ -13,6 +14,9 @@
             <td class="ssa-table__entry">@ssa.stack.getOrElse(emptyChar)</td>
             <td class="ssa-table__entry">@ssa.stage.getOrElse(emptyChar)</td>
             <td class="ssa-table__entry">@ssa.app.getOrElse(emptyChar)</td>
+            <td class="ssa-table__entry">
+                <a href="@{SSA.riffRaffLink(ssa, "eu-west-1")}" target="_blank" rel="noopener noreferrer">Recent Deploys</a>
+            </td>
         </tr>
     </tbody>
 </table>
