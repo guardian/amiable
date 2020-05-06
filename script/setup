@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR=${DIR}/..
+
+brew bundle --file="$ROOT_DIR/Brewfile"
+
+dev-nginx setup-app "$ROOT_DIR/nginx/nginx-mapping.yml"

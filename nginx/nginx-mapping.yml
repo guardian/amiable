@@ -1,0 +1,4 @@
+name: amiable
+mappings:
+  - prefix: amiable
+    port: 9101
