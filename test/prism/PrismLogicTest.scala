@@ -108,7 +108,7 @@ class PrismLogicTest extends FreeSpec with Matchers {
   }
 
   "instanceSSAs" - {
-    val emptySSA = SSA(None, None, None)
+    val emptySSA = SSAA(None, None, None)
 
     "returns empty list for no instances" in {
       instanceSSAAs(Nil) shouldEqual Nil
@@ -124,13 +124,13 @@ class PrismLogicTest extends FreeSpec with Matchers {
     }
 
     "returns the correct SSA for an instance" in {
-      val ssa = SSA(Some("stack"), Some("app"), Some("app"))
+      val ssa = SSAA(Some("stack"), Some("app"), Some("app"))
       instanceSSAAs(List(instanceWithSSA("i1", ssa))) shouldEqual List(ssa)
     }
 
     "returns the correct SSAs for multiple instances" in {
-      val ssa1 = SSA(Some("stack-1"), Some("stage-1"), Some("app-1"))
-      val ssa2 = SSA(Some("stack-2"), Some("stage-2"), Some("app-2"))
+      val ssa1 = SSAA(Some("stack-1"), Some("stage-1"), Some("app-1"))
+      val ssa2 = SSAA(Some("stack-2"), Some("stage-2"), Some("app-2"))
       instanceSSAAs(List(instanceWithSSA("i1", ssa1), instanceWithSSA("i2", ssa2))) shouldEqual List(ssa1, ssa2)
     }
   }
@@ -140,8 +140,8 @@ class PrismLogicTest extends FreeSpec with Matchers {
     val a2 = emptyAmi("a2")
 
     "associates" - {
-      val ssa1 = SSA(Some("stack-1"), Some("stage-1"), Some("app-1"))
-      val ssa2 = SSA(Some("stack-2"), Some("stage-2"), Some("app-2"))
+      val ssa1 = SSAA(Some("stack-1"), Some("stage-1"), Some("app-1"))
+      val ssa2 = SSAA(Some("stack-2"), Some("stage-2"), Some("app-2"))
       val i1 = instanceWithSSA("i1", ssa1)
       val i2 = instanceWithSSA("i2", ssa2)
 
@@ -159,7 +159,7 @@ class PrismLogicTest extends FreeSpec with Matchers {
     }
 
     "if an instance's app is empty, associates with the stack/stage combo" in {
-      val stackStage = SSA(Some("stack"), Some("stage"), None)
+      val stackStage = SSAA(Some("stack"), Some("stage"), None)
       val instance = instanceWithSSA("i", stackStage)
       amiSSAs(List(a1 -> List(instance))) shouldEqual Map(stackStage -> List(a1))
     }
@@ -167,8 +167,8 @@ class PrismLogicTest extends FreeSpec with Matchers {
     "correctly associates instances with multiple apps" in {
       val instance = emptyInstance("i").copy(app = List("app1", "app2"))
       amiSSAs(List(a1 -> List(instance))) shouldEqual Map(
-        SSA(None, None, Some("app1")) -> List(a1),
-        SSA(None, None, Some("app2")) -> List(a1)
+        SSAA(None, None, Some("app1")) -> List(a1),
+        SSAA(None, None, Some("app2")) -> List(a1)
       )
     }
 
@@ -177,17 +177,17 @@ class PrismLogicTest extends FreeSpec with Matchers {
       val i2 = emptyInstance("i2").copy(app = List("app1", "app2"))
       val i3 = emptyInstance("i3").copy(app = List("app2"))
       amiSSAs(List(a1 -> List(i1, i2), a2 -> List(i3))) shouldEqual Map(
-        SSA(None, None, Some("app1")) -> List(a1),
-        SSA(None, None, Some("another-app")) -> List(a1),
-        SSA(None, None, Some("app2")) -> List(a1, a2)
+        SSAA(None, None, Some("app1")) -> List(a1),
+        SSAA(None, None, Some("another-app")) -> List(a1),
+        SSAA(None, None, Some("app2")) -> List(a1, a2)
       )
     }
   }
 
   "sortSSAAmisByAge" - {
-    val ssa1 = SSA(Some("stack-1"))
-    val ssa2 = SSA(Some("stack-2"))
-    val ssaEmpty = SSA()
+    val ssa1 = SSAA(Some("stack-1"))
+    val ssa2 = SSAA(Some("stack-2"))
+    val ssaEmpty = SSAA()
     val oldAmi = emptyAmi("old").copy(creationDate = Some(DateTime.now.minusDays(40)))
     val newAmi = emptyAmi("new").copy(creationDate = Some(DateTime.now.minusDays(1)))
     val mediumAmi = emptyAmi("medium").copy(creationDate = Some(DateTime.now.minusDays(20)))
@@ -269,9 +269,9 @@ class PrismLogicTest extends FreeSpec with Matchers {
 
   "instancesCountPerSsaPerAmi" - {
     "correctly associates the instance count with each couple SSA/AMI" in {
-      val ssa1 = SSA(Some("stack-1"), Some("stage-1"), Some("app-1"))
-      val ssa2 = SSA(Some("stack-2"), Some("stage-2"))
-      val ssa3 = SSA(Some("stack-3"))
+      val ssa1 = SSAA(Some("stack-1"), Some("stage-1"), Some("app-1"))
+      val ssa2 = SSAA(Some("stack-2"), Some("stage-2"))
+      val ssa3 = SSAA(Some("stack-3"))
       val a1 = emptyAmi("a1")
       val a2 = emptyAmi("a2")
       val i1 = emptyInstance("i1").copy(stack = Some("stack-1"), stage = Some("stage-1"), app = List("app-1"))
@@ -300,33 +300,33 @@ class PrismLogicTest extends FreeSpec with Matchers {
     val i1 = emptyInstance("i1").copy(stack = Some("stack1"), stage = Some("stage1"), app = List("app1"))
     "should return true when instance and SSA have" - {
       "the same stack" in {
-        val stack = SSA(stack = i1.stack)
+        val stack = SSAA(stack = i1.stack)
         doesInstanceBelongToSSA(i1, stack) should be(true)
       }
       "the same stack and stage" in {
-        val stack = SSA(stack = i1.stack, stage = i1.stage)
+        val stack = SSAA(stack = i1.stack, stage = i1.stage)
         doesInstanceBelongToSSA(i1, stack) should be(true)
       }
       "the same stack, stage and app" in {
-        val stack = SSA(stack = i1.stack, stage = i1.stage, app = i1.app.headOption)
+        val stack = SSAA(stack = i1.stack, stage = i1.stage, app = i1.app.headOption)
         doesInstanceBelongToSSA(i1, stack) should be(true)
       }
     }
     "should return false when instance and SSA have" - {
       "different stack" in {
-        val stack = SSA(stack = Some("another stack"))
+        val stack = SSAA(stack = Some("another stack"))
         doesInstanceBelongToSSA(i1, stack) should be(false)
       }
       "the same stack but different stage" in {
-        val stack = SSA(stack = i1.stack, stage = Some("another stage"))
+        val stack = SSAA(stack = i1.stack, stage = Some("another stage"))
         doesInstanceBelongToSSA(i1, stack) should be(false)
       }
       "the same stack and stage but different app" in {
-        val stack = SSA(stack = i1.stack, stage = i1.stack, app = Some("another app"))
+        val stack = SSAA(stack = i1.stack, stage = i1.stack, app = Some("another app"))
         doesInstanceBelongToSSA(i1, stack) should be(false)
       }
       "the same stage but different stack" in {
-        val stack = SSA(stack = Some("another stack"), stage = i1.stage)
+        val stack = SSAA(stack = Some("another stack"), stage = i1.stage)
         doesInstanceBelongToSSA(i1, stack) should be(false)
       }
     }
