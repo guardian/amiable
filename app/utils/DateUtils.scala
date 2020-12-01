@@ -28,10 +28,6 @@ object DateUtils {
     }
   }
 
-  implicit val isoDateReads: Reads[DateTime] = JodaReads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  implicit val isoDateWrites: Writes[DateTime] = JodaWrites.jodaDateWrites("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  implicit val jodaDateTimeFormats: Format[DateTime] = Format[DateTime](isoDateReads, isoDateWrites)
-
   val yearMonthDay: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
   val yearMonthDayTime: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm")
   val readableDateTime: DateTimeFormatter = DateTimeFormat.forPattern("dd MMMM yyyy 'at' HH:mm")
