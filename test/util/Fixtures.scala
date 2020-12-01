@@ -67,7 +67,7 @@ object Fixtures {
                           |      "ip": "0.0.0.0"
                           |    }
                           |  },
-                          |  "createdAt": "2016-02-09T10:59:01.000Z",
+                          |  "createdAt": "2020-11-13T18:56:59Z",
                           |  "instanceName": "i-id",
                           |  "region": "region",
                           |  "vendor": "aws",
