@@ -111,27 +111,27 @@ class PrismLogicTest extends FreeSpec with Matchers {
     val emptySSA = SSA(None, None, None)
 
     "returns empty list for no instances" in {
-      instanceSSAs(Nil) shouldEqual Nil
+      instanceSSAAs(Nil) shouldEqual Nil
     }
 
     "returns the empty SSA when an instance has no SSA fields" in {
-      instanceSSAs(List(instanceWithSSA("i1", emptySSA))) shouldEqual List(emptySSA)
+      instanceSSAAs(List(instanceWithSSA("i1", emptySSA))) shouldEqual List(emptySSA)
     }
 
     "returns single empty SSA for a collection of instances with no SSA fields" in {
       val instances = List(instanceWithSSA("i1", emptySSA), instanceWithSSA("i2", emptySSA))
-      instanceSSAs(instances) shouldEqual List(emptySSA)
+      instanceSSAAs(instances) shouldEqual List(emptySSA)
     }
 
     "returns the correct SSA for an instance" in {
       val ssa = SSA(Some("stack"), Some("app"), Some("app"))
-      instanceSSAs(List(instanceWithSSA("i1", ssa))) shouldEqual List(ssa)
+      instanceSSAAs(List(instanceWithSSA("i1", ssa))) shouldEqual List(ssa)
     }
 
     "returns the correct SSAs for multiple instances" in {
       val ssa1 = SSA(Some("stack-1"), Some("stage-1"), Some("app-1"))
       val ssa2 = SSA(Some("stack-2"), Some("stage-2"), Some("app-2"))
-      instanceSSAs(List(instanceWithSSA("i1", ssa1), instanceWithSSA("i2", ssa2))) shouldEqual List(ssa1, ssa2)
+      instanceSSAAs(List(instanceWithSSA("i1", ssa1), instanceWithSSA("i2", ssa2))) shouldEqual List(ssa1, ssa2)
     }
   }
 

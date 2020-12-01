@@ -34,15 +34,15 @@
                 @for((instance, maybeAmi) <- instances) {
                         <tr>
                             <td style="padding: 5px 5px;">
-                                <a href="@{amiableUrl+routes.AMIable.ssaInstanceAMIs(instance.stack, None, None).path}">
+                                <a href="@{amiableUrl+routes.AMIable.ssaInstanceAMIs(instance.stack, None, None, None).path}">
                                     @instance.stack.getOrElse(emptyChar)
                                 </a>
                             </td>
                             <td style="padding: 5px 5px;">
-                                <a href="@{amiableUrl+routes.AMIable.ssaInstanceAMIs(instance.stack, instance.stage, None).path}">@instance.stage.getOrElse(emptyChar)</a>
+                                <a href="@{amiableUrl+routes.AMIable.ssaInstanceAMIs(instance.stack, instance.stage, None, None).path}">@instance.stage.getOrElse(emptyChar)</a>
                             </td>
                             <td style="padding: 5px 5px;">
-                                <a href="@{amiableUrl+routes.AMIable.ssaInstanceAMIs(instance.stack, instance.stage, instance.app.headOption).path}">@instance.app</a>
+                                <a href="@{amiableUrl+routes.AMIable.ssaInstanceAMIs(instance.stack, instance.stage, instance.app.headOption, None).path}">@instance.app</a>
                             </td>
                             <td style="padding: 5px 5px;">@instance.instanceName</td>
                             <td style="padding: 5px 5px;">

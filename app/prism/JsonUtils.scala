@@ -71,6 +71,12 @@ object JsonUtils {
     }
   }
 
+  def accountsResponseJson(response: WSResponse): Attempt[List[JsValue]] = {
+    JsonUtils.jsResultToAttempt("Could not get aws accounts from response JSON") {
+      (response.json \ "data" ).validate[List[JsValue]]
+    }
+  }
+
   def ownersResponseJson(response: WSResponse)(implicit ec: ExecutionContext): Attempt[JsValue] = {
     JsonUtils.extractToAttempt("Could not get Owners from response JSON") {
       (response.json \ "data").validate[JsValue]
@@ -86,6 +92,12 @@ object JsonUtils {
   def extractLaunchConfiguration(json: JsValue): Attempt[LaunchConfiguration] = {
     JsonUtils.extractToAttempt[LaunchConfiguration]("Could not get Launch Configuration from response JSON") {
       json.validate[LaunchConfiguration]
+    }
+  }
+
+  def extractAccounts(json: JsValue): Attempt[AWSAccount] = {
+    JsonUtils.extractToAttempt[AWSAccount]("Could not get Accounts from response JSON") {
+      json.validate[AWSAccount]
     }
   }
 

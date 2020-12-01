@@ -1,9 +1,10 @@
 @(
-        filterSsa: SSA,
+        filterSsa: SSAA,
         metrics: models.Metrics,
         amisWithUpgrades: List[AMI],
-        amiSSAs: List[(SSA, List[AMI])],
-        instancesCount: Map[(SSA, AMI), Int]
+        amiSSAs: List[(SSAA, List[AMI])],
+        instancesCount: Map[(SSAA, AMI), Int],
+        accountNames: List[String]
 )
 
 @import views.html.fragments.{ssaAmiForm, amiOverlay, printSSA, metricsHeader}
@@ -68,6 +69,6 @@
             </div>
         </div>
         <a name="search"></a>
-        @ssaAmiForm(filterSsa)
+        @ssaAmiForm(filterSsa, accountNames)
     </div>
 }()

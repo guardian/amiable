@@ -43,12 +43,12 @@ object PrismLogic {
     }
   }
 
-  def instanceSSAs(instances: List[Instance]): List[SSA] = {
+  def instanceSSAAs(instances: List[Instance]): List[SSAA] = {
     val allInstanceSSAs = for {
       instance <- instances
       ssa <- {
-        if (instance.app.isEmpty) List(SSA(instance.stack, instance.stage, None))
-        else instance.app.map(app => SSA(instance.stack, instance.stage, Some(app)))
+        if (instance.app.isEmpty) List(SSAA(instance.stack, instance.stage, None, Some(instance.meta.origin.accountName)))
+        else instance.app.map(app => SSAA(instance.stack, instance.stage, Some(app), Some(instance.meta.origin.accountName)))
       }
     } yield ssa
     allInstanceSSAs.distinct
@@ -59,10 +59,10 @@ object PrismLogic {
     * From a full list of Ts and instances, return each unique
     * SSA combination with all its associated Ts.
     */
-  def amiSSAs[T](amisWithInstances: List[(T, List[Instance])]): Map[SSA, List[T]] = {
+  def amiSSAs[T](amisWithInstances: List[(T, List[Instance])]): Map[SSAA, List[T]] = {
     val allSSACombos = for {
       (t, instances) <- amisWithInstances
-      ssa <- instanceSSAs(instances)
+      ssa <- instanceSSAAs(instances)
     } yield ssa -> t
 
     allSSACombos
@@ -76,7 +76,7 @@ object PrismLogic {
     * SSAs are sorted by their oldest AMI, except for the empty SSA which
     * always appears last.
     */
-  def sortSSAAmisByAge(ssaAmis: Map[SSA, List[AMI]]): List[(SSA, List[AMI])] = {
+  def sortSSAAmisByAge(ssaAmis: Map[SSAA, List[AMI]]): List[(SSAA, List[AMI])] = {
     ssaAmis.toList.sortBy { case (ssa, amis) =>
       if (ssa.isEmpty) {
         // put empty SSA last
@@ -112,7 +112,7 @@ object PrismLogic {
     * From a full list of Ts and instances and a list of SSAs, return unique
     * SSA and AMI combinations with their respective number of instances
     */
-  def instancesCountPerSsaPerAmi[T](amisWithInstances: List[(T, List[Instance])], ssas: List[SSA]): Map[(SSA, T), Int] = {
+  def instancesCountPerSsaPerAmi[T](amisWithInstances: List[(T, List[Instance])], ssas: List[SSAA]): Map[(SSAA, T), Int] = {
     for {
       (t, instances) <- amisWithInstances.toMap
       ssa <- ssas
@@ -121,7 +121,7 @@ object PrismLogic {
     } yield (ssa, t) -> instancesCount
   }
 
-  def doesInstanceBelongToSSA(instance: Instance, ssa: SSA): Boolean = ssa.stack == instance.stack &&
+  def doesInstanceBelongToSSA(instance: Instance, ssa: SSAA): Boolean = ssa.stack == instance.stack &&
     ssa.stage.fold(true)(s => instance.stage.contains(s)) &&
     ssa.app.fold(true)(instance.app.contains(_))
 

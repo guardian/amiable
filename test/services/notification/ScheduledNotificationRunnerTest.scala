@@ -19,7 +19,7 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
 
   "ownerForInstance should return the owner of an instance" in {
     val discussion = Owner("discussiondev", List(SSA(Some("discussion"), Some("PROD"), Some("api"))))
-    val capi = Owner("capi", List(SSA(Some("capi"), Some("PROD"))))
+    val capi = Owner("capi", List(SSAA(Some("capi"), Some("PROD"))))
     val owners = List(discussion, capi)
 
     val discussionApiProd = Fixtures.instanceWithSSA("arn3", SSA(Some("discussion"), Some("PROD"), Some("api")))

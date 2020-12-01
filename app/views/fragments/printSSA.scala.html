@@ -1,9 +1,10 @@
-@(ssa: SSA, emptyChar: String = "-")
+@(ssa: SSAA, emptyChar: String = "-")
 
 <table class="ssa-table">
     <thead>
         <tr>
-            <th class="ssa-table__heading">Stack</th>
+            @if(!ssa.stackAccountMatch){ <th class="ssa-table__heading">Account</th> }
+            <th class="ssa-table__heading">@ssa.stackAccountLabel</th>
             <th class="ssa-table__heading">Stage</th>
             <th class="ssa-table__heading">App</th>
             <th class="ssa-table__heading"></th>
@@ -11,11 +12,12 @@
     </thead>
     <tbody>
         <tr>
+            @if(!ssa.stackAccountMatch){<td class="ssa-table__entry">@ssa.accountName.getOrElse(emptyChar)</td> }
             <td class="ssa-table__entry">@ssa.stack.getOrElse(emptyChar)</td>
             <td class="ssa-table__entry">@ssa.stage.getOrElse(emptyChar)</td>
             <td class="ssa-table__entry">@ssa.app.getOrElse(emptyChar)</td>
             <td class="ssa-table__entry">
-                <a href="@{SSA.riffRaffLink(ssa, "eu-west-1")}" target="_blank" rel="noopener noreferrer">Recent Deploys</a>
+                <a href="@{SSAA.riffRaffLink(ssa, "eu-west-1")}" target="_blank" rel="noopener noreferrer">Recent Deploys</a>
             </td>
         </tr>
     </tbody>

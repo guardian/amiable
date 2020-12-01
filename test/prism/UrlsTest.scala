@@ -1,6 +1,6 @@
 package prism
 
-import models.SSA
+import models.SSAA
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{EitherValues, FreeSpec, Matchers, OptionValues}
 import prism.Urls._

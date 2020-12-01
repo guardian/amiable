@@ -1,10 +1,19 @@
-@(ssa: SSA)
+@(ssa: SSAA, accountNames: List[String])
 
 
 <div class="card">
     <div class="card-content">
         <span class="card-title">Lookup AMI usage</span>
         <form action="/instanceAMIs" method="get" class="row">
+            <div class="input-field col m6">
+                <select name="accountName" id="accountName" value="@ssa.accountName.getOrElse("")" >
+                    <option value="" disabled selected>Choose AWS account</option>
+                @for(accountName <- accountNames) {
+                    <option value="@accountName" >@accountName</option>
+                }
+                </select>
+                <label for="accountName">Filter AMIs by account name</label>
+            </div>
             <div class="input-field col m6">
                 <input type="text" name="stack" id="stack" placeholder="Stack" value="@ssa.stack.getOrElse("")" />
                 <label for="stack">Filter AMIs by stack</label>

@@ -80,26 +80,47 @@ object Meta {
   implicit val jsonFormat = Json.format[Meta]
 }
 
-case class SSA (
+case class SSAA (
   stack: Option[String] = None,
   stage: Option[String] = None,
-  app: Option[String] = None
+  app: Option[String] = None,
+  accountName: Option[String] = None
 ) {
   def isEmpty = stack.isEmpty && stage.isEmpty && app.isEmpty
-  override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}>"
+  def stackAccountMatch: Boolean = {
+    val stackAccountCompare = for {
+      an <- accountName
+      s <- stack
+    } yield {an == s}
+    stackAccountCompare.contains(true)
+  }
+
+  def stackAccountLabel: String = if (stackAccountMatch) "Account/Stack" else "Stack"
+
+  override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}, ${accountName.getOrElse("unknown-account")}>"
 }
-object SSA {
-  implicit val jsonFormat = Json.format[SSA]
+object SSAA {
+  implicit val jsonFormat = Json.format[SSAA]
+
+  def stackAccountMatch(ssaa: SSAA): Boolean = {
+    val comparison = for {
+      accountName <- ssaa.accountName
+      stack <- ssaa.stack
+    } yield {
+      accountName == stack
+    }
+    comparison.contains(true)
+  }
 
   /**
     * Filters empty strings to None, such as those provided by request parameters.
     */
-  def fromParams(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None): SSA =
-    SSA(stack.filter(_.nonEmpty), stage.filter(_.nonEmpty), app.filter(_.nonEmpty))
+  def fromParams(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None, accountName: Option[String] = None): SSAA =
+    SSAA(stack.filter(_.nonEmpty), stage.filter(_.nonEmpty), app.filter(_.nonEmpty), accountName.filter(_.nonEmpty))
 
-  def empty = SSA(None, None, None)
+  def empty = SSAA(None, None, None, None)
 
-  def riffRaffLink(ssa: SSA, region: String): Option[String] = for {
+  def riffRaffLink(ssa: SSAA, region: String): Option[String] = for {
     stack <- ssa.stack
     stage <- ssa.stage
     app <- ssa.app
@@ -143,8 +164,8 @@ object LaunchConfiguration {
   implicit val jsonFormat = Json.format[LaunchConfiguration]
 }
 
-case class Owner(id: String, stacks: List[SSA]) {
-  def hasSSA(ssa: SSA): Boolean = stacks.contains(ssa)
+case class Owner(id: String, stacks: List[SSAA]) {
+  def hasSSA(ssa: SSAA): Boolean = stacks.contains(ssa)
 }
 
 object Owner {
@@ -155,4 +176,9 @@ case class Owners(owners: List[Owner], defaultOwner: Owner)
 
 object Owners {
   implicit val jsonFormat = Json.format[Owners]
+}
+
+case class AWSAccount(accountNumber: Option[String], accountName: String)
+object AWSAccount {
+  implicit val jsonFormat = Json.format[AWSAccount]
 }

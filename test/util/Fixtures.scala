@@ -10,7 +10,7 @@ object Fixtures {
     Instance(arn, "", "", "", "", "", DateTime.now, "", "", "", Nil, Map.empty, None, None, Nil, Nil, Map.empty, Meta("", Origin("", "", "", "")))
   def instanceWithAmiArn(arn: String, amiArnOpt: Option[String]): Instance =
     amiArnOpt.fold(emptyInstance(arn))(amiArn => emptyInstance(arn).copy(specification = Map("imageArn" -> amiArn)))
-  def instanceWithSSA(arn: String, ssa: SSA): Instance =
+  def instanceWithSSA(arn: String, ssa: SSAA): Instance =
     emptyInstance(arn).copy(stack = ssa.stack, stage = ssa.stage, app = ssa.app.toList)
 
   object AMIs {

@@ -18,7 +18,7 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
   implicit val conf: AMIableConfig = amiableConfigProvider.conf
 
   def index: Action[AnyContent] = authAction.async { implicit request =>
-    val ssa = SSA(stage = Some("PROD"))
+    val ssa = SSAA(stage = Some("PROD"))
     val charts = Charts.charts(
       instanceCountHistory = agents.oldProdInstanceCountHistory,
       age25thPercentileHistory = agents.amisAgePercentile25thHistory,
@@ -28,11 +28,12 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
     attempt {
       for {
         instancesWithAmis <- Prism.instancesWithAmis(ssa)
+        accountNames = PrismLogic.instanceSSAAs(instancesWithAmis.map(_._1)).flatMap(_.accountName).distinct
         oldInstances = PrismLogic.oldInstances(instancesWithAmis)
         oldStacks = PrismLogic.stacks(oldInstances)
         agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
         metrics = Metrics(oldInstances.length, instancesWithAmis.length, agePercentiles)
-      } yield Ok(views.html.index(oldStacks.sorted, charts, metrics))
+      } yield Ok(views.html.index(oldStacks.sorted, charts, metrics, accountNames))
     }
   }
 
@@ -51,11 +52,12 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
     }
   }
 
-  def ssaInstanceAMIs(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String]): Action[AnyContent] = authAction.async { implicit request =>
-    val ssa = SSA.fromParams(stackOpt, stageOpt, appOpt)
+  def ssaInstanceAMIs(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String], accountNameOpt: Option[String]): Action[AnyContent] = authAction.async { implicit request =>
+    val ssa = SSAA.fromParams(stackOpt, stageOpt, appOpt, accountNameOpt)
     attempt {
       for {
         instancesWithAmis <- Prism.instancesWithAmis(ssa)
+        accounts <- Prism.getAccounts
         instances = instancesWithAmis.map(_._1)
         amis = instancesWithAmis.flatMap(_._2).distinct
         amisWithUpgrades = amis.map(Recommendations.amiWithUpgrade(agents.allAmis))
@@ -67,14 +69,16 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
           totalInstancesCount = instances.length,
           PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
         )
-        allSSAs = ssa :: PrismLogic.instanceSSAs(instances)
+        allSSAs = ssa :: PrismLogic.instanceSSAAs(instances)
         instancesCount = PrismLogic.instancesCountPerSsaPerAmi(amisWithInstances, allSSAs)
+        accountNames = accounts.map(_.accountName)
       } yield Ok(views.html.instanceAMIs(
         ssa,
         metrics,
         amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis)),
         PrismLogic.sortSSAAmisByAge(amiSSAs),
-        instancesCount
+        instancesCount,
+        accountNames
       ))
     }
   }
