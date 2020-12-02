@@ -97,7 +97,11 @@ case class SSAA (
 
   def stackAccountLabel: String = if (stackAccountMatch) "Account/Stack" else "Stack"
 
-  override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}, ${accountName.getOrElse("unknown-account")}>"
+  override def toString: String = {
+    // accountName is non optional in some cases so is often set to "". In these cases treat it as 'none'
+    val accountString = if (accountName.isEmpty || accountName.contains(""))"unknown-account" else accountName.get
+    s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}, ${accountString}>"
+  }
 }
 object SSAA {
   implicit val jsonFormat = Json.format[SSAA]
