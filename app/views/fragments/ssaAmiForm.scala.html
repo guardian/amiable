@@ -6,10 +6,10 @@
         <span class="card-title">Lookup AMI usage</span>
         <form action="/instanceAMIs" method="get" class="row">
             <div class="input-field col m6">
-                <select name="accountName" id="accountName" value="@ssaa.accountName.getOrElse("")" >
+                <select name="accountName" id="accountName" value="@ssaa.accountName.getOrElse("")">
                     <option value="" disabled selected>Choose AWS account</option>
                 @for(accountName <- accountNames) {
-                    <option value="@accountName" >@accountName</option>
+                    <option value="@accountName">@accountName</option>
                 }
                 </select>
                 <label for="accountName">Filter AMIs by account name</label>

@@ -151,4 +151,11 @@ object Fixtures {
         |        }
         |      }""".stripMargin
   }
+  object Accounts {
+    val validAccount =
+      """{
+        |      "accountNumber": "1",
+        |      "accountName": "barnard-castle"
+        |    }""".stripMargin
+  }
 }
