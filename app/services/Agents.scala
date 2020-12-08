@@ -81,9 +81,9 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
       { err =>
         Logger.warn(s"Failed to update SSAs ${err.logString}")
       },
-      { ssas =>
-        Logger.debug(s"Loaded ${ssas.size} SSA combinations")
-        ssasAgent.send(ssas.toSet)
+      { ssaas =>
+        Logger.debug(s"Loaded ${ssaas.size} SSAA combinations")
+        ssasAgent.send(ssaas.toSet)
       }
     )
   }

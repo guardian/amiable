@@ -87,34 +87,14 @@ case class SSAA (
   accountName: Option[String] = None
 ) {
   def isEmpty = stack.isEmpty && stage.isEmpty && app.isEmpty
-  def stackAccountMatch: Boolean = {
-    val stackAccountCompare = for {
-      an <- accountName
-      s <- stack
-    } yield {an == s}
-    stackAccountCompare.contains(true)
-  }
-
-  def stackAccountLabel: String = if (stackAccountMatch) "Account/Stack" else "Stack"
-
   override def toString: String = {
     // accountName is non optional in some cases so is often set to "". In these cases treat it as 'none'
     val accountString = if (accountName.isEmpty || accountName.contains(""))"unknown-account" else accountName.get
-    s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}, ${accountString}>"
+    s"SSAA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}, ${accountString}>"
   }
 }
 object SSAA {
   implicit val jsonFormat = Json.format[SSAA]
-
-  def stackAccountMatch(ssaa: SSAA): Boolean = {
-    val comparison = for {
-      accountName <- ssaa.accountName
-      stack <- ssaa.stack
-    } yield {
-      accountName == stack
-    }
-    comparison.contains(true)
-  }
 
   /**
     * Filters empty strings to None, such as those provided by request parameters.
@@ -124,10 +104,10 @@ object SSAA {
 
   def empty = SSAA(None, None, None, None)
 
-  def riffRaffLink(ssa: SSAA, region: String): Option[String] = for {
-    stack <- ssa.stack
-    stage <- ssa.stage
-    app <- ssa.app
+  def riffRaffLink(ssaa: SSAA, region: String): Option[String] = for {
+    stack <- ssaa.stack
+    stage <- ssaa.stage
+    app <- ssaa.app
   } yield {
     s"https://riffraff.gutools.co.uk/deployment/target/deploy?region=$region&stack=$stack&stage=$stage&app=$app"
   }
@@ -169,7 +149,7 @@ object LaunchConfiguration {
 }
 
 case class Owner(id: String, stacks: List[SSAA]) {
-  def hasSSA(ssa: SSAA): Boolean = stacks.contains(ssa)
+  def hasSSA(ssaa: SSAA): Boolean = stacks.contains(ssaa)
 }
 
 object Owner {

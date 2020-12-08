@@ -36,18 +36,18 @@
         <div class="row">
             <h2>AMI usage</h2>
             <div class="ssa-amis">
-                @for((ssa, amis) <- amiSSAs) {
-                    @if(ssa.isEmpty) {
+                @for((ssaa, amis) <- amiSSAs) {
+                    @if(ssaa.isEmpty) {
                         @* show AMIs with empty SSAs in their own block (there are lots of them) *@
             </div>
         </div>
 
         <div class="row">
-            @printSSA(ssa)
+            @printSSA(ssaa)
             <div class="ssa-amis">
                         @for(ami <- amis) {
                             <div class="ssa-amis__item">
-                                @amiOverlay(ami, instancesCount.get(ssa, ami))
+                                @amiOverlay(ami, instancesCount.get(ssaa, ami))
                             </div>
                         }
         </div>
@@ -57,9 +57,9 @@
                         <div class="ssa-amis__item">
                             <div class="card">
                                 <div class="card-content">
-                                    @printSSA(ssa)
+                                    @printSSA(ssaa)
                                     @for(ami <- amis) {
-                                        @amiOverlay(ami = ami, instanceCount = instancesCount.get(ssa, ami), stackStageApp = Some(ssa))
+                                        @amiOverlay(ami = ami, instanceCount = instancesCount.get(ssaa, ami), stackStageApp = Some(ssaa))
                                     }
                                 </div>
                             </div>

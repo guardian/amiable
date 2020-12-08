@@ -1,27 +1,27 @@
-@(ssa: SSAA, emptyChar: String = "-")
+@(ssaa: SSAA, emptyChar: String = "-")
 
 <table class="striped">
     <tbody>
         <tr>
             <td class="ssa-table__heading">App</td>
-            <td class="ssa-table__entry">@ssa.app.getOrElse(emptyChar)</td>
+            <td class="ssa-table__entry">@ssaa.app.getOrElse(emptyChar)</td>
         </tr>
         <tr>
             <td class="ssa-table__heading">Stage</td>
-            <td class="ssa-table__entry">@ssa.stage.getOrElse(emptyChar)</td>
+            <td class="ssa-table__entry">@ssaa.stage.getOrElse(emptyChar)</td>
         </tr>
         <tr>
             <td class="ssa-table__heading">Stack</td>
-            <td class="ssa-table__entry">@ssa.stack.getOrElse(emptyChar)</td>
+            <td class="ssa-table__entry">@ssaa.stack.getOrElse(emptyChar)</td>
         </tr>
         <tr>
             <td class="ssa-table__heading">Account</td>
-            <td class="ssa-table__entry">@ssa.accountName.getOrElse(emptyChar)</td>
+            <td class="ssa-table__entry">@ssaa.accountName.getOrElse(emptyChar)</td>
         </tr>
         <tr>
             <td class="ssa-table__heading"></td>
             <td class="ssa-table__entry">
-                <a href="@{SSAA.riffRaffLink(ssa, "eu-west-1")}" target="_blank" rel="noopener noreferrer">Recent Deploys</a>
+                <a href="@{SSAA.riffRaffLink(ssaa, "eu-west-1")}" target="_blank" rel="noopener noreferrer">Recent Deploys</a>
             </td>
          </tr>
     </tbody>

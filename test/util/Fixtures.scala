@@ -10,9 +10,9 @@ object Fixtures {
     Instance(arn, "", "", "", "", "", DateTime.now, "", "", "", Nil, Map.empty, None, None, Nil, Nil, Map.empty, Meta("", Origin("", "", "", "")))
   def instanceWithAmiArn(arn: String, amiArnOpt: Option[String]): Instance =
     amiArnOpt.fold(emptyInstance(arn))(amiArn => emptyInstance(arn).copy(specification = Map("imageArn" -> amiArn)))
-  def instanceWithSSA(arn: String, ssa: SSAA): Instance = {
+  def instanceWithSSA(arn: String, ssaa: SSAA): Instance = {
     val empty = emptyInstance(arn)
-    empty.copy(stack = ssa.stack, stage = ssa.stage, app = ssa.app.toList,  meta = Meta("", Origin("", ssa.accountName.getOrElse(""), "", "")))
+    empty.copy(stack = ssaa.stack, stage = ssaa.stage, app = ssaa.app.toList,  meta = Meta("", Origin("", ssaa.accountName.getOrElse(""), "", "")))
   }
 
   object AMIs {

@@ -21,9 +21,9 @@ object Urls {
 
   private[prism] def emptyToNone(strOpt: Option[String]) = strOpt.filter(_.nonEmpty)
 
-  def instancesUrl(ssa: SSAA, prismUrl: String) = {
+  def instancesUrl(ssaa: SSAA, prismUrl: String) = {
     val getVars = for {
-      (name, strOpt) <- List("stack" -> ssa.stack, "stage" -> ssa.stage, "app" -> ssa.app, "meta.origin.accountName" -> ssa.accountName)
+      (name, strOpt) <- List("stack" -> ssaa.stack, "stage" -> ssaa.stage, "app" -> ssaa.app, "meta.origin.accountName" -> ssaa.accountName)
       getVar <- strOpt.map(str =>  s"$name=${URLEncoder.encode(str, "UTF-8")}")
     } yield getVar
     s"$prismUrl/instances?${getVars.mkString("&")}"

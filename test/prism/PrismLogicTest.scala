@@ -124,8 +124,8 @@ class PrismLogicTest extends FreeSpec with Matchers {
     }
 
     "returns the correct SSA for an instance" in {
-      val ssa = SSAA(Some("stack"), Some("app"), Some("app"), Some("account"))
-      instanceSSAAs(List(instanceWithSSA("i1", ssa))) shouldEqual List(ssa)
+      val ssaa = SSAA(Some("stack"), Some("app"), Some("app"), Some("account"))
+      instanceSSAAs(List(instanceWithSSA("i1", ssaa))) shouldEqual List(ssaa)
     }
 
     "returns the correct SSAs for multiple instances" in {
@@ -146,27 +146,27 @@ class PrismLogicTest extends FreeSpec with Matchers {
       val i2 = instanceWithSSA("i2", ssa2)
 
       "an SSA with an AMI" in {
-        amiSSAs(List(a1 -> List(i1))) shouldEqual Map(ssa1 -> List(a1))
+        amiSSAAs(List(a1 -> List(i1))) shouldEqual Map(ssa1 -> List(a1))
       }
 
       "an SSA with multiple AMIs" in {
-        amiSSAs(List(a1 -> List(i1), a2 -> List(i1))) shouldEqual Map(ssa1 -> List(a1, a2))
+        amiSSAAs(List(a1 -> List(i1), a2 -> List(i1))) shouldEqual Map(ssa1 -> List(a1, a2))
       }
 
       "an AMI with multiple SSAs when it's used on different instances" in {
-        amiSSAs(List(a1 -> List(i1, i2))) shouldEqual Map(ssa1 -> List(a1), ssa2 -> List(a1))
+        amiSSAAs(List(a1 -> List(i1, i2))) shouldEqual Map(ssa1 -> List(a1), ssa2 -> List(a1))
       }
     }
 
     "if an instance's app is empty, associates with the stack/stage combo" in {
       val stackStage = SSAA(Some("stack"), Some("stage"), None, Some("acc-1"))
       val instance = instanceWithSSA("i", stackStage)
-      amiSSAs(List(a1 -> List(instance))) shouldEqual Map(stackStage -> List(a1))
+      amiSSAAs(List(a1 -> List(instance))) shouldEqual Map(stackStage -> List(a1))
     }
 
     "correctly associates instances with multiple apps" in {
       val instance = emptyInstance("i").copy(app = List("app1", "app2"), meta=Meta("", Origin("", "acc-1", "", "")))
-      amiSSAs(List(a1 -> List(instance))) shouldEqual Map(
+      amiSSAAs(List(a1 -> List(instance))) shouldEqual Map(
         SSAA(None, None, Some("app1"), Some("acc-1")) -> List(a1),
         SSAA(None, None, Some("app2"), Some("acc-1")) -> List(a1)
       )
@@ -176,7 +176,7 @@ class PrismLogicTest extends FreeSpec with Matchers {
       val i1 = emptyInstance("i1").copy(app = List("app1", "another-app"), meta=Meta("", Origin("", "acc-1", "", "")))
       val i2 = emptyInstance("i2").copy(app = List("app1", "app2"), meta=Meta("", Origin("", "acc-1", "", "")))
       val i3 = emptyInstance("i3").copy(app = List("app2"), meta=Meta("", Origin("", "acc-1", "", "")))
-      amiSSAs(List(a1 -> List(i1, i2), a2 -> List(i3))) shouldEqual Map(
+      amiSSAAs(List(a1 -> List(i1, i2), a2 -> List(i3))) shouldEqual Map(
         SSAA(None, None, Some("app1"), Some("acc-1")) -> List(a1),
         SSAA(None, None, Some("another-app"), Some("acc-1")) -> List(a1),
         SSAA(None, None, Some("app2"), Some("acc-1")) -> List(a1, a2)
