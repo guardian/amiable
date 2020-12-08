@@ -62,13 +62,12 @@ h1 {
 }
 
 .ssa-table__heading {
-    padding-top: 0;
+    padding: 3px;
+    font-weight: bold;
 }
 
 .ssa-table__entry {
-    padding-bottom: 0;
-    word-wrap: break-word;
-    max-width: 80px;
+    padding: 3px;
 }
 
 @media only screen and (min-width: 601px) {
