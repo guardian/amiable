@@ -22,7 +22,7 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
     val capi = Owner("capi", List(SSAA(Some("capi"), Some("PROD"))))
     val owners = List(discussion, capi)
 
-    val discussionApiProd = Fixtures.instanceWithSSA("arn3", SSAA(Some("discussion"), Some("PROD"), Some("api")))
+    val discussionApiProd = Fixtures.instanceWithSSAA("arn3", SSAA(Some("discussion"), Some("PROD"), Some("api")))
 
     ScheduledNotificationRunner.ownerForInstance(discussionApiProd, Owners(owners, defaultOwner)) should be(discussion)
   }
@@ -32,7 +32,7 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
     val amigoProdOwner = Owner("amigoProdOwner", List(SSAA(Some("devtools"), Some("PROD"), Some("amigo"))))
     val owners = List(amigoOwner, amigoProdOwner)
 
-    val amigoProd = Fixtures.instanceWithSSA("arn3", SSAA(Some("devtools"), Some("PROD"), Some("amigo")))
+    val amigoProd = Fixtures.instanceWithSSAA("arn3", SSAA(Some("devtools"), Some("PROD"), Some("amigo")))
 
     ScheduledNotificationRunner.ownerForInstance(amigoProd, Owners(owners, defaultOwner)) should be(amigoProdOwner)
   }
@@ -42,7 +42,7 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
     val devtoolsProd = Owner("capi", List(SSAA(Some("devtools"), Some("PROD"))))
     val owners = List(amigoOwner, devtoolsProd)
 
-    val amigoProd = Fixtures.instanceWithSSA("arn3", SSAA(Some("devtools"), Some("PROD"), Some("amigo")))
+    val amigoProd = Fixtures.instanceWithSSAA("arn3", SSAA(Some("devtools"), Some("PROD"), Some("amigo")))
 
     ScheduledNotificationRunner.ownerForInstance(amigoProd, Owners(owners, defaultOwner)) should be(amigoOwner)
   }
@@ -52,7 +52,7 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
     val devtoolsProd = Owner("capi", List(SSAA(Some("devtools"), Some("PROD"))))
     val owners = List(amigoOwner, devtoolsProd)
 
-    val capiProd = Fixtures.instanceWithSSA("arn3", SSAA(Some("capi"), Some("PROD")))
+    val capiProd = Fixtures.instanceWithSSAA("arn3", SSAA(Some("capi"), Some("PROD")))
 
     ScheduledNotificationRunner.ownerForInstance(capiProd, Owners(owners, defaultOwner)) should be(defaultOwner)
   }

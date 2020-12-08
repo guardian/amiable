@@ -107,31 +107,31 @@ class PrismLogicTest extends FreeSpec with Matchers {
     }
   }
 
-  "instanceSSAs" - {
-    val emptySSA = SSAA(None, None, None, Some(""))
+  "instanceSSAAs" - {
+    val emptySSAA = SSAA(None, None, None, None)
 
     "returns empty list for no instances" in {
       instanceSSAAs(Nil) shouldEqual Nil
     }
 
     "returns the empty SSA when an instance has no SSA fields" in {
-      instanceSSAAs(List(instanceWithSSA("i1", emptySSA))) shouldEqual List(emptySSA)
+      instanceSSAAs(List(instanceWithSSAA("i1", emptySSAA))) shouldEqual List(emptySSAA)
     }
 
     "returns single empty SSA for a collection of instances with no SSA fields" in {
-      val instances = List(instanceWithSSA("i1", emptySSA), instanceWithSSA("i2", emptySSA))
-      instanceSSAAs(instances) shouldEqual List(emptySSA)
+      val instances = List(instanceWithSSAA("i1", emptySSAA), instanceWithSSAA("i2", emptySSAA))
+      instanceSSAAs(instances) shouldEqual List(emptySSAA)
     }
 
     "returns the correct SSA for an instance" in {
       val ssaa = SSAA(Some("stack"), Some("app"), Some("app"), Some("account"))
-      instanceSSAAs(List(instanceWithSSA("i1", ssaa))) shouldEqual List(ssaa)
+      instanceSSAAs(List(instanceWithSSAA("i1", ssaa))) shouldEqual List(ssaa)
     }
 
     "returns the correct SSAs for multiple instances" in {
       val ssa1 = SSAA(Some("stack-1"), Some("stage-1"), Some("app-1"), Some("acc-1"))
       val ssa2 = SSAA(Some("stack-2"), Some("stage-2"), Some("app-2"), Some("acc-2"))
-      instanceSSAAs(List(instanceWithSSA("i1", ssa1), instanceWithSSA("i2", ssa2))) shouldEqual List(ssa1, ssa2)
+      instanceSSAAs(List(instanceWithSSAA("i1", ssa1), instanceWithSSAA("i2", ssa2))) shouldEqual List(ssa1, ssa2)
     }
   }
 
@@ -142,8 +142,8 @@ class PrismLogicTest extends FreeSpec with Matchers {
     "associates" - {
       val ssa1 = SSAA(Some("stack-1"), Some("stage-1"), Some("app-1"), Some("acc-1"))
       val ssa2 = SSAA(Some("stack-2"), Some("stage-2"), Some("app-2"), Some("acc-2"))
-      val i1 = instanceWithSSA("i1", ssa1)
-      val i2 = instanceWithSSA("i2", ssa2)
+      val i1 = instanceWithSSAA("i1", ssa1)
+      val i2 = instanceWithSSAA("i2", ssa2)
 
       "an SSA with an AMI" in {
         amiSSAAs(List(a1 -> List(i1))) shouldEqual Map(ssa1 -> List(a1))
@@ -160,26 +160,26 @@ class PrismLogicTest extends FreeSpec with Matchers {
 
     "if an instance's app is empty, associates with the stack/stage combo" in {
       val stackStage = SSAA(Some("stack"), Some("stage"), None, Some("acc-1"))
-      val instance = instanceWithSSA("i", stackStage)
+      val instance = instanceWithSSAA("i", stackStage)
       amiSSAAs(List(a1 -> List(instance))) shouldEqual Map(stackStage -> List(a1))
     }
 
     "correctly associates instances with multiple apps" in {
-      val instance = emptyInstance("i").copy(app = List("app1", "app2"), meta=Meta("", Origin("", "acc-1", "", "")))
+      val instance = emptyInstance("i").copy(app = List("app1", "app2"), meta=Meta("", Origin("", None, "", "")))
       amiSSAAs(List(a1 -> List(instance))) shouldEqual Map(
-        SSAA(None, None, Some("app1"), Some("acc-1")) -> List(a1),
-        SSAA(None, None, Some("app2"), Some("acc-1")) -> List(a1)
+        SSAA(None, None, Some("app1")) -> List(a1),
+        SSAA(None, None, Some("app2")) -> List(a1)
       )
     }
 
     "combines multi-app instances with other instances" in {
-      val i1 = emptyInstance("i1").copy(app = List("app1", "another-app"), meta=Meta("", Origin("", "acc-1", "", "")))
-      val i2 = emptyInstance("i2").copy(app = List("app1", "app2"), meta=Meta("", Origin("", "acc-1", "", "")))
-      val i3 = emptyInstance("i3").copy(app = List("app2"), meta=Meta("", Origin("", "acc-1", "", "")))
+      val i1 = emptyInstance("i1").copy(app = List("app1", "another-app"))
+      val i2 = emptyInstance("i2").copy(app = List("app1", "app2"))
+      val i3 = emptyInstance("i3").copy(app = List("app2"))
       amiSSAAs(List(a1 -> List(i1, i2), a2 -> List(i3))) shouldEqual Map(
-        SSAA(None, None, Some("app1"), Some("acc-1")) -> List(a1),
-        SSAA(None, None, Some("another-app"), Some("acc-1")) -> List(a1),
-        SSAA(None, None, Some("app2"), Some("acc-1")) -> List(a1, a2)
+        SSAA(None, None, Some("app1")) -> List(a1),
+        SSAA(None, None, Some("another-app")) -> List(a1),
+        SSAA(None, None, Some("app2")) -> List(a1, a2)
       )
     }
   }
@@ -355,17 +355,17 @@ class PrismLogicTest extends FreeSpec with Matchers {
 
   "sortLCsByOwner" - {
     "sorts Launch Configurations by account first" in {
-      val meta1 = Meta("href", Origin("vendor", "account1", "region", "accountNum"))
+      val meta1 = Meta("href", Origin("vendor", Some("account1"), "region", "accountNum"))
       val lc1 = LaunchConfiguration("arn1", "nameB", "imageId", "region", DateTime.now(), "t1-micro", "key", List.empty, None, meta1)
 
-      val meta2 = meta1.copy(origin = meta1.origin.copy(accountName = "account2"))
+      val meta2 = meta1.copy(origin = meta1.origin.copy(accountName = Some("account2")))
       val lc2 = lc1.copy(name = "nameA", meta = meta2)
 
       val lcList = List(lc2, lc1)
       PrismLogic.sortLCsByOwner(lcList) should contain inOrderOnly(lc1, lc2)
     }
     "sorts Launch Configurations by name when accounts are the same" in {
-      val meta1 = Meta("href", Origin("vendor", "account", "region", "accountNum"))
+      val meta1 = Meta("href", Origin("vendor", Some("account"), "region", "accountNum"))
       val lc1 = models.LaunchConfiguration("arn1", "name1", "imageId1", "region", DateTime.now(), "t1-micro", "key1", List.empty, None, meta1)
 
       val lc2 = lc1.copy(name = "name2")

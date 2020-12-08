@@ -47,8 +47,8 @@ object PrismLogic {
     val allInstanceSSAs = for {
       instance <- instances
       ssaa <- {
-        if (instance.app.isEmpty) List(SSAA(instance.stack, instance.stage, None, Some(instance.meta.origin.accountName)))
-        else instance.app.map(app => SSAA(instance.stack, instance.stage, Some(app), Some(instance.meta.origin.accountName)))
+        if (instance.app.isEmpty) List(SSAA(instance.stack, instance.stage, None, instance.meta.origin.accountName))
+        else instance.app.map(app => SSAA(instance.stack, instance.stage, Some(app), instance.meta.origin.accountName))
       }
     } yield ssaa
     allInstanceSSAs.distinct
@@ -130,7 +130,7 @@ object PrismLogic {
     * and by Launch Configuration name, in ascending order
     */
   def sortLCsByOwner(configs: List[LaunchConfiguration]): List[LaunchConfiguration] = {
-    configs.sortBy(lc => (lc.meta.origin.accountName, lc.name))
+    configs.sortBy(lc => (lc.meta.origin.accountName.getOrElse(""), lc.name))
   }
 
   /**

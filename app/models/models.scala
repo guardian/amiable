@@ -63,7 +63,7 @@ case class Instance(
 
 case class Origin(
   vendor: String,
-  accountName: String,
+  accountName: Option[String],
   region: String,
   accountNumber: String)
 
