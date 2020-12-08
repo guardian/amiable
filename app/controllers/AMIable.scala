@@ -28,12 +28,12 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
     attempt {
       for {
         instancesWithAmis <- Prism.instancesWithAmis(ssaa)
-        accountNames = PrismLogic.instanceSSAAs(instancesWithAmis.map(_._1)).flatMap(_.accountName).distinct
+        accountNames <- Prism.getAccounts
         oldInstances = PrismLogic.oldInstances(instancesWithAmis)
         oldStacks = PrismLogic.stacks(oldInstances)
         agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
         metrics = Metrics(oldInstances.length, instancesWithAmis.length, agePercentiles)
-      } yield Ok(views.html.index(oldStacks.sorted, charts, metrics, accountNames))
+      } yield Ok(views.html.index(oldStacks.sorted, charts, metrics, accountNames.map(_.accountName)))
     }
   }
 
