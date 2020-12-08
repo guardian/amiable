@@ -61,13 +61,20 @@ h1 {
     width: 100%;
 }
 
+.ssa-table {
+    max-width: 400px;
+}
 .ssa-table__heading {
-    padding: 3px;
     font-weight: bold;
 }
 
 .ssa-table__entry {
     padding: 3px;
+    max-width: 400px;
+}
+
+.empty-ssaa-card {
+    padding: 5px;
 }
 
 @media only screen and (min-width: 601px) {

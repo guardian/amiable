@@ -1,17 +1,17 @@
 @(ssaa: SSAA, emptyChar: String = "-")
 
-<table class="striped">
+<table class="striped ssa-table">
     <tbody>
         <tr>
-            <td class="ssa-table__heading">App</td>
+            <td class="ssa-table__entry ssa-table__heading">App</td>
             <td class="ssa-table__entry">@ssaa.app.getOrElse(emptyChar)</td>
         </tr>
         <tr>
-            <td class="ssa-table__heading">Stage</td>
+            <td class="ssa-table__entry ssa-table__heading">Stage</td>
             <td class="ssa-table__entry">@ssaa.stage.getOrElse(emptyChar)</td>
         </tr>
         <tr>
-            <td class="ssa-table__heading">Stack</td>
+            <td class="ssa-table__entry ssa-table__heading">Stack</td>
             <td class="ssa-table__entry">@ssaa.stack.getOrElse(emptyChar)</td>
         </tr>
         <tr>
@@ -19,7 +19,7 @@
             <td class="ssa-table__entry">@ssaa.accountName.getOrElse(emptyChar)</td>
         </tr>
         <tr>
-            <td class="ssa-table__heading"></td>
+            <td class="ssa-table__entry ssa-table__heading"></td>
             <td class="ssa-table__entry">
                 <a href="@{SSAA.riffRaffLink(ssaa, "eu-west-1")}" target="_blank" rel="noopener noreferrer">Recent Deploys</a>
             </td>

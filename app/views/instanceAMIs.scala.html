@@ -43,6 +43,7 @@
         </div>
 
         <div class="row">
+            <div class="card empty-ssaa-card">
             @printSSA(ssaa)
             <div class="ssa-amis">
                         @for(ami <- amis) {
@@ -50,6 +51,7 @@
                                 @amiOverlay(ami, instancesCount.get(ssaa, ami))
                             </div>
                         }
+            </div>
         </div>
         <div class="row">
             <div class="ssa-amis">
