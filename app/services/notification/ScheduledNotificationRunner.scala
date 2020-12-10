@@ -16,7 +16,7 @@ class ScheduledNotificationRunner @Inject() (mailClient: AWSMailClient, environm
 
   def run(today: DateTime): Attempt[List[String]] = {
     for {
-      instancesWithAmis <- Prism.instancesWithAmis(SSA(stage = Some("PROD")))
+      instancesWithAmis <- Prism.instancesWithAmis(SSAA(stage = Some("PROD")))
       oldInstances = PrismLogic.oldInstances(instancesWithAmis)
       instanceAmiMap = ScheduledNotificationRunner.makeInstanceAmiMap(instancesWithAmis)
       ownersWithDefault <- Prism.getOwners
@@ -32,10 +32,10 @@ class ScheduledNotificationRunner @Inject() (mailClient: AWSMailClient, environm
 
 object ScheduledNotificationRunner {
   def ownerForInstance(i: Instance, owners: Owners): Owner = {
-    owners.owners.find(_.hasSSA(SSA(i.stack, i.stage, i.app.headOption)))
-      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack, app = i.app.headOption))))
-      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack, i.stage))))
-      .orElse(owners.owners.find(_.hasSSA(SSA(i.stack))))
+    owners.owners.find(_.hasSSA(SSAA(i.stack, i.stage, i.app.headOption)))
+      .orElse(owners.owners.find(_.hasSSA(SSAA(i.stack, app = i.app.headOption))))
+      .orElse(owners.owners.find(_.hasSSA(SSAA(i.stack, i.stage))))
+      .orElse(owners.owners.find(_.hasSSA(SSAA(i.stack))))
       .getOrElse(owners.defaultOwner)
   }
 

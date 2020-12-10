@@ -23,7 +23,7 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   val refreshInterval = 5.minutes
 
   private val amisAgent: Agent[Set[AMI]] = Agent(Set.empty)
-  private val ssasAgent: Agent[Set[SSA]] = Agent(Set.empty)
+  private val ssasAgent: Agent[Set[SSAA]] = Agent(Set.empty)
   private val oldProdInstanceCountAgent: Agent[Option[Int]] = Agent(None)
   private val oldProdInstanceCountHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
   private val amisAgePercentilesAgent: Agent[Option[Percentiles]] = Agent(None)
@@ -32,7 +32,7 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   private val amisAgePercentile75thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
 
   def allAmis: Set[AMI] = amisAgent.get
-  def allSSAs: Set[SSA] = ssasAgent.get
+  def allSSAs: Set[SSAA] = ssasAgent.get
   def oldProdInstanceCount: Option[Int] = oldProdInstanceCountAgent.get
   def oldProdInstanceCountHistory: List[(DateTime, Double)] = oldProdInstanceCountHistoryAgent.get
   def amisAgePercentiles: Option[Percentiles] = amisAgePercentilesAgent.get
@@ -77,19 +77,19 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   }
 
   def refreshSSAs(): Unit = {
-    Prism.getInstances(SSA()).map(PrismLogic.instanceSSAs).fold(
+    Prism.getInstances(SSAA()).map(PrismLogic.instanceSSAAs).fold(
       { err =>
         Logger.warn(s"Failed to update SSAs ${err.logString}")
       },
-      { ssas =>
-        Logger.debug(s"Loaded ${ssas.size} SSA combinations")
-        ssasAgent.send(ssas.toSet)
+      { ssaas =>
+        Logger.debug(s"Loaded ${ssaas.size} SSAA combinations")
+        ssasAgent.send(ssaas.toSet)
       }
     )
   }
 
   def refreshInstancesInfo(): Unit = {
-    Prism.instancesWithAmis(SSA(stage = Some("PROD"))).fold(
+    Prism.instancesWithAmis(SSAA(stage = Some("PROD"))).fold(
       { err =>
         Logger.warn(s"Failed to update old PROD instance count ${err.logString}")
       },

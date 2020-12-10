@@ -1,4 +1,4 @@
-@(ami: AMI, instanceCount: Option[Int] = None, id: String = java.util.UUID.randomUUID.toString, stackStageApp: Option[SSA] = None)
+@(ami: AMI, instanceCount: Option[Int] = None, id: String = java.util.UUID.randomUUID.toString, stackStageApp: Option[SSAA] = None)
 
 @import utils.DateUtils.{getAgeColour, daysAgo}
 @import views.html.fragments.amiWithUpgrade
@@ -68,8 +68,8 @@
         }
         <a href="#!" class="black-text modal-action modal-close waves-effect waves-white btn grey lighten-3">Close</a>
         @if(ami.upgrade.isDefined) {
-            @stackStageApp.map { ssa =>
-                @SSA.riffRaffLink(ssa, ami.region).map { link =>
+            @stackStageApp.map { ssaa =>
+                @SSAA.riffRaffLink(ssaa, ami.region).map { link =>
                     <a href="@link" target="_blank" rel="noopener" class="waves-effect waves-light btn">Redeploy</a>
                 }
             }

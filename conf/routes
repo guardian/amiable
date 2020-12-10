@@ -5,7 +5,7 @@
 # Home page
 GET     /                           controllers.AMIable.index
 GET     /ami                        controllers.AMIable.ami(imageId: String)
-GET     /instanceAMIs               controllers.AMIable.ssaInstanceAMIs(stack: Option[String], stage: Option[String], app: Option[String])
+GET     /instanceAMIs               controllers.AMIable.ssaInstanceAMIs(stack: Option[String], stage: Option[String], app: Option[String], accountName: Option[String])
 GET     /healthcheck                controllers.Healthcheck.healthcheck
 
 GET     /loginError                 controllers.Login.loginError

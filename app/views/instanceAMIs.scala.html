@@ -1,9 +1,10 @@
 @(
-        filterSsa: SSA,
+        filterSsa: SSAA,
         metrics: models.Metrics,
         amisWithUpgrades: List[AMI],
-        amiSSAs: List[(SSA, List[AMI])],
-        instancesCount: Map[(SSA, AMI), Int]
+        amiSSAs: List[(SSAA, List[AMI])],
+        instancesCount: Map[(SSAA, AMI), Int],
+        accountNames: List[String]
 )
 
 @import views.html.fragments.{ssaAmiForm, amiOverlay, printSSA, metricsHeader}
@@ -35,20 +36,22 @@
         <div class="row">
             <h2>AMI usage</h2>
             <div class="ssa-amis">
-                @for((ssa, amis) <- amiSSAs) {
-                    @if(ssa.isEmpty) {
+                @for((ssaa, amis) <- amiSSAs) {
+                    @if(ssaa.isEmpty) {
                         @* show AMIs with empty SSAs in their own block (there are lots of them) *@
             </div>
         </div>
 
         <div class="row">
-            @printSSA(ssa)
+            <div class="card empty-ssaa-card">
+            @printSSA(ssaa)
             <div class="ssa-amis">
                         @for(ami <- amis) {
                             <div class="ssa-amis__item">
-                                @amiOverlay(ami, instancesCount.get(ssa, ami))
+                                @amiOverlay(ami, instancesCount.get(ssaa, ami))
                             </div>
                         }
+            </div>
         </div>
         <div class="row">
             <div class="ssa-amis">
@@ -56,9 +59,9 @@
                         <div class="ssa-amis__item">
                             <div class="card">
                                 <div class="card-content">
-                                    @printSSA(ssa)
+                                    @printSSA(ssaa)
                                     @for(ami <- amis) {
-                                        @amiOverlay(ami = ami, instanceCount = instancesCount.get(ssa, ami), stackStageApp = Some(ssa))
+                                        @amiOverlay(ami = ami, instanceCount = instancesCount.get(ssaa, ami), stackStageApp = Some(ssaa))
                                     }
                                 </div>
                             </div>
@@ -68,6 +71,6 @@
             </div>
         </div>
         <a name="search"></a>
-        @ssaAmiForm(filterSsa)
+        @ssaAmiForm(filterSsa, accountNames)
     </div>
 }()

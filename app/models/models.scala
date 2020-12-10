@@ -63,7 +63,7 @@ case class Instance(
 
 case class Origin(
   vendor: String,
-  accountName: String,
+  accountName: Option[String],
   region: String,
   accountNumber: String)
 
@@ -80,29 +80,34 @@ object Meta {
   implicit val jsonFormat = Json.format[Meta]
 }
 
-case class SSA (
+case class SSAA (
   stack: Option[String] = None,
   stage: Option[String] = None,
-  app: Option[String] = None
+  app: Option[String] = None,
+  accountName: Option[String] = None
 ) {
   def isEmpty = stack.isEmpty && stage.isEmpty && app.isEmpty
-  override def toString: String = s"SSA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}>"
+  override def toString: String = {
+    // accountName is non optional in some cases so is often set to "". In these cases treat it as 'none'
+    val accountString = if (accountName.isEmpty || accountName.contains(""))"unknown-account" else accountName.get
+    s"SSAA<${stack.getOrElse("none")}, ${stage.getOrElse("none")}, ${app.getOrElse("none")}, ${accountString}>"
+  }
 }
-object SSA {
-  implicit val jsonFormat = Json.format[SSA]
+object SSAA {
+  implicit val jsonFormat = Json.format[SSAA]
 
   /**
     * Filters empty strings to None, such as those provided by request parameters.
     */
-  def fromParams(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None): SSA =
-    SSA(stack.filter(_.nonEmpty), stage.filter(_.nonEmpty), app.filter(_.nonEmpty))
+  def fromParams(stack: Option[String] = None, stage: Option[String] = None, app: Option[String] = None, accountName: Option[String] = None): SSAA =
+    SSAA(stack.filter(_.nonEmpty), stage.filter(_.nonEmpty), app.filter(_.nonEmpty), accountName.filter(_.nonEmpty))
 
-  def empty = SSA(None, None, None)
+  def empty = SSAA(None, None, None, None)
 
-  def riffRaffLink(ssa: SSA, region: String): Option[String] = for {
-    stack <- ssa.stack
-    stage <- ssa.stage
-    app <- ssa.app
+  def riffRaffLink(ssaa: SSAA, region: String): Option[String] = for {
+    stack <- ssaa.stack
+    stage <- ssaa.stage
+    app <- ssaa.app
   } yield {
     s"https://riffraff.gutools.co.uk/deployment/target/deploy?region=$region&stack=$stack&stage=$stage&app=$app"
   }
@@ -143,8 +148,8 @@ object LaunchConfiguration {
   implicit val jsonFormat = Json.format[LaunchConfiguration]
 }
 
-case class Owner(id: String, stacks: List[SSA]) {
-  def hasSSA(ssa: SSA): Boolean = stacks.contains(ssa)
+case class Owner(id: String, stacks: List[SSAA]) {
+  def hasSSA(ssaa: SSAA): Boolean = stacks.contains(ssaa)
 }
 
 object Owner {
@@ -155,4 +160,9 @@ case class Owners(owners: List[Owner], defaultOwner: Owner)
 
 object Owners {
   implicit val jsonFormat = Json.format[Owners]
+}
+
+case class AWSAccount(accountNumber: Option[String], accountName: String)
+object AWSAccount {
+  implicit val jsonFormat = Json.format[AWSAccount]
 }

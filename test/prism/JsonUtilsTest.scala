@@ -124,4 +124,18 @@ class JsonUtilsTest extends FreeSpec with Matchers with EitherValues with Attemp
       extractLaunchConfiguration(json).awaitEither.isLeft shouldBe true
     }
   }
+
+  "extractAccounts" - {
+    "should return an accounts list from correct json" in {
+      val json = Json.parse(Accounts.validAccount)
+      val accounts = extractAccounts(json).awaitEither.right.value
+      accounts.accountName shouldEqual("barnard-castle")
+    }
+
+    "should return a failure given invalid json" in {
+      val jsonStr = """{"testyinvalid":123}"""
+      val json = Json.parse(jsonStr)
+      extractAccounts(json).awaitEither.isLeft shouldBe true
+    }
+  }
 }

@@ -38,7 +38,7 @@ object Prism {
     } yield amis
   }
 
-  def getInstances(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
+  def getInstances(stackStageApp: SSAA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[Instance]] = {
     val url = instancesUrl(stackStageApp, config.prismUrl)
     getInstancesFromUrl(url)
   }
@@ -56,7 +56,7 @@ object Prism {
     } yield instances
   }
 
-  def instancesWithAmis(stackStageApp: SSA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[(Instance, Option[AMI])]] = {
+  def instancesWithAmis(stackStageApp: SSAA)(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[(Instance, Option[AMI])]] = {
     for {
       prodInstances <- getInstances(stackStageApp)
       amiAttempts = amiArns(prodInstances).map(getAMI)
@@ -71,5 +71,14 @@ object Prism {
       jsons <- launchConfigurationResponseJson(response)
       launchConfigurations <- Attempt.sequence(jsons.map(extractLaunchConfiguration))
     } yield launchConfigurations
+  }
+
+  def getAccounts(implicit config: AMIableConfig, ec: ExecutionContext): Attempt[List[AWSAccount]] = {
+    val url = s"${config.prismUrl}/sources/accounts"
+    for {
+      response <- Http.response(config.wsClient.url(url).get(), "Unable to fetch accounts list", url)
+      jsons <- accountsResponseJson(response)
+      accounts <- Attempt.sequence(jsons.map(extractAccounts))
+    } yield accounts
   }
 }

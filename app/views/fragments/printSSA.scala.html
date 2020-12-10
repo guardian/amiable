@@ -1,22 +1,28 @@
-@(ssa: SSA, emptyChar: String = "-")
+@(ssaa: SSAA, emptyChar: String = "-")
 
-<table class="ssa-table">
-    <thead>
-        <tr>
-            <th class="ssa-table__heading">Stack</th>
-            <th class="ssa-table__heading">Stage</th>
-            <th class="ssa-table__heading">App</th>
-            <th class="ssa-table__heading"></th>
-        </tr>
-    </thead>
+<table class="striped ssa-table">
     <tbody>
         <tr>
-            <td class="ssa-table__entry">@ssa.stack.getOrElse(emptyChar)</td>
-            <td class="ssa-table__entry">@ssa.stage.getOrElse(emptyChar)</td>
-            <td class="ssa-table__entry">@ssa.app.getOrElse(emptyChar)</td>
-            <td class="ssa-table__entry">
-                <a href="@{SSA.riffRaffLink(ssa, "eu-west-1")}" target="_blank" rel="noopener noreferrer">Recent Deploys</a>
-            </td>
+            <td class="ssa-table__entry ssa-table__heading">App</td>
+            <td class="ssa-table__entry">@ssaa.app.getOrElse(emptyChar)</td>
         </tr>
+        <tr>
+            <td class="ssa-table__entry ssa-table__heading">Stage</td>
+            <td class="ssa-table__entry">@ssaa.stage.getOrElse(emptyChar)</td>
+        </tr>
+        <tr>
+            <td class="ssa-table__entry ssa-table__heading">Stack</td>
+            <td class="ssa-table__entry">@ssaa.stack.getOrElse(emptyChar)</td>
+        </tr>
+        <tr>
+            <td class="ssa-table__heading">Account</td>
+            <td class="ssa-table__entry">@ssaa.accountName.getOrElse(emptyChar)</td>
+        </tr>
+        <tr>
+            <td class="ssa-table__entry ssa-table__heading"></td>
+            <td class="ssa-table__entry">
+                <a href="@{SSAA.riffRaffLink(ssaa, "eu-west-1")}" target="_blank" rel="noopener noreferrer">Recent Deploys</a>
+            </td>
+         </tr>
     </tbody>
 </table>

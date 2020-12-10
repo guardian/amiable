@@ -7,11 +7,13 @@ object Fixtures {
   def emptyAmi(arn: String): AMI =
     AMI(arn, None, "", "", None, Map.empty, None, "", "", "", "", "",  "", None, None)
   def emptyInstance(arn: String): Instance =
-    Instance(arn, "", "", "", "", "", DateTime.now, "", "", "", Nil, Map.empty, None, None, Nil, Nil, Map.empty, Meta("", Origin("", "", "", "")))
+    Instance(arn, "", "", "", "", "", DateTime.now, "", "", "", Nil, Map.empty, None, None, Nil, Nil, Map.empty, Meta("", Origin("", None, "", "")))
   def instanceWithAmiArn(arn: String, amiArnOpt: Option[String]): Instance =
     amiArnOpt.fold(emptyInstance(arn))(amiArn => emptyInstance(arn).copy(specification = Map("imageArn" -> amiArn)))
-  def instanceWithSSA(arn: String, ssa: SSA): Instance =
-    emptyInstance(arn).copy(stack = ssa.stack, stage = ssa.stage, app = ssa.app.toList)
+  def instanceWithSSAA(arn: String, ssaa: SSAA): Instance = {
+    val empty = emptyInstance(arn)
+    empty.copy(stack = ssaa.stack, stage = ssaa.stage, app = ssaa.app.toList,  meta = Meta("", Origin("", ssaa.accountName, "", "")))
+  }
 
   object AMIs {
     val validAMI = """{
@@ -148,5 +150,12 @@ object Fixtures {
         |          }
         |        }
         |      }""".stripMargin
+  }
+  object Accounts {
+    val validAccount =
+      """{
+        |      "accountNumber": "1",
+        |      "accountName": "barnard-castle"
+        |    }""".stripMargin
   }
 }
