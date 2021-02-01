@@ -18,7 +18,7 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
   implicit val conf: AMIableConfig = amiableConfigProvider.conf
 
   def index: Action[AnyContent] = authAction.async { implicit request =>
-    val ssaa = SSAA(stage = Some("PROD"))
+    val ssaa = SSAA()
     val charts = Charts.charts(
       instanceCountHistory = agents.oldProdInstanceCountHistory,
       age25thPercentileHistory = agents.amisAgePercentile25thHistory,
