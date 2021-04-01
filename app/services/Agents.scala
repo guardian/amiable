@@ -16,6 +16,7 @@ import utils.Percentiles
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
+case class OldInstanceAccountHistory(date: DateTime, accountName: String, count: Int)
 
 class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle: ApplicationLifecycle, system: ActorSystem, environment: Environment)(implicit exec: ExecutionContext) {
 
@@ -30,6 +31,7 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   private val amisAgePercentile25thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
   private val amisAgePercentile50thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
   private val amisAgePercentile75thHistoryAgent: Agent[List[(DateTime, Double)]] = Agent(Nil)
+  private val oldInstanceCountByAccountAgent: Agent[List[OldInstanceAccountHistory]] = Agent(Nil)
 
   def allAmis: Set[AMI] = amisAgent.get
   def allSSAs: Set[SSAA] = ssasAgent.get
@@ -39,6 +41,7 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   def amisAgePercentile25thHistory: List[(DateTime, Double)] = amisAgePercentile25thHistoryAgent.get
   def amisAgePercentile50thHistory: List[(DateTime, Double)] = amisAgePercentile50thHistoryAgent.get
   def amisAgePercentile75thHistory: List[(DateTime, Double)] = amisAgePercentile75thHistoryAgent.get
+  def oldInstanceCountByAccount: List[OldInstanceAccountHistory] = oldInstanceCountByAccountAgent.get
 
   if (environment.mode != Mode.Test) {
     refreshAmis()
@@ -88,19 +91,35 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
     )
   }
 
+  def refreshProdInstancesInfo(instancesWithAmis: List[(Instance, Option[AMI])]): Unit = {
+    val prodInstancesWithAmis = instancesWithAmis.filter(_._1.stage.contains("PROD"))
+
+    val oldProdInstances = PrismLogic.oldInstances(prodInstancesWithAmis)
+    Logger.debug(s"Found ${oldProdInstances.size} PROD instances running on an out-of-date AMI")
+    oldProdInstanceCountAgent.send(Some(oldProdInstances.size))
+
+    val prodAgePercentiles = PrismLogic.instancesAmisAgePercentiles(prodInstancesWithAmis)
+    Logger.debug(s"Found AMIs age percentiles (p25: ${prodAgePercentiles.p25}, p50: ${prodAgePercentiles.p50}, p75: ${prodAgePercentiles.p75})")
+    amisAgePercentilesAgent.send(Some(prodAgePercentiles))
+  }
+
+  def refreshOldInstanceCountInfo(instancesWithAmis: List[(Instance, Option[AMI])]): Unit = {
+    val now = DateTime.now
+    val oldInstanceCountsByAccount = PrismLogic.oldInstances(instancesWithAmis)
+      .groupBy(_.meta.origin.accountName.getOrElse("unknown-account"))
+      .map{ case (accountName, list) => OldInstanceAccountHistory(now, accountName, list.length)}
+      .toList
+    oldInstanceCountByAccountAgent.send(oldInstanceCountsByAccount)
+  }
+
   def refreshInstancesInfo(): Unit = {
-    Prism.instancesWithAmis(SSAA(stage = Some("PROD"))).fold(
+    Prism.instancesWithAmis(SSAA()).fold(
       { err =>
-        Logger.warn(s"Failed to update old PROD instance count ${err.logString}")
+        Logger.warn(s"Failed to update old instance count ${err.logString}")
       },
       { instancesWithAmis =>
-        val oldInstances = PrismLogic.oldInstances(instancesWithAmis)
-        Logger.debug(s"Found ${oldInstances.size} PROD instances running on an out-of-date AMI")
-        oldProdInstanceCountAgent.send(Some(oldInstances.size))
-
-        val agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
-        Logger.debug(s"Found AMIs age percentiles (p25: ${agePercentiles.p25}, p50: ${agePercentiles.p50}, p75: ${agePercentiles.p75})")
-        amisAgePercentilesAgent.send(Some(agePercentiles))
+        refreshProdInstancesInfo(instancesWithAmis)
+        refreshOldInstanceCountInfo(instancesWithAmis)
       }
     )
   }

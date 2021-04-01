@@ -20,6 +20,7 @@ class Metrics(environment: Environment, agents: Agents, lifecycle: ApplicationLi
       CloudWatch.put(CloudWatchMetrics.AmisAgePercentile75th.name, agents.amisAgePercentiles.flatMap(_.p75))
       CloudWatch.put(CloudWatchMetrics.AmisAgePercentile90th.name, agents.amisAgePercentiles.flatMap(_.p90))
       CloudWatch.put(CloudWatchMetrics.AmisAgePercentileHighest.name, agents.amisAgePercentiles.flatMap(_.highest))
+      CloudWatch.put(CloudWatchMetrics.OldCountByAccount.name, agents.oldInstanceCountByAccount)
     }
 
     lifecycle.addStopHook { () =>

@@ -9,6 +9,7 @@ import com.amazonaws.services.cloudwatch.model._
 import models.Attempt
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logger
+import services.OldInstanceAccountHistory
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
@@ -22,6 +23,7 @@ object CloudWatchMetrics {
   case object AmisAgePercentile75th extends CloudWatchMetric("instances-amis-age-percentile-75th")
   case object AmisAgePercentile90th extends CloudWatchMetric("instances-amis-age-percentile-90th")
   case object AmisAgePercentileHighest extends CloudWatchMetric("instances-amis-age-percentile-highest")
+  case object OldCountByAccount extends CloudWatchMetric("instances-running-out-of-date-amis-account")
 }
 
 object CloudWatch {
@@ -41,7 +43,7 @@ object CloudWatch {
   val allStacks = "*"
   val namespace = "AMIs"
 
-  private val dimensions = List(
+  private val defaultDimensions = List(
     new Dimension()
       .withName("stage")
       .withValue(prodStage),
@@ -50,14 +52,14 @@ object CloudWatch {
       .withValue(allStacks)
   )
 
-  private[metrics] def putRequest(metricName: String, value: Int): PutMetricDataRequest = {
+  private[metrics] def putRequest(metricName: String, value: Int, dimensions: Option[List[Dimension]] = None): PutMetricDataRequest = {
     new PutMetricDataRequest()
       .withNamespace(namespace)
       .withMetricData {
         new MetricDatum()
           .withMetricName(metricName)
           .withValue(value.toDouble)
-          .withDimensions(dimensions.asJava)
+          .withDimensions(dimensions.getOrElse(defaultDimensions).asJava)
       }
   }
 
@@ -66,7 +68,7 @@ object CloudWatch {
     new GetMetricStatisticsRequest()
       .withNamespace(namespace)
       .withMetricName(metricName)
-      .withDimensions(dimensions.asJava)
+      .withDimensions(defaultDimensions.asJava)
       .withPeriod(60 * 60 * 24)  // 1 day (24 hrs)
       .withStartTime(now.minusDays(90).toDate)
       .withEndTime(now.toDate)
@@ -100,6 +102,16 @@ object CloudWatch {
     }{ value =>
       putWithRequest(putRequest(metricName, value))
       Logger.debug(s"Updated CloudWatch metric '$metricName' with value '$value'")
+    }
+  }
+
+  def put(metricName: String, oldInstanceAccountHistory: List[OldInstanceAccountHistory]): Unit = {
+    oldInstanceAccountHistory.foreach { oldAMICount =>
+      val dimensions = List(
+        new Dimension().withName("Account").withValue(oldAMICount.accountName),
+        new Dimension().withName("DataType").withValue("ami/total-old")
+      )
+      putWithRequest(putRequest(metricName, oldAMICount.count, Some(dimensions)))
     }
   }
 }
