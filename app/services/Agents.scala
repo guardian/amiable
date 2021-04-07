@@ -18,7 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class OldInstanceAccountHistory(date: DateTime, accountName: String, count: Int)
 
-class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle: ApplicationLifecycle, system: ActorSystem, environment: Environment)(implicit exec: ExecutionContext) {
+class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle: ApplicationLifecycle, system: ActorSystem, environment: Environment, cloudWatch: CloudWatch)(implicit exec: ExecutionContext) {
 
   lazy implicit val conf = amiableConfigProvider.conf
   val refreshInterval = 5.minutes
@@ -132,7 +132,7 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   }
 
   private def refreshHistory(agent: Agent[List[(DateTime, Double)]], metricName:String): Unit = {
-    CloudWatch.get(metricName).fold(
+    cloudWatch.get(metricName).fold(
       { err =>
         Logger.warn(s"Failed to update historical data for metric '$metricName': ${err.logString}")
       },

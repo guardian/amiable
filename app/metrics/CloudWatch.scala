@@ -6,9 +6,11 @@ import com.amazonaws.auth.{AWSCredentialsProviderChain, InstanceProfileCredentia
 import com.amazonaws.regions.{Region, Regions}
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClientBuilder
 import com.amazonaws.services.cloudwatch.model._
+import config.AmiableConfigProvider
 import models.Attempt
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logger
+import play.api.mvc.Handler.Stage
 import services.OldInstanceAccountHistory
 
 import scala.collection.JavaConverters._
@@ -26,7 +28,7 @@ object CloudWatchMetrics {
   case object OldCountByAccount extends CloudWatchMetric("instances-running-out-of-date-amis-account")
 }
 
-object CloudWatch {
+class CloudWatch(amiableConfigProvider: AmiableConfigProvider) {
   lazy val client = {
     val credentialsProvider = new AWSCredentialsProviderChain(
       InstanceProfileCredentialsProvider.getInstance(),
@@ -39,27 +41,16 @@ object CloudWatch {
     acwac
   }
 
-  val prodStage = "PROD"
-  val allStacks = "*"
-  val namespace = "AMIs"
+  val namespace = s"AMIable-${amiableConfigProvider.stage}"
 
-  private val defaultDimensions = List(
-    new Dimension()
-      .withName("stage")
-      .withValue(prodStage),
-    new Dimension()
-      .withName("stack")
-      .withValue(allStacks)
-  )
-
-  private[metrics] def putRequest(metricName: String, value: Int, dimensions: Option[List[Dimension]] = None): PutMetricDataRequest = {
+  private[metrics] def putRequest(metricName: String, value: Int, dimensions: List[Dimension] = List.empty): PutMetricDataRequest = {
     new PutMetricDataRequest()
       .withNamespace(namespace)
       .withMetricData {
         new MetricDatum()
           .withMetricName(metricName)
           .withValue(value.toDouble)
-          .withDimensions(dimensions.getOrElse(defaultDimensions).asJava)
+          .withDimensions(dimensions.asJava)
       }
   }
 
@@ -68,7 +59,6 @@ object CloudWatch {
     new GetMetricStatisticsRequest()
       .withNamespace(namespace)
       .withMetricName(metricName)
-      .withDimensions(defaultDimensions.asJava)
       .withPeriod(60 * 60 * 24)  // 1 day (24 hrs)
       .withStartTime(now.minusDays(90).toDate)
       .withEndTime(now.toDate)
@@ -111,7 +101,7 @@ object CloudWatch {
         new Dimension().withName("Account").withValue(oldAMICount.accountName),
         new Dimension().withName("DataType").withValue("ami/total-old")
       )
-      putWithRequest(putRequest(metricName, oldAMICount.count, Some(dimensions)))
+      putWithRequest(putRequest(metricName, oldAMICount.count, dimensions))
     }
   }
 }
