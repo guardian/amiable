@@ -47,7 +47,7 @@ class AppComponents(context: Context) extends play.api.BuiltInComponentsFromCont
 
   lazy val amiableConfigProvider = new AmiableConfigProvider(wsClient, configuration, httpConfiguration)
 
-  val cloudwatch = new CloudWatch(amiableConfigProvider)
+  val cloudwatch = new CloudWatch(amiableConfigProvider.stage)
 
   val agents = new Agents(amiableConfigProvider, applicationLifecycle, actorSystem, environment, cloudwatch)
   val metrics = new Metrics(cloudwatch, environment, agents, applicationLifecycle)

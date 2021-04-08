@@ -28,7 +28,7 @@ object CloudWatchMetrics {
   case object OldCountByAccount extends CloudWatchMetric("instances-running-out-of-date-amis-account")
 }
 
-class CloudWatch(amiableConfigProvider: AmiableConfigProvider) {
+class CloudWatch(stage: String) {
   lazy val client = {
     val credentialsProvider = new AWSCredentialsProviderChain(
       InstanceProfileCredentialsProvider.getInstance(),
@@ -41,7 +41,7 @@ class CloudWatch(amiableConfigProvider: AmiableConfigProvider) {
     acwac
   }
 
-  val namespace = s"AMIable-${amiableConfigProvider.stage}"
+  val namespace = s"AMIable-$stage"
 
   private[metrics] def putRequest(metricName: String, value: Int, dimensions: List[Dimension] = List.empty): PutMetricDataRequest = {
     new PutMetricDataRequest()
