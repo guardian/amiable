@@ -41,11 +41,11 @@ class CloudWatch(stage: String) {
     acwac
   }
 
-  val namespace = s"AMIable-$stage"
+  val defaultNamespace = s"AMIable-$stage"
 
-  private[metrics] def putRequest(metricName: String, value: Int, dimensions: List[Dimension] = List.empty): PutMetricDataRequest = {
+  private[metrics] def putRequest(metricName: String, value: Int, dimensions: List[Dimension] = List.empty, namespace: String = defaultNamespace): PutMetricDataRequest = {
     new PutMetricDataRequest()
-      .withNamespace(namespace)
+      .withNamespace(defaultNamespace)
       .withMetricData {
         new MetricDatum()
           .withMetricName(metricName)
@@ -57,7 +57,7 @@ class CloudWatch(stage: String) {
   private def getRequest(metricName: String): GetMetricStatisticsRequest = {
     val now = DateTime.now(DateTimeZone.UTC)
     new GetMetricStatisticsRequest()
-      .withNamespace(namespace)
+      .withNamespace(defaultNamespace)
       .withMetricName(metricName)
       .withPeriod(60 * 60 * 24)  // 1 day (24 hrs)
       .withStartTime(now.minusDays(90).toDate)
@@ -99,9 +99,9 @@ class CloudWatch(stage: String) {
     oldInstanceAccountHistory.foreach { oldAMICount =>
       val dimensions = List(
         new Dimension().withName("Account").withValue(oldAMICount.accountName),
-        new Dimension().withName("DataType").withValue("ami/total-old")
+        new Dimension().withName("DataType").withValue("oldami/total")
       )
-      putWithRequest(putRequest(metricName, oldAMICount.count, dimensions))
+      putWithRequest(putRequest(metricName, oldAMICount.count, dimensions, "SecurityHQ"))
     }
   }
 }
