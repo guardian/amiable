@@ -36,6 +36,10 @@ class AmiableConfigProvider @Inject() (val ws: WSClient, val playConfig: Configu
     amiableUrl
   )
 
+  val stage: String = requiredString(
+    playConfig, "stage"
+  )
+
   val requiredGoogleGroups: Set[String] = Set(requiredString(playConfig, "auth.google.2faGroupId"))
 
   val googleAuthConfig: GoogleAuthConfig = {

@@ -2,6 +2,7 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync
 import com.gu.googleauth.AuthAction
 import config.AmiableConfigProvider
 import controllers.{AMIable, Healthcheck, Login, routes}
+import metrics.CloudWatch
 import play.api.ApplicationLoader.Context
 import play.api.libs.logback.LogbackLoggerConfigurator
 import play.api.libs.ws.ahc.AhcWSComponents
@@ -44,10 +45,13 @@ class AppLoader extends play.api.ApplicationLoader {
 
 class AppComponents(context: Context) extends play.api.BuiltInComponentsFromContext(context) with HttpFiltersComponents with AhcWSComponents with controllers.AssetsComponents {
 
-  val agents = new Agents(amiableConfigProvider, applicationLifecycle, actorSystem, environment)
-  val metrics = new Metrics(environment, agents, applicationLifecycle)
-
   lazy val amiableConfigProvider = new AmiableConfigProvider(wsClient, configuration, httpConfiguration)
+
+  val cloudwatch = new CloudWatch(amiableConfigProvider.stage)
+
+  val agents = new Agents(amiableConfigProvider, applicationLifecycle, actorSystem, environment, cloudwatch)
+  val metrics = new Metrics(cloudwatch, environment, agents, applicationLifecycle)
+
 
   lazy val amazonMailClient: AmazonSimpleEmailServiceAsync = amazonSimpleEmailServiceAsync
 
