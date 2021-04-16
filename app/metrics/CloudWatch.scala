@@ -45,7 +45,7 @@ class CloudWatch(stage: String) {
 
   private[metrics] def putRequest(metricName: String, value: Int, dimensions: List[Dimension] = List.empty, namespace: String = defaultNamespace): PutMetricDataRequest = {
     new PutMetricDataRequest()
-      .withNamespace(defaultNamespace)
+      .withNamespace(namespace)
       .withMetricData {
         new MetricDatum()
           .withMetricName(metricName)
