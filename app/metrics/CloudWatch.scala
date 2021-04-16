@@ -25,7 +25,7 @@ object CloudWatchMetrics {
   case object AmisAgePercentile75th extends CloudWatchMetric("instances-amis-age-percentile-75th")
   case object AmisAgePercentile90th extends CloudWatchMetric("instances-amis-age-percentile-90th")
   case object AmisAgePercentileHighest extends CloudWatchMetric("instances-amis-age-percentile-highest")
-  case object OldCountByAccount extends CloudWatchMetric("instances-running-out-of-date-amis-account")
+  case object OldCountByAccount extends CloudWatchMetric("Vulnerabilities")
 }
 
 class CloudWatch(stage: String) {
