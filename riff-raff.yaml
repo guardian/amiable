@@ -13,6 +13,7 @@ deployments:
     type: ami-cloudformation-parameter
     app: amiable
     parameters:
+      amiParameter: AMIAmiable
       amiTags:
         Recipe: arm64-bionic-java8-deploy-infrastructure
         AmigoStage: PROD
