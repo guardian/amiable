@@ -13,7 +13,7 @@ class Metrics(cloudWatch: CloudWatch, environment: Environment, agents: Agents, 
   // only add metrics from PROD
   if (environment.mode == Mode.Prod) {
 
-    val subscription = Observable.interval(initialDelay = 10.seconds, period = agents.refreshInterval).subscribe { _ =>
+    val subscription = Observable.interval(initialDelay = 10.seconds, period = 6.hours).subscribe { _ =>
       cloudWatch.put(CloudWatchMetrics.OldCount.name, agents.oldProdInstanceCount)
       cloudWatch.put(CloudWatchMetrics.AmisAgePercentile25th.name, agents.amisAgePercentiles.flatMap(_.p25))
       cloudWatch.put(CloudWatchMetrics.AmisAgePercentile50th.name, agents.amisAgePercentiles.flatMap(_.p50))
