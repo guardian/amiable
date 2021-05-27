@@ -46,17 +46,21 @@ class Notifications @Inject() (amiableConfigProvider: AmiableConfigProvider,
 
 
   def setupSchedule(ownerSchdlCron: String)(implicit ec: ExecutionContext): Unit = {
-    scheduler.getContext.put("ScheduledNotificationRunner", scheduledNotificationRunner)
-    scheduler.getContext.put("ExecutionContext", ec)
-    val jobDetail = newJob(classOf[NotificationJob])
-      .withIdentity(new JobKey("notificationJob"))
-      .build()
-    val trigger = newTrigger()
-      .withIdentity(new TriggerKey("notificationTrigger"))
-      .withSchedule(cronSchedule(ownerSchdlCron))
-      .build()
-    scheduler.scheduleJob(jobDetail, trigger)
-    Logger.info(s"Scheduled owner notification with schedule [$ownerSchdlCron]")
+    if(amiableConfigProvider.stage == "PROD") {
+      scheduler.getContext.put("ScheduledNotificationRunner", scheduledNotificationRunner)
+      scheduler.getContext.put("ExecutionContext", ec)
+      val jobDetail = newJob(classOf[NotificationJob])
+        .withIdentity(new JobKey("notificationJob"))
+        .build()
+      val trigger = newTrigger()
+        .withIdentity(new TriggerKey("notificationTrigger"))
+        .withSchedule(cronSchedule(ownerSchdlCron))
+        .build()
+      scheduler.scheduleJob(jobDetail, trigger)
+      Logger.info(s"Scheduled owner notification with schedule [$ownerSchdlCron]")
+    } else {
+      Logger.info(s"Scheduled notifications disabled in ${amiableConfigProvider.stage}")
+    }
   }
 
   def sendEmail(): Attempt[List[String]] = {
