@@ -50,7 +50,7 @@ class AppComponents(context: Context) extends play.api.BuiltInComponentsFromCont
   val cloudwatch = new CloudWatch(amiableConfigProvider.stage)
 
   val agents = new Agents(amiableConfigProvider, applicationLifecycle, actorSystem, environment, cloudwatch)
-  val metrics = new Metrics(cloudwatch, environment, agents, applicationLifecycle)
+  val metrics = new Metrics(cloudwatch, amiableConfigProvider.stage, agents, applicationLifecycle)
 
 
   lazy val amazonMailClient: AmazonSimpleEmailServiceAsync = amazonSimpleEmailServiceAsync
