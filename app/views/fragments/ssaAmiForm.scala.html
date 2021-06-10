@@ -8,7 +8,7 @@
             <div class="input-field col m6">
                 <select name="accountName" id="accountName" value="@ssaa.accountName.getOrElse("")">
                     <option value="" disabled selected>Choose AWS account</option>
-                @for(accountName <- accountNames) {
+                @for(accountName <- accountNames.sorted) {
                     <option value="@accountName">@accountName</option>
                 }
                 </select>
