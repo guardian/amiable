@@ -104,12 +104,19 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   }
 
   def refreshOldInstanceCountInfo(instancesWithAmis: List[(Instance, Option[AMI])]): Unit = {
-    val now = DateTime.now
-    val oldInstanceCountsByAccount = PrismLogic.oldInstances(instancesWithAmis)
-      .groupBy(_.meta.origin.accountName.getOrElse("unknown-account"))
-      .map{ case (accountName, list) => OldInstanceAccountHistory(now, accountName, list.length)}
-      .toList
-    oldInstanceCountByAccountAgent.send(oldInstanceCountsByAccount)
+    for {
+      accounts <- Prism.getAccounts
+    } yield {
+      val now = DateTime.now
+      val oldInstancesForAccount = PrismLogic.oldInstances(instancesWithAmis).groupBy(_.meta.origin.accountName.getOrElse("unknown-account"))
+
+      val oldInstanceCountsByAccount = accounts.map(account => {
+        val numberOfOldInstancesForAccount = oldInstancesForAccount.getOrElse(account.accountName, List()).length
+        OldInstanceAccountHistory(now, account.accountName, numberOfOldInstancesForAccount)
+      })
+
+      oldInstanceCountByAccountAgent.send(oldInstanceCountsByAccount)
+    }
   }
 
   def refreshInstancesInfo(): Unit = {
