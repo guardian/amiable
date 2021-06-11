@@ -111,10 +111,7 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
       val amisForAccount = instancesWithAmis.groupBy(_._1.meta.origin.accountName.getOrElse("unknown-account"))
 
       val oldInstanceCountsByAccount = accounts.map( account => {
-        if(amisForAccount.contains(account.accountName))
-          OldInstanceAccountHistory(now, account.accountName, PrismLogic.oldInstances(amisForAccount(account.accountName)).length)
-        else
-          OldInstanceAccountHistory(now, account.accountName, 0)
+          OldInstanceAccountHistory(now, account.accountName, PrismLogic.oldInstances(amisForAccount.getOrElse(account.accountName, List())).length)
       })
 
       oldInstanceCountByAccountAgent.send(oldInstanceCountsByAccount)
