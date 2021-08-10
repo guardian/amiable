@@ -15,7 +15,7 @@
     "lint": "eslint lib/** bin/** --ext .ts",
     "format": "prettier --write \"{lib,bin}/**/*.ts\"",
     "cdk": "cdk",
-    "diff": "./script/diff",
+    "diff": "cdk diff --path-metadata false --version-reporting false",
     "generate": "./script/generate"
   },
   "devDependencies": {
