@@ -59,5 +59,6 @@ debianPackageDependencies := Seq("openjdk-8-jre-headless")
 riffRaffPackageType := (packageBin in Debian).value
 riffRaffArtifactResources  := Seq(
   riffRaffPackageType.value -> s"${name.value}/${name.value}.deb",
-  baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml"
+  baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml",
+  baseDirectory.value / "cdk/cdk.out/Amiable.template.json" -> "cloudformation/Amiable.template.json"
 )

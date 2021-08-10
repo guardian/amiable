@@ -8,9 +8,9 @@ deployments:
     parameters:
       bucket: deploy-tools-dist
     dependencies:
-      - update-ami
-  update-ami:
-    type: ami-cloudformation-parameter
+      - cloudformation
+  cloudformation:
+    type: cloud-formation
     app: amiable
     parameters:
       amiParameter: AMIAmiable
@@ -19,3 +19,6 @@ deployments:
         AmigoStage: PROD
         BuiltBy: amigo
       amiEncrypted: true
+      templatePath: Amiable.template.json
+      cloudFormationStackName: amiable-gucdk-
+      appendStageToCloudFormationStackName: true
