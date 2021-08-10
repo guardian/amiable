@@ -31,3 +31,12 @@ This can be achieved by running:
 ### Common problems
  - If when running main you can an error "Could not find a suitable constructor..." it's something wrong with your
  config file - you probably need to add `include "application.conf"` to your `application.local.conf` file.
+
+
+## CI/CD
+CI is configured in TeamCity. It will execute [`./script/ci`](./script/ci).
+
+CD is configured in RiffRaff. The project name is [`tools::amiable`](https://riffraff.gutools.co.uk/deployment/history?projectName=tools%3A%3Aamiable&page=1).
+
+Note, it was also ["amiable"](https://riffraff.gutools.co.uk/deployment/history?projectName=amiable&page=1) at one point too, however was namespaced to "tools::" for consistency with other projects.
+The "amiable" project has a block on it to prevent mistakes.

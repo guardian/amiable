@@ -50,9 +50,6 @@ resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
 PlayKeys.playDefaultPort := 9101
 
-// Allow building both ways on Teamcity
-addCommandAlias("riffRaffArtifact", "riffRaffUpload")
-
 packageName in Universal := name.value
 maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
@@ -60,14 +57,6 @@ packageDescription := """Web app for monitoring the use of AMIs"""
 debianPackageDependencies := Seq("openjdk-8-jre-headless")
 
 riffRaffPackageType := (packageBin in Debian).value
-
-def env(key: String): Option[String] = Option(System.getenv(key))
-
-riffRaffBuildIdentifier := env("BUILD_NUMBER").getOrElse("DEV")
-riffRaffManifestBranch := env("BRANCH_NAME").getOrElse("unknown_branch")
-riffRaffManifestVcsUrl := "git@github.com:guardian/amiable.git"
-riffRaffUploadArtifactBucket := Some("riffraff-artifact")
-riffRaffUploadManifestBucket := Some("riffraff-builds")
 riffRaffArtifactResources  := Seq(
   riffRaffPackageType.value -> s"${name.value}/${name.value}.deb",
   baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml"
