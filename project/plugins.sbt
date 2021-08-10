@@ -2,7 +2,7 @@
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.20")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.1.1")
-addSbtPlugin("com.gu" % "sbt-riffraff-artifact" % "0.9.2")
+addSbtPlugin("com.gu" % "sbt-riffraff-artifact" % "1.1.12")
 libraryDependencies += "org.vafer" % "jdeb" % "1.3" artifacts (Artifact("jdeb", "jar", "jar"))
 
 // web plugins
