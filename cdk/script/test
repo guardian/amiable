@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -e
+
+EXTRA_ARGS=""
+if [[ $# -gt 0 ]] ; then
+  # npm requires `--` for argument passing
+  # see https://docs.npmjs.com/cli/v6/commands/npm-run-script
+  EXTRA_ARGS="-- $*"
+fi
+
+yarn lint
+yarn test "$EXTRA_ARGS"
+
+for file in bin/*; do
+  stackName=$(basename "$file" ".ts")
+  yarn generate "$stackName"
+done
