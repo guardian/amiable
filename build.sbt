@@ -57,8 +57,6 @@ packageDescription := """Web app for monitoring the use of AMIs"""
 debianPackageDependencies := Seq("openjdk-8-jre-headless")
 
 riffRaffPackageType := (packageBin in Debian).value
-riffRaffUploadArtifactBucket := Some("riffraff-artifact")
-riffRaffUploadManifestBucket := Some("riffraff-builds")
 riffRaffArtifactResources  := Seq(
   riffRaffPackageType.value -> s"${name.value}/${name.value}.deb",
   baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml"
