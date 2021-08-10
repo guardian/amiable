@@ -8,15 +8,13 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "cfn": "cfn",
-    "update-template": "cfn update-template",
     "test": "jest --runInBand --detectOpenHandles",
     "test:dev": "jest --runInBand --detectOpenHandles --watch",
     "lint": "eslint lib/** bin/** --ext .ts",
     "format": "prettier --write \"{lib,bin}/**/*.ts\"",
     "cdk": "cdk",
     "diff": "cdk diff --path-metadata false --version-reporting false",
-    "generate": "./script/generate"
+    "synth": "cdk synth --path-metadata false --version-reporting false"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.115.0",
