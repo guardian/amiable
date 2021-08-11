@@ -20,7 +20,7 @@
     "@aws-cdk/assert": "1.115.0",
     "@guardian/eslint-config-typescript": "^0.6.0",
     "@guardian/private-infrastructure-config": "git+ssh://git@github.com:guardian/private-infrastructure-config.git#1.2.0",
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^27.0.0",
     "@types/node": "16.4.13",
     "aws-cdk": "1.115.0",
     "eslint": "^7.32.0",
