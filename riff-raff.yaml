@@ -20,5 +20,3 @@ deployments:
         BuiltBy: amigo
       amiEncrypted: true
       templatePath: Amiable.template.json
-      cloudFormationStackName: amiable-gucdk-
-      appendStageToCloudFormationStackName: true
