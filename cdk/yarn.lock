@@ -1256,10 +1256,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@guardian/cdk@23.0.0":
-  version "23.0.0"
-  resolved "https://registry.yarnpkg.com/@guardian/cdk/-/cdk-23.0.0.tgz#c8e9725112e69634062b4ea466b9e69cc78d04ac"
-  integrity sha512-YpTboYaJ6XQPHJtVmuiCZsAy6RHr9T963wE2zKbniLy6p6JaAihpdyTAyuUxaU/yePiyAfQelSUd3ypskJgmQg==
+"@guardian/cdk@23.3.0":
+  version "23.3.0"
+  resolved "https://registry.yarnpkg.com/@guardian/cdk/-/cdk-23.3.0.tgz#c0fbd1d05e2b792115e5f7aeae419078ccfb427f"
+  integrity sha512-r0qDOwzOxsMDXYJp100266Zy26U5Dt1vYo+ivBhokyu/hgPrcWcVApBcEWaGQGw0FBwnlGJnQ+cGLcD5SsX+Eg==
   dependencies:
     "@aws-cdk/assert" "1.115.0"
     "@aws-cdk/aws-apigateway" "1.115.0"
@@ -1276,7 +1276,7 @@
     "@aws-cdk/aws-rds" "1.115.0"
     "@aws-cdk/aws-s3" "1.115.0"
     "@aws-cdk/core" "1.115.0"
-    aws-sdk "^2.950.0"
+    aws-sdk "^2.960.0"
     execa "^5.1.1"
     git-url-parse "^11.5.0"
     read-pkg-up "7.0.1"
@@ -2003,25 +2003,10 @@ aws-cdk@1.115.0:
     yaml "1.10.2"
     yargs "^16.2.0"
 
-aws-sdk@^2.848.0:
-  version "2.865.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.865.0.tgz#e80cc4a07059068d7354f9043df4ede9fbe11a41"
-  integrity sha512-JUaUlGjnJY4Nnd/xnWt8rPmTwebVvA26XfnUM3tyAPtSClwniANkaRq4UdHI0uU3R+V4N2Cuohy8XSLOzBG/4A==
-  dependencies:
-    buffer "4.9.2"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.3.2"
-    xml2js "0.4.19"
-
-aws-sdk@^2.950.0:
-  version "2.952.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.952.0.tgz#cfbdf2c4685aed17165f4df8760759cd7659a597"
-  integrity sha512-FZkmOWAyDSQMeD8iioeoSW873ZjPXLfGejr0gNi8kQB7JrllOayPaexpq70aT+7n5bAzArjSIH8OAB+BoHYijA==
+aws-sdk@^2.848.0, aws-sdk@^2.960.0:
+  version "2.965.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.965.0.tgz#e63fb38bcc77334a3c9edbe9353050312f3bdbfe"
+  integrity sha512-jifeFsA6IEKXM65WI5gvBNSCXKw4n64Wf9Q7/8E7wZ5vzRbBGoHzGpyhK6ZBBRvE2YvNp/ykTWChO7RydkA+AQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
