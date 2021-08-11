@@ -1,0 +1,44 @@
+{
+  "name": "cdk",
+  "version": "0.1.0",
+  "bin": {
+    "cdk": "./node_modules/.bin/cdk"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest --runInBand --detectOpenHandles",
+    "test:dev": "jest --runInBand --detectOpenHandles --watch",
+    "lint": "eslint lib/** bin/** --ext .ts",
+    "format": "prettier --write \"{lib,bin}/**/*.ts\"",
+    "cdk": "cdk",
+    "diff": "cdk diff --path-metadata false --version-reporting false",
+    "synth": "cdk synth --path-metadata false --version-reporting false"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "1.115.0",
+    "@guardian/eslint-config-typescript": "^0.6.0",
+    "@guardian/private-infrastructure-config": "git+ssh://git@github.com:guardian/private-infrastructure-config.git#1.2.0",
+    "@types/jest": "^26.0.24",
+    "@types/node": "16.4.13",
+    "aws-cdk": "1.115.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.0.6",
+    "jest-teamcity-reporter": "^0.9.0",
+    "prettier": "^2.3.2",
+    "ts-jest": "^27.0.4",
+    "ts-node": "^10.1.0",
+    "typescript": "~4.3.5"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-autoscaling": "1.115.0",
+    "@aws-cdk/aws-ec2": "1.115.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "1.115.0",
+    "@aws-cdk/aws-iam": "1.115.0",
+    "@aws-cdk/aws-rds": "1.115.0",
+    "@aws-cdk/core": "1.115.0",
+    "@guardian/cdk": "23.0.0",
+    "source-map-support": "^0.5.16"
+  }
+}
