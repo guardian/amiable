@@ -47,7 +47,7 @@
                     @for( (key, value) <- ami.tags) {
                         <tr>
                             <th>@key:</th>
-                            <td>@value</td>
+                            <td>@if(key == "Recipe"){ <a target="_blank" href="https://amigo.gutools.co.uk/recipes/@value">@value</a> } else { @value }</td>
                         </tr>
                     }
                     </tbody>
