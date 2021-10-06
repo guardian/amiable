@@ -48,11 +48,6 @@ Object {
       "Description": "The sender of emails sent using SES.",
       "Type": "String",
     },
-    "InstanceTypeAmiable": Object {
-      "Default": "t3.small",
-      "Description": "EC2 Instance Type for the app amiable",
-      "Type": "String",
-    },
     "Stage": Object {
       "AllowedValues": Array [
         "CODE",
@@ -175,9 +170,7 @@ Object {
         "ImageId": Object {
           "Ref": "AMIAmiable",
         },
-        "InstanceType": Object {
-          "Ref": "InstanceTypeAmiable",
-        },
+        "InstanceType": "t4g.micro",
         "SecurityGroups": Array [
           Object {
             "Fn::GetAtt": Array [
@@ -817,11 +810,11 @@ Object {
     },
     "TargetGroupAmiable6987B5AC": Object {
       "Properties": Object {
-        "HealthCheckIntervalSeconds": 30,
+        "HealthCheckIntervalSeconds": 10,
         "HealthCheckPath": "/healthcheck",
         "HealthCheckProtocol": "HTTP",
-        "HealthCheckTimeoutSeconds": 10,
-        "HealthyThresholdCount": 2,
+        "HealthCheckTimeoutSeconds": 5,
+        "HealthyThresholdCount": 5,
         "Port": 9000,
         "Protocol": "HTTP",
         "Tags": Array [
@@ -848,8 +841,14 @@ Object {
             },
           },
         ],
+        "TargetGroupAttributes": Array [
+          Object {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "30",
+          },
+        ],
         "TargetType": "instance",
-        "UnhealthyThresholdCount": 5,
+        "UnhealthyThresholdCount": 2,
         "VpcId": Object {
           "Ref": "VpcId",
         },
@@ -876,10 +875,6 @@ Object {
           },
         ],
         "Tags": Array [
-          Object {
-            "Key": "App",
-            "Value": "amiable",
-          },
           Object {
             "Key": "gu:cdk:version",
             "Value": "TEST",

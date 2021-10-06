@@ -10,5 +10,5 @@ new Amiable(app, "Amiable", {
   migratedFromCloudFormation: true,
   stack: "deploy",
   env: { region: "eu-west-1" },
-  stackName
+  stackName,
 });
