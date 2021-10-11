@@ -14,6 +14,7 @@ import scala.util.Try
 
 case class AMIableConfig(
                           prismUrl: String,
+                          amigoUrl: String,
                           wsClient: WSClient,
                           mailAddress: String,
                           ownerNotificationCron: Option[String],
@@ -29,6 +30,7 @@ class AmiableConfigProvider @Inject() (val ws: WSClient, val playConfig: Configu
 
   val conf = AMIableConfig(
     playConfig.get[String]("prism.url"),
+    playConfig.get[String]("amigo.url"),
     ws,
     playConfig.get[String]("amiable.mailClient.fromAddress"),
     playConfig.getOptional[String]("amiable.owner.notification.cron"),

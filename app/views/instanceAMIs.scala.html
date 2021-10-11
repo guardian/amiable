@@ -1,10 +1,12 @@
+@import config.AMIableConfig
 @(
         filterSsa: SSAA,
         metrics: models.Metrics,
         amisWithUpgrades: List[AMI],
         amiSSAs: List[(SSAA, List[AMI])],
         instancesCount: Map[(SSAA, AMI), Int],
-        accountNames: List[String]
+        accountNames: List[String],
+        conf: AMIableConfig
 )
 
 @import views.html.fragments.{ssaAmiForm, amiOverlay, printSSA, metricsHeader}
@@ -28,7 +30,7 @@
             <div class="amis-list">
                 @for(amiWithUpgrade <- amisWithUpgrades) {
                     <div class="amis-list__item">
-                        @amiOverlay(amiWithUpgrade, instancesCount.get(filterSsa, amiWithUpgrade))
+                        @amiOverlay(amiWithUpgrade, conf, instancesCount.get(filterSsa, amiWithUpgrade))
                     </div>
                 }
             </div>
@@ -48,7 +50,7 @@
             <div class="ssa-amis">
                         @for(ami <- amis) {
                             <div class="ssa-amis__item">
-                                @amiOverlay(ami, instancesCount.get(ssaa, ami))
+                                @amiOverlay(ami, conf, instancesCount.get(ssaa, ami))
                             </div>
                         }
             </div>
@@ -61,7 +63,7 @@
                                 <div class="card-content">
                                     @printSSA(ssaa)
                                     @for(ami <- amis) {
-                                        @amiOverlay(ami = ami, instanceCount = instancesCount.get(ssaa, ami), stackStageApp = Some(ssaa))
+                                        @amiOverlay(ami = ami, conf, instanceCount = instancesCount.get(ssaa, ami), stackStageApp = Some(ssaa))
                                     }
                                 </div>
                             </div>
