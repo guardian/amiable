@@ -21,6 +21,7 @@ This can be achieved by running:
  ```
     APPLICATION_SECRET="abcdefghijklmnopqrstuvwxyz"
     PRISM_URL="http://prism.gutools.co.uk"
+    AMIGO_URL="https://amigo.gutools.co.uk"
     HOST="https://amiable.local.dev-gutools.co.uk"
  ```
  In order to setup the auth parameters (eg. `serviceAccountCertPath`),
