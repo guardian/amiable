@@ -1,4 +1,5 @@
-@(ami: AMI)
+@import config.AMIableConfig
+@(ami: AMI, conf: AMIableConfig)
 
 @import utils.DateUtils.{getAgeColour}
 @import prism.Recommendations
@@ -6,7 +7,7 @@
 
 <div class="ami-details__container">
     <div class="ami-details--this-ami">
-        @amiDetails(ami)
+        @amiDetails(ami, conf)
     </div>
     @if(Recommendations.isObsoleteUbuntu(ami)) {
         <div class="ami-details--upgrade upgrade-image no-upgrade-image dist-eol">
@@ -15,7 +16,7 @@
     } else {
         @ami.upgrade.map { upgrade =>
             <div class="ami-details--upgrade upgrade-image upgrade-image--@ami.upgrade.flatMap(upgrade => upgrade.creationDate).map(getAgeColour).getOrElse("black")">
-              @amiDetails(upgrade)
+              @amiDetails(upgrade, conf)
             </div>
         }.getOrElse {
             @if(Recommendations.isUnknown(ami)) {

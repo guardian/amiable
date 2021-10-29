@@ -47,6 +47,7 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
         launchConfigs <- Prism.launchConfigUsage(ami)
       } yield Ok(views.html.ami(
         amiWithUpgrade,
+        conf,
         PrismLogic.sortInstancesByStack(instances),
         PrismLogic.sortLCsByOwner(launchConfigs)))
     }
@@ -78,7 +79,8 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
         amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis)),
         PrismLogic.sortSSAAmisByAge(amiSSAs),
         instancesCount,
-        accountNames
+        accountNames,
+        conf
       ))
     }
   }

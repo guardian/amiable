@@ -60,7 +60,7 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
   "createEmailRequest should use the override To address if it is defined" in {
     val date = new DateTime(2017,6,1,11,0,0)
     val owner = Owner("john.doe", List.empty)
-    val config = AMIableConfig("prismUrl", null, "fromAddress", None, overrideToAddress = Some("admin@guardian.co.uk"), "http://test-url")
+    val config = AMIableConfig("prismUrl", "amigoUrl", null, "fromAddress", None, overrideToAddress = Some("admin@guardian.co.uk"), "http://test-url")
     val req = ScheduledNotificationRunner.createEmailRequest(owner, List.empty, config, date)
     req.getDestination.getToAddresses.get(0) should be("admin@guardian.co.uk")
   }
@@ -68,7 +68,7 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
   "createEmailRequest should use the date in the subject line" in {
     val date = new DateTime(2017,6,1,11,0,0)
     val owner = Owner("john.doe", List.empty)
-    val config = AMIableConfig("prismUrl", null, "fromAddress", None, overrideToAddress = None, "http://test-url")
+    val config = AMIableConfig("prismUrl", "amigoUrl", null, "fromAddress", None, overrideToAddress = None, "http://test-url")
     val req = ScheduledNotificationRunner.createEmailRequest(owner, List.empty, config, date)
     req.getMessage.getSubject.getData should include ("2017-06-01")
   }
@@ -76,7 +76,7 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
   "createEmailRequest should use the owner's id in the To address if the override address is not defined" in {
     val date = new DateTime(2017,6,1,11,0,0)
     val owner = Owner("john.doe", List.empty)
-    val config = AMIableConfig("prismUrl", null, "fromAddress", None, overrideToAddress = None, "http://test-url")
+    val config = AMIableConfig("prismUrl", "amigoUrl", null, "fromAddress", None, overrideToAddress = None, "http://test-url")
     val req = ScheduledNotificationRunner.createEmailRequest(owner, List.empty, config, date)
     req.getDestination.getToAddresses.get(0) should be("john.doe@guardian.co.uk")
   }

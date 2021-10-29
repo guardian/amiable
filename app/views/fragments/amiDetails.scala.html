@@ -1,4 +1,5 @@
-@(ami: AMI)
+@import config.AMIableConfig
+@(ami: AMI, conf: AMIableConfig)
 
 @import utils.DateUtils.{readableDateTime, getAgeColour, daysAgo}
 @import prism.Recommendations
@@ -47,7 +48,7 @@
                     @for( (key, value) <- ami.tags) {
                         <tr>
                             <th>@key:</th>
-                            <td>@value</td>
+                            <td>@if(key == "Recipe"){ <a target="_blank" href="@conf.amigoUrl/recipes/@value">@value</a> } else { @value }</td>
                         </tr>
                     }
                     </tbody>
