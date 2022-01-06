@@ -1,26 +1,27 @@
 package prism
 
 import models._
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.ExecutionContext
 
-object JsonUtils {
+object JsonUtils extends Logging {
 
   import Serialisation._
 
   def jsResultToAttempt(errMessage: String)(jsResult: JsResult[List[JsValue]]): Attempt[List[JsValue]] = {
     jsResult match {
       case JsSuccess(ami, _) => Attempt.Right(ami)
-      case JsError(pathErrors) => Attempt.Left {
+      case JsError(pathErrors) =>
+        Attempt.Left {
         AMIableErrors(pathErrors.flatMap { case (path, errors) =>
           errors.map { error =>
-            Logger.warn(s"${error.message} while extracting list of JsValues at $path")
+            logger.warn(s"${error.message} while extracting list of JsValues at $path")
             AMIableError(error.message, errMessage, 500)
           }
-        })
+        }.toList)
       }
     }
   }
@@ -31,10 +32,10 @@ object JsonUtils {
       case JsError(pathErrors) => Attempt.Left {
         AMIableErrors(pathErrors.flatMap { case (path, errors) =>
           errors.map { error =>
-            Logger.warn(s"${error.message} extracting value at $path")
+            logger.warn(s"${error.message} extracting value at $path")
             AMIableError(error.message, errMessage, 500)
           }
-        })
+        }.toList)
       }
     }
   }
@@ -42,7 +43,7 @@ object JsonUtils {
   def amiResponseJson(response: WSResponse): Attempt[JsValue] = Attempt.fromEither {
     (response.json \ "data").toEither
       .left.map { valErr =>
-      Logger.warn(valErr.message)
+      logger.warn(valErr.message)
       AMIableErrors(AMIableError(valErr.message, "Could not parse AMI response JSON", 500))
     }
   }

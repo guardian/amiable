@@ -5,7 +5,7 @@ import config.{AMIableConfig, AmiableConfigProvider}
 import javax.inject.Inject
 import models._
 import org.joda.time.DateTime
-import play.api.{Environment, Logger, Mode}
+import play.api.{Environment, Logging, Mode}
 import prism.{Prism, PrismLogic}
 import utils.DateUtils
 
@@ -30,7 +30,7 @@ class ScheduledNotificationRunner @Inject() (mailClient: AWSMailClient, environm
   }
 }
 
-object ScheduledNotificationRunner {
+object ScheduledNotificationRunner extends Logging {
   def ownerForInstance(i: Instance, owners: Owners): Owner = {
     owners.owners.find(_.hasSSA(SSAA(i.stack, i.stage, i.app.headOption)))
       .orElse(owners.owners.find(_.hasSSA(SSAA(i.stack, app = i.app.headOption))))
@@ -52,7 +52,7 @@ object ScheduledNotificationRunner {
   }
 
   def findInstanceOwners(instances: List[Instance], owners: Owners): Map[Owner, List[Instance]] = {
-    instances.map { i => (i, ScheduledNotificationRunner.ownerForInstance(i, owners)) }.groupBy(_._2).mapValues(_.map(_._1))
+    instances.map { i => (i, ScheduledNotificationRunner.ownerForInstance(i, owners)) }.groupBy(_._2).view.mapValues(_.map(_._1)).toMap
   }
 
   def createEmailRequest(owner: Owner, instances: Seq[(Instance, Option[AMI])], config: AMIableConfig, today: DateTime): SendEmailRequest = {
@@ -78,7 +78,7 @@ object ScheduledNotificationRunner {
       case (_, Some(overrideToaddress)) =>
         mailClient.send(overrideToaddress, request)
       case (_, None) =>
-        Logger.info(s"Not in Prod and no override To Address set. Would have sent email to ${owner.id}, request: $request")
+        logger.info(s"Not in Prod and no override To Address set. Would have sent email to ${owner.id}, request: $request")
         Attempt.Right("")
     }
   }

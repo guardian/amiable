@@ -9,7 +9,7 @@ import com.amazonaws.services.cloudwatch.model._
 import config.AmiableConfigProvider
 import models.Attempt
 import org.joda.time.{DateTime, DateTimeZone}
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.Handler.Stage
 import services.OldInstanceAccountHistory
 
@@ -28,7 +28,7 @@ object CloudWatchMetrics {
   case object OldCountByAccount extends CloudWatchMetric("Vulnerabilities")
 }
 
-class CloudWatch(stage: String) {
+class CloudWatch(stage: String) extends Logging {
   lazy val client = {
     val credentialsProvider = new AWSCredentialsProviderChain(
       InstanceProfileCredentialsProvider.getInstance(),
@@ -81,17 +81,17 @@ class CloudWatch(stage: String) {
 
   def get(metricName: String)(implicit executionContext: ExecutionContext): Attempt[Option[List[(DateTime, Double)]]] = {
     Attempt.fromFuture(getWithRequest(getRequest(metricName)).map(ds => Right(Option(ds)))){ case e =>
-      Logger.warn("Failed to fetch CloudWatch data", e)
+      logger.warn("Failed to fetch CloudWatch data", e)
       Right(None)
     }
   }
 
   def put(metricName: String, maybeValue: Option[Int]): Unit = {
     maybeValue.fold {
-      Logger.warn(s"Not updating CloudWatch - no value available for '$metricName'")
+      logger.warn(s"Not updating CloudWatch - no value available for '$metricName'")
     }{ value =>
       putWithRequest(putRequest(metricName, value))
-      Logger.debug(s"Updated CloudWatch metric '$metricName' with value '$value'")
+      logger.debug(s"Updated CloudWatch metric '$metricName' with value '$value'")
     }
   }
 

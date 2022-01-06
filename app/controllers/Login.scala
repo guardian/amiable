@@ -37,15 +37,14 @@ class Login (val controllerComponents: ControllerComponents, val amiableConfigPr
   }
 
   def logout: Action[AnyContent] = Action { implicit request =>
-    Redirect(routes.Login.loggedOut()).withNewSession
+    Redirect(routes.Login.loggedOut).withNewSession
   }
 
   def loggedOut: Action[AnyContent] = Action {
-    Ok(views.html.loggedOut())
-  }
+    Ok(views.html.loggedOut())}
 
-  override val failureRedirectTarget: Call = routes.Login.startLogin()
+  override val failureRedirectTarget: Call = routes.Login.startLogin
 
-  override val defaultRedirectTarget: Call = routes.AMIable.index()
+  override val defaultRedirectTarget: Call = routes.AMIable.index
 
 }

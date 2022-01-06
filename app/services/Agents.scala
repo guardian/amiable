@@ -3,12 +3,13 @@ package services
 import akka.actor.ActorSystem
 import akka.agent.Agent
 import config.AmiableConfigProvider
+
 import javax.inject.Inject
 import metrics.{CloudWatch, CloudWatchMetrics}
 import models._
 import org.joda.time.DateTime
 import play.api.inject.ApplicationLifecycle
-import play.api.{Environment, Logger, Mode}
+import play.api.{Environment, Logging, Mode}
 import prism.{Prism, PrismLogic}
 import rx.lang.scala.Observable
 import utils.Percentiles
@@ -18,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class OldInstanceAccountHistory(date: DateTime, accountName: String, count: Int)
 
-class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle: ApplicationLifecycle, system: ActorSystem, environment: Environment, cloudWatch: CloudWatch)(implicit exec: ExecutionContext) {
+class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle: ApplicationLifecycle, system: ActorSystem, environment: Environment, cloudWatch: CloudWatch)(implicit exec: ExecutionContext) extends Logging {
 
   lazy implicit val conf = amiableConfigProvider.conf
   val refreshInterval = 5.minutes
@@ -50,7 +51,7 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
     refreshHistory()
 
     val prismDataSubscription = Observable.interval(refreshInterval).subscribe { i =>
-      Logger.debug(s"Refreshing agents")
+      logger.debug(s"Refreshing agents")
       refreshAmis()
       refreshSSAs()
       refreshInstancesInfo()
@@ -70,10 +71,10 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   def refreshAmis(): Unit = {
     Prism.getAMIs().fold(
       { err =>
-        Logger.warn(s"Failed to update AMIs ${err.logString}")
+        logger.warn(s"Failed to update AMIs ${err.logString}")
       },
       { amis =>
-        Logger.debug(s"Loaded ${amis.size} AMIs")
+        logger.debug(s"Loaded ${amis.size} AMIs")
         amisAgent.send(amis.toSet)
       }
     )
@@ -82,10 +83,10 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   def refreshSSAs(): Unit = {
     Prism.getInstances(SSAA()).map(PrismLogic.instanceSSAAs).fold(
       { err =>
-        Logger.warn(s"Failed to update SSAs ${err.logString}")
+        logger.warn(s"Failed to update SSAs ${err.logString}")
       },
       { ssaas =>
-        Logger.debug(s"Loaded ${ssaas.size} SSAA combinations")
+        logger.debug(s"Loaded ${ssaas.size} SSAA combinations")
         ssasAgent.send(ssaas.toSet)
       }
     )
@@ -95,11 +96,11 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
     val prodInstancesWithAmis = instancesWithAmis.filter(_._1.stage.contains("PROD"))
 
     val oldProdInstances = PrismLogic.oldInstances(prodInstancesWithAmis)
-    Logger.debug(s"Found ${oldProdInstances.size} PROD instances running on an out-of-date AMI")
+    logger.debug(s"Found ${oldProdInstances.size} PROD instances running on an out-of-date AMI")
     oldProdInstanceCountAgent.send(Some(oldProdInstances.size))
 
     val prodAgePercentiles = PrismLogic.instancesAmisAgePercentiles(prodInstancesWithAmis)
-    Logger.debug(s"Found AMIs age percentiles (p25: ${prodAgePercentiles.p25}, p50: ${prodAgePercentiles.p50}, p75: ${prodAgePercentiles.p75})")
+    logger.debug(s"Found AMIs age percentiles (p25: ${prodAgePercentiles.p25}, p50: ${prodAgePercentiles.p50}, p75: ${prodAgePercentiles.p75})")
     amisAgePercentilesAgent.send(Some(prodAgePercentiles))
   }
 
@@ -122,7 +123,7 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   def refreshInstancesInfo(): Unit = {
     Prism.instancesWithAmis(SSAA()).fold(
       { err =>
-        Logger.warn(s"Failed to update old instance count ${err.logString}")
+        logger.warn(s"Failed to update old instance count ${err.logString}")
       },
       { instancesWithAmis =>
         refreshProdInstancesInfo(instancesWithAmis)
@@ -141,13 +142,13 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   private def refreshHistory(agent: Agent[List[(DateTime, Double)]], metricName:String): Unit = {
     cloudWatch.get(metricName).fold(
       { err =>
-        Logger.warn(s"Failed to update historical data for metric '$metricName': ${err.logString}")
+        logger.warn(s"Failed to update historical data for metric '$metricName': ${err.logString}")
       },
       { dataOpt =>
         dataOpt.fold {
-          Logger.warn(s"Failed to fetch historical data for metric '$metricName'")
+          logger.warn(s"Failed to fetch historical data for metric '$metricName'")
         } { data =>
-          Logger.debug(s"Found ${data.size} historical datapoints for metric '$metricName'")
+          logger.debug(s"Found ${data.size} historical datapoints for metric '$metricName'")
           agent.send(data)
         }
       }

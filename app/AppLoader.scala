@@ -63,7 +63,7 @@ class AppComponents(context: Context) extends play.api.BuiltInComponentsFromCont
 
   private val authAction = new AuthAction[AnyContent](
     amiableConfigProvider.googleAuthConfig,
-    routes.Login.startLogin(),
+    routes.Login.startLogin,
     controllerComponents.parsers.default
   )(executionContext)
 

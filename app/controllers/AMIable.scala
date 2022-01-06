@@ -13,7 +13,7 @@ import services.notification.Notifications
 import scala.concurrent.ExecutionContext
 
 class AMIable (val controllerComponents: ControllerComponents, val amiableConfigProvider: AmiableConfigProvider, agents: Agents, notifications: Notifications, authAction: AuthAction[AnyContent])
-             (implicit exec: ExecutionContext) extends BaseController {
+             (implicit exec: ExecutionContext) extends BaseController with Logging {
 
   implicit val conf: AMIableConfig = amiableConfigProvider.conf
 
@@ -98,7 +98,7 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
     */
   private def attempt[A](action: => Attempt[Result]) = {
     Attempt(action) { err =>
-      Logger.error(err.logString)
+      logger.error(err.logString)
       Status(err.statusCode)(views.html.error(err))
     }
   }

@@ -1,10 +1,12 @@
+import com.typesafe.sbt.packager.debian.DebianPlugin.autoImport.Debian
+
 name := """amiable"""
 
-version := "1.0-SNAPSHOT"
+version := "1.2-SNAPSHOT"
 
 enablePlugins(PlayScala, RiffRaffArtifact, JDebPackaging, SystemdPlugin)
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.13.7"
 
 javaOptions in Universal ++= Seq(
   "-Dpidfile.path=/dev/null",
@@ -26,27 +28,28 @@ scalacOptions := Seq(
   "-deprecation",
   "-Xcheckinit",
   "-feature",
-  "-Yinline-warnings",
+  "-nowarn",
   "-Ywarn-unused"
 )
 
 libraryDependencies ++= Seq(
   jdbc,
-  cache,
+  ehcache,
   ws,
-  "com.typesafe.akka" %% "akka-agent" % "2.4.2",
-  "io.reactivex" %% "rxscala" % "0.26.0",
-  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.11.557",
-  "com.amazonaws" % "aws-java-sdk-ses" % "1.11.557",
-  "com.gu" %% "play-googleauth" % "0.7.7",
-  "org.quartz-scheduler" % "quartz" % "2.2.3",
-  "com.typesafe.play" %% "play-json-joda" % "2.7.3",
+  "com.typesafe.akka" %% "akka-agent" % "2.5.32",
+  "io.reactivex" %% "rxscala" % "0.27.0",
+  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.12.128",
+  "com.amazonaws" % "aws-java-sdk-ses" % "1.12.128",
+  "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.2",
+  "org.quartz-scheduler" % "quartz" % "2.3.2",
+  "com.typesafe.play" %% "play-json-joda" % "2.10.0-RC5",
   specs2 % Test,
-  "org.scalatest" %% "scalatest" % "2.2.6" % Test,
-  "org.mockito" % "mockito-core" % "1.10.19" % Test
+  "org.scalatest" %% "scalatest" % "3.2.10" % Test,
+  "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
+  "org.mockito" % "mockito-core" % "4.2.0" % Test
 )
 
-resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 PlayKeys.playDefaultPort := 9101
 
@@ -62,3 +65,4 @@ riffRaffArtifactResources  := Seq(
   baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml",
   baseDirectory.value / "cdk/cdk.out/Amiable.template.json" -> "cloudformation/Amiable.template.json"
 )
+//dependencyOverrides += "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" // Avoid binary incompatibility error.

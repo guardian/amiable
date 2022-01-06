@@ -52,15 +52,15 @@ class AmiableConfigProvider @Inject() (val ws: WSClient, val playConfig: Configu
       GoogleAuthConfig(
         clientId = requiredString(playConfig, "auth.google.clientId"),
         clientSecret = requiredString(playConfig, "auth.google.clientSecret"),
-        redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback().url}",
-        domain = domain,
+        redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback.url}",
+        domains = List(domain),
         antiForgeryChecker = AntiForgeryChecker.borrowSettingsFromPlay(httpConfiguration)
       )
     }).getOrElse(
       GoogleAuthConfig.withNoDomainRestriction(
         clientId = requiredString(playConfig, "auth.google.clientId"),
         clientSecret = requiredString(playConfig, "auth.google.clientSecret"),
-        redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback().url}",
+        redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback.url}",
         antiForgeryChecker = AntiForgeryChecker.borrowSettingsFromPlay(httpConfiguration)
       )
     )

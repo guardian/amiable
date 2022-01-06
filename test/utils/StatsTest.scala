@@ -1,10 +1,11 @@
 package utils
 
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.util.Random
 
-class StatsTests extends FreeSpec with Matchers {
+class StatsTests extends AnyFreeSpec with Matchers {
 
   val percentiles = Percentiles(Random.shuffle(0 to 100).toSeq)
 
