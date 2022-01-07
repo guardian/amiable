@@ -38,8 +38,10 @@ libraryDependencies ++= Seq(
   ws,
   "com.typesafe.akka" %% "akka-agent" % "2.5.32",
   "io.reactivex" %% "rxscala" % "0.27.0",
-  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.12.128",
-  "com.amazonaws" % "aws-java-sdk-ses" % "1.12.128",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.1",
+  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.12.134",
+  "com.amazonaws" % "aws-java-sdk-ses" % "1.12.134",
+  "com.google.code.gson" % "gson" % "2.8.9",
   "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.2",
   "org.quartz-scheduler" % "quartz" % "2.3.2",
   "com.typesafe.play" %% "play-json-joda" % "2.10.0-RC5",
@@ -65,4 +67,3 @@ riffRaffArtifactResources  := Seq(
   baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml",
   baseDirectory.value / "cdk/cdk.out/Amiable.template.json" -> "cloudformation/Amiable.template.json"
 )
-//dependencyOverrides += "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" // Avoid binary incompatibility error.
