@@ -1,10 +1,11 @@
 package config
 
 import java.io.FileInputStream
-
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
+import com.google.auth.oauth2.ServiceAccountCredentials
 import com.gu.googleauth.{AntiForgeryChecker, GoogleAuthConfig, GoogleGroupChecker, GoogleServiceAccount}
 import controllers.routes
+
 import javax.inject.Inject
 import play.api.Configuration
 import play.api.http.HttpConfiguration
@@ -68,22 +69,13 @@ class AmiableConfigProvider @Inject() (val ws: WSClient, val playConfig: Configu
   }
 
   val googleGroupChecker: GoogleGroupChecker = {
-    val twoFAUser = requiredString(playConfig, "auth.google.2faUser")
     val serviceAccountCertPath = requiredString(playConfig, "auth.google.serviceAccountCertPath")
+    val creds = ServiceAccountCredentials.fromStream(new FileInputStream(serviceAccountCertPath))
 
-    val credentials: GoogleCredential = {
-      val jsonCertStream =
-        Try(new FileInputStream(serviceAccountCertPath))
-          .getOrElse(throw new RuntimeException(s"Could not load service account JSON from $serviceAccountCertPath"))
-      GoogleCredential.fromStream(jsonCertStream)
-    }
-
-    val serviceAccount = GoogleServiceAccount(
-      credentials.getServiceAccountId,
-      credentials.getServiceAccountPrivateKey,
-      twoFAUser
+    new GoogleGroupChecker(
+      impersonatedUser = requiredString(playConfig, "auth.google.2faUser"),
+      serviceAccountCredentials = creds,
     )
-    new GoogleGroupChecker(serviceAccount)
   }
 
   private def requiredString(config: Configuration, key: String): String = {
