@@ -2,7 +2,7 @@ import com.typesafe.sbt.packager.debian.DebianPlugin.autoImport.Debian
 
 name := """amiable"""
 
-version := "1.2-SNAPSHOT"
+version := "1.0-SNAPSHOT"
 
 enablePlugins(PlayScala, RiffRaffArtifact, JDebPackaging, SystemdPlugin)
 
