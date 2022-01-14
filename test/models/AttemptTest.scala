@@ -1,13 +1,15 @@
 package models
 
 import models.Attempt.{Left, Right}
-import org.scalatest._
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.EitherValues
 import util.AttemptValues
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
-class AttemptTest extends FreeSpec with Matchers with EitherValues with AttemptValues {
+class AttemptTest extends AnyFreeSpec with Matchers with EitherValues with AttemptValues {
   "traverse" - {
     "returns the first failure" in {
       def failOnFourAndSix(i: Int): Attempt[Int] = {

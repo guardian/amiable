@@ -2,12 +2,14 @@ package metrics
 
 import com.amazonaws.services.cloudwatch.model.{Datapoint, GetMetricStatisticsResult}
 import org.joda.time.DateTime
-import org.scalatest.{FreeSpec, Matchers, OptionValues}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.OptionValues
 
 import scala.collection.JavaConverters._
 
 
-class CloudWatchTest extends FreeSpec with Matchers with OptionValues {
+class CloudWatchTest extends AnyFreeSpec with Matchers with OptionValues {
   val cloudwatch = new CloudWatch("TEST")
   "putRequest" - {
     "sets provided count value" in {

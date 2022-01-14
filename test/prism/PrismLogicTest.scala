@@ -2,10 +2,11 @@ package prism
 
 import models._
 import org.joda.time.DateTime
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 import scala.util.Random
 
-class PrismLogicTest extends FreeSpec with Matchers {
+class PrismLogicTest extends AnyFreeSpec with Matchers {
 
   import prism.PrismLogic._
   import util.Fixtures._

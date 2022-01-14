@@ -2,13 +2,13 @@ package services.notification
 
 import org.joda.time.DateTime
 import org.quartz.{Job, JobExecutionContext}
-import play.api.Logger
+import play.api.Logging
 
 import scala.concurrent.{Await, ExecutionContext}
 import scala.concurrent.duration._
 
 /** Quartz job wrapper for [[ScheduledNotificationRunner]] */
-class NotificationJob extends Job {
+class NotificationJob extends Job with Logging {
 
   override def execute(context: JobExecutionContext): Unit = {
     val schedulerContext = context.getScheduler.getContext
@@ -16,8 +16,8 @@ class NotificationJob extends Job {
     implicit val ec = schedulerContext.get("ExecutionContext").asInstanceOf[ExecutionContext]
     val result = scheduledNotificationRunner.run(new DateTime())
     Await.result(result.asFuture, 10.minutes).fold(
-      err => Logger.error(s"Failed to send scheduled notifications: ${err.logString}"), { msgs =>
-        Logger.info(s"Email notifications: ${msgs.size} sent")
+      err => logger.error(s"Failed to send scheduled notifications: ${err.logString}"), { msgs =>
+        logger.info(s"Email notifications: ${msgs.size} sent")
       }
     )
   }

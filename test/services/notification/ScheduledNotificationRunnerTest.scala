@@ -4,16 +4,19 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest
 import config.AMIableConfig
 import models._
 import org.joda.time.DateTime
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers.anyString
+import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
-import org.scalatest.{EitherValues, FreeSpec, Matchers}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.EitherValues
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
+import org.specs2.mock.Mockito.anyObject
 import play.api.Mode
 import util.{AttemptValues, Fixtures}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with AttemptValues with EitherValues with MockitoSugar {
+class ScheduledNotificationRunnerTest extends AnyFreeSpec with Matchers with AttemptValues with EitherValues with MockitoSugar {
 
   val defaultOwner = Owner("Director of Engineering", List.empty)
 
@@ -106,7 +109,7 @@ class ScheduledNotificationRunnerTest extends FreeSpec with Matchers with Attemp
     when(mailClient.send("overrideToaddress", request)).thenReturn(Attempt.Right("MessageSentId"))
     val res = ScheduledNotificationRunner.conditionallySendEmail(Mode.Dev, None, mailClient, owner, request)
     res.awaitEither.right.value shouldBe ""
-    verify(mailClient, never()).send(anyString(), anyObject())
+    verify(mailClient, never()).send(anyString, anyObject)
   }
 
   "pairInstancesWithAmiAge should order unknown ages first and then decreasing age second" in {

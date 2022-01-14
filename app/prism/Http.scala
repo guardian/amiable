@@ -1,12 +1,12 @@
 package prism
 
 import models.{AMIableError, AMIableErrors, Attempt}
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object Http {
+object Http extends Logging {
   /**
     * Reusable logic for handling WS errors
     */
@@ -17,7 +17,7 @@ object Http {
           case status if status < 400 =>
             Right(response)
           case status =>
-            Logger.warn(s"Status code $status: $detail")
+            logger.warn(s"Status code $status: $detail")
             Left(AMIableErrors(
               AMIableError(s"$status: $detail", friendlyMessage, status)
             ))
@@ -26,7 +26,7 @@ object Http {
     }
     Attempt.fromFuture(handleStatusCode) {
       case e: Exception =>
-        Logger.error(s"Request failed: $detail", e)
+        logger.error(s"Request failed: $detail", e)
         Left(AMIableErrors(
           AMIableError(s"Request failed: $detail, ${e.getMessage}", friendlyMessage, 500)
         ))

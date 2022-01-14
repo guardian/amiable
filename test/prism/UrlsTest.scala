@@ -1,13 +1,16 @@
 package prism
 
 import models.SSAA
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{EitherValues, FreeSpec, Matchers, OptionValues}
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatest.EitherValues
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.OptionValues
 import prism.Urls._
 import util.AttemptValues
 
 
-class UrlsTest extends FreeSpec with Matchers with EitherValues with AttemptValues with OptionValues with MockitoSugar {
+class UrlsTest extends AnyFreeSpec with Matchers with EitherValues with AttemptValues with OptionValues with MockitoSugar {
   "amiUrl" - {
     "should generate this url" in {
       amiUrl("ami-blah", "http://root") shouldEqual "http://root/images/ami-blah"

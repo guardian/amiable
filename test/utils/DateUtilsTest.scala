@@ -1,10 +1,11 @@
 package utils
 
 import org.joda.time.DateTime
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 import DateUtils._
 
-class DateUtilsTest extends FreeSpec with Matchers {
+class DateUtilsTest extends AnyFreeSpec with Matchers {
   "daysAgo" - {
     "should correctly calculate how long ago a date was" in {
       daysAgo(DateTime.now.minusDays(5)) shouldEqual 5

@@ -2,8 +2,11 @@ package prism
 
 import org.joda.time.DateTime
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{EitherValues, FreeSpec, Matchers, OptionValues}
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatest.EitherValues
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.OptionValues
 import play.api.libs.ws.WSResponse
 import util.AttemptValues
 import util.Fixtures._
@@ -13,7 +16,7 @@ import prism.JsonUtils._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
-class JsonUtilsTest extends FreeSpec with Matchers with EitherValues with AttemptValues with OptionValues with MockitoSugar {
+class JsonUtilsTest extends AnyFreeSpec with Matchers with EitherValues with AttemptValues with OptionValues with MockitoSugar {
   "extractAMI" - {
     "should return an AMI from correct json" in {
       val json = Json.parse(AMIs.validAMI)

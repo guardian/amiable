@@ -1,10 +1,12 @@
 package prism
 
 import org.joda.time.DateTime
-import org.scalatest.{OptionValues, Matchers, FreeSpec}
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 
 
-class RecommendationsTest extends FreeSpec with Matchers with OptionValues {
+class RecommendationsTest extends AnyFreeSpec with Matchers with OptionValues {
   import util.Fixtures._
   import Recommendations._
 
