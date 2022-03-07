@@ -10,6 +10,9 @@ describe("The Amiable stack", () => {
       migratedFromCloudFormation: true,
       stack: "deploy",
       env: { region: "eu-west-1" },
+      stage: "PROD",
+      domainName: "amiable.gutools.co.uk",
+      scaling: { minimumInstances: 1 },
     });
 
     expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();

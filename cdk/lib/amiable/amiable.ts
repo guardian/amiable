@@ -5,12 +5,20 @@ import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
 import { GuStack } from "@guardian/cdk/lib/constructs/core";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
+import type { GuAsgCapacity } from "@guardian/cdk/lib/types";
 import { GuardianPublicNetworks } from "@guardian/private-infrastructure-config";
+
+export interface AmiableProps extends GuStackProps {
+  domainName: string;
+  scaling: GuAsgCapacity;
+}
 
 export class Amiable extends GuStack {
   private readonly app: string = "amiable";
 
-  constructor(scope: App, id: string, props: GuStackProps) {
+  constructor(scope: App, id: string, props: AmiableProps) {
+    const { domainName, scaling } = props;
+
     super(scope, id, props);
 
     const allowedCIDRs = [
@@ -30,10 +38,7 @@ export class Amiable extends GuStack {
           aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/${this.stage}/amiable/amiable.deb /amiable/
 
           dpkg -i /amiable/amiable.deb`,
-      certificateProps: {
-        CODE: { domainName: "amiable.code.dev-gutools.co.uk" },
-        PROD: { domainName: "amiable.gutools.co.uk" },
-      },
+      certificateProps: { domainName },
       monitoringConfiguration: { noMonitoring: true },
       access: { scope: AccessScope.RESTRICTED, cidrRanges: allowedCIDRs.map((cidr) => Peer.ipv4(cidr)) },
       roleConfiguration: {
@@ -47,10 +52,7 @@ export class Amiable extends GuStack {
         ],
       },
       accessLogging: { enabled: true, prefix: `ELBLogs/${this.stack}/${this.app}/${this.stage}` },
-      scaling: {
-        CODE: { minimumInstances: 1 },
-        PROD: { minimumInstances: 1 },
-      },
+      scaling,
     });
   }
 }

@@ -38,7 +38,7 @@
     "@aws-cdk/aws-iam": "1.147.0",
     "@aws-cdk/aws-rds": "1.147.0",
     "@aws-cdk/core": "1.147.0",
-    "@guardian/cdk": "37.0.0",
+    "@guardian/cdk": "38.0.0-beta.1",
     "source-map-support": "^0.5.16"
   }
 }
