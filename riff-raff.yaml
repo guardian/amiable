@@ -19,4 +19,6 @@ deployments:
         AmigoStage: PROD
         BuiltBy: amigo
       amiEncrypted: true
-      templatePath: Amiable.template.json
+      templateStagePaths:
+        CODE: Amiable-CODE.template.json
+        PROD: Amiable-PROD.template.json
