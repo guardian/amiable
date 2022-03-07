@@ -1,9 +1,10 @@
 import { InstanceClass, InstanceSize, InstanceType, Peer } from "@aws-cdk/aws-ec2";
 import type { App } from "@aws-cdk/core";
+import { AccessScope } from "@guardian/cdk/lib/constants";
 import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
 import { GuStack } from "@guardian/cdk/lib/constructs/core";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
-import { AccessScope, GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
+import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
 import { GuardianPublicNetworks } from "@guardian/private-infrastructure-config";
 
 export class Amiable extends GuStack {

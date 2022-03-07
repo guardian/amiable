@@ -3,7 +3,7 @@
 exports[`The Amiable stack matches the snapshot 1`] = `
 Object {
   "Mappings": Object {
-    "stagemapping": Object {
+    "amiable": Object {
       "CODE": Object {
         "domainName": "amiable.code.dev-gutools.co.uk",
         "maxInstances": 2,
@@ -59,7 +59,7 @@ Object {
     },
     "VpcId": Object {
       "Default": "/account/vpc/primary/id",
-      "Description": "Virtual Private Cloud to run EC2 instances within",
+      "Description": "Virtual Private Cloud to run EC2 instances within. Should NOT be the account default VPC.",
       "Type": "AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>",
     },
     "amiablePrivateSubnets": Object {
@@ -83,7 +83,7 @@ Object {
         },
         "MaxSize": Object {
           "Fn::FindInMap": Array [
-            "stagemapping",
+            "amiable",
             Object {
               "Ref": "Stage",
             },
@@ -92,7 +92,7 @@ Object {
         },
         "MinSize": Object {
           "Fn::FindInMap": Array [
-            "stagemapping",
+            "amiable",
             Object {
               "Ref": "Stage",
             },
@@ -222,7 +222,7 @@ Object {
       "Properties": Object {
         "DomainName": Object {
           "Fn::FindInMap": Array [
-            "stagemapping",
+            "amiable",
             Object {
               "Ref": "Stage",
             },
@@ -683,6 +683,29 @@ Object {
                 ],
               },
             },
+            Object {
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:ssm:eu-west-1:",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/",
+                    Object {
+                      "Ref": "Stage",
+                    },
+                    "/deploy/amiable/*",
+                  ],
+                ],
+              },
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -845,6 +868,10 @@ Object {
           Object {
             "Key": "deregistration_delay.timeout_seconds",
             "Value": "30",
+          },
+          Object {
+            "Key": "stickiness.enabled",
+            "Value": "false",
           },
         ],
         "TargetType": "instance",
