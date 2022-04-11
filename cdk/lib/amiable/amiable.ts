@@ -1,6 +1,7 @@
 import { InstanceClass, InstanceSize, InstanceType, Peer } from "@aws-cdk/aws-ec2";
 import type { App } from "@aws-cdk/core";
-import { GuStackProps } from "@guardian/cdk/lib/constructs/core";
+import { Tags } from "@aws-cdk/core";
+import { GuStackProps, GuLoggingStreamNameParameter } from "@guardian/cdk/lib/constructs/core";
 import { GuStack } from "@guardian/cdk/lib/constructs/core";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
@@ -23,7 +24,7 @@ export class Amiable extends GuStack {
       GuardianPublicNetworks.NewYork2,
     ];
 
-    new GuPlayApp(this, {
+    const app = new GuPlayApp(this, {
       app: this.app,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
       userData: `#!/bin/bash -ev
@@ -40,7 +41,6 @@ export class Amiable extends GuStack {
       monitoringConfiguration: { noMonitoring: true },
       access: { scope: AccessScope.RESTRICTED, cidrRanges: allowedCIDRs.map((cidr) => Peer.ipv4(cidr)) },
       roleConfiguration: {
-        withoutLogShipping: true,
         additionalPolicies: [
           new GuSESSenderPolicy(this),
           new GuAllowPolicy(this, "CloudwatchPolicy", {
@@ -52,5 +52,7 @@ export class Amiable extends GuStack {
       accessLogging: { enabled: true, prefix: `ELBLogs/${this.stack}/${this.app}/${this.stage}` },
       scaling: { minimumInstances: 1},
     });
+
+    Tags.of(app.autoScalingGroup).add("LogKinesisStreamName", GuLoggingStreamNameParameter.getInstance(this).valueAsString)
   }
 }
