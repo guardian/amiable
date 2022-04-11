@@ -1,15 +1,20 @@
 import { InstanceClass, InstanceSize, InstanceType, Peer } from "@aws-cdk/aws-ec2";
 import type { App } from "@aws-cdk/core";
-import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
+import { GuStackProps } from "@guardian/cdk/lib/constructs/core";
 import { GuStack } from "@guardian/cdk/lib/constructs/core";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
-import { AccessScope, GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
+import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
 import { GuardianPublicNetworks } from "@guardian/private-infrastructure-config";
+import { AccessScope } from "@guardian/cdk/lib/constants/access";
+
+interface AmiableProps extends GuStackProps {
+  domainName: string;
+}
 
 export class Amiable extends GuStack {
   private readonly app: string = "amiable";
 
-  constructor(scope: App, id: string, props: GuStackProps) {
+  constructor(scope: App, id: string, props: AmiableProps) {
     super(scope, id, props);
 
     const allowedCIDRs = [
@@ -30,8 +35,7 @@ export class Amiable extends GuStack {
 
           dpkg -i /amiable/amiable.deb`,
       certificateProps: {
-        CODE: { domainName: "amiable.code.dev-gutools.co.uk" },
-        PROD: { domainName: "amiable.gutools.co.uk" },
+        domainName: props.domainName
       },
       monitoringConfiguration: { noMonitoring: true },
       access: { scope: AccessScope.RESTRICTED, cidrRanges: allowedCIDRs.map((cidr) => Peer.ipv4(cidr)) },
@@ -46,10 +50,7 @@ export class Amiable extends GuStack {
         ],
       },
       accessLogging: { enabled: true, prefix: `ELBLogs/${this.stack}/${this.app}/${this.stage}` },
-      scaling: {
-        CODE: { minimumInstances: 1 },
-        PROD: { minimumInstances: 1 },
-      },
+      scaling: { minimumInstances: 1},
     });
   }
 }
