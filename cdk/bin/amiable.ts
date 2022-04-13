@@ -3,12 +3,19 @@ import "source-map-support/register";
 import { App } from "@aws-cdk/core";
 import { Amiable } from "../lib/amiable/amiable";
 
-const stackName = process.env.GU_CDK_STACK_NAME;
-
 const app = new App();
-new Amiable(app, "Amiable", {
+new Amiable(app, "Amiable-CODE", {
   migratedFromCloudFormation: true,
   stack: "deploy",
+  stage: "CODE",
   env: { region: "eu-west-1" },
-  stackName,
+  domainName: "amiable.code.dev-gutools.co.uk",
+});
+
+new Amiable(app, "Amiable-PROD", {
+  migratedFromCloudFormation: true,
+  stack: "deploy",
+  stage: "PROD",
+  env: { region: "eu-west-1" },
+  domainName: "amiable.gutools.co.uk",
 });

@@ -131,3 +131,9 @@ tramp
 
 # server auth directory
 /server/
+
+# VS Code
+.bloop
+.metals
+.vscode
+project/metals.sbt

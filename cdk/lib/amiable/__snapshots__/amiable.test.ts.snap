@@ -2,20 +2,6 @@
 
 exports[`The Amiable stack matches the snapshot 1`] = `
 Object {
-  "Mappings": Object {
-    "stagemapping": Object {
-      "CODE": Object {
-        "domainName": "amiable.code.dev-gutools.co.uk",
-        "maxInstances": 2,
-        "minInstances": 1,
-      },
-      "PROD": Object {
-        "domainName": "amiable.gutools.co.uk",
-        "maxInstances": 2,
-        "minInstances": 1,
-      },
-    },
-  },
   "Outputs": Object {
     "LoadBalancerAmiableDnsName": Object {
       "Description": "DNS entry for LoadBalancerAmiable",
@@ -48,18 +34,14 @@ Object {
       "Description": "The sender of emails sent using SES.",
       "Type": "String",
     },
-    "Stage": Object {
-      "AllowedValues": Array [
-        "CODE",
-        "PROD",
-      ],
-      "Default": "CODE",
-      "Description": "Stage name",
-      "Type": "String",
+    "LoggingStreamName": Object {
+      "Default": "/account/services/logging.stream.name",
+      "Description": "SSM parameter containing the Name (not ARN) on the kinesis stream",
+      "Type": "AWS::SSM::Parameter::Value<String>",
     },
     "VpcId": Object {
       "Default": "/account/vpc/primary/id",
-      "Description": "Virtual Private Cloud to run EC2 instances within",
+      "Description": "Virtual Private Cloud to run EC2 instances within. Should NOT be the account default VPC.",
       "Type": "AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>",
     },
     "amiablePrivateSubnets": Object {
@@ -81,24 +63,8 @@ Object {
         "LaunchConfigurationName": Object {
           "Ref": "AutoScalingGroupAmiableLaunchConfig09A6D8E3",
         },
-        "MaxSize": Object {
-          "Fn::FindInMap": Array [
-            "stagemapping",
-            Object {
-              "Ref": "Stage",
-            },
-            "maxInstances",
-          ],
-        },
-        "MinSize": Object {
-          "Fn::FindInMap": Array [
-            "stagemapping",
-            Object {
-              "Ref": "Stage",
-            },
-            "minInstances",
-          ],
-        },
+        "MaxSize": "2",
+        "MinSize": "1",
         "Tags": Array [
           Object {
             "Key": "App",
@@ -121,6 +87,13 @@ Object {
             "Value": "guardian/amiable",
           },
           Object {
+            "Key": "LogKinesisStreamName",
+            "PropagateAtLaunch": true,
+            "Value": Object {
+              "Ref": "LoggingStreamName",
+            },
+          },
+          Object {
             "Key": "Name",
             "PropagateAtLaunch": true,
             "Value": "amiable/AutoScalingGroupAmiable",
@@ -133,9 +106,7 @@ Object {
           Object {
             "Key": "Stage",
             "PropagateAtLaunch": true,
-            "Value": Object {
-              "Ref": "Stage",
-            },
+            "Value": "CODE",
           },
         ],
         "TargetGroupARNs": Array [
@@ -171,6 +142,9 @@ Object {
           "Ref": "AMIAmiable",
         },
         "InstanceType": "t4g.micro",
+        "MetadataOptions": Object {
+          "HttpTokens": "required",
+        },
         "SecurityGroups": Array [
           Object {
             "Fn::GetAtt": Array [
@@ -186,33 +160,14 @@ Object {
           },
         ],
         "UserData": Object {
-          "Fn::Base64": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "#!/bin/bash -ev
+          "Fn::Base64": "#!/bin/bash -ev
 
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/",
-                Object {
-                  "Ref": "Stage",
-                },
-                "/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/",
-                Object {
-                  "Ref": "Stage",
-                },
-                "/amiable/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/",
-                Object {
-                  "Ref": "Stage",
-                },
-                "/amiable/amiable.deb /amiable/
+          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/CODE/amiable/conf/amiable-service-account-cert.json /amiable/
+          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/CODE/amiable/conf/amiable.conf /etc/
+          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/CODE/amiable/amiable.deb /amiable/
 
           dpkg -i /amiable/amiable.deb",
-              ],
-            ],
-          },
         },
       },
       "Type": "AWS::AutoScaling::LaunchConfiguration",
@@ -220,15 +175,7 @@ Object {
     "CertificateAmiable3AC0F81D": Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
-        "DomainName": Object {
-          "Fn::FindInMap": Array [
-            "stagemapping",
-            Object {
-              "Ref": "Stage",
-            },
-            "domainName",
-          ],
-        },
+        "DomainName": "amiable.code.dev-gutools.co.uk",
         "Tags": Array [
           Object {
             "Key": "App",
@@ -248,9 +195,7 @@ Object {
           },
           Object {
             "Key": "Stage",
-            "Value": Object {
-              "Ref": "Stage",
-            },
+            "Value": "CODE",
           },
         ],
         "ValidationMethod": "DNS",
@@ -320,11 +265,7 @@ Object {
                     Object {
                       "Ref": "DistributionBucketName",
                     },
-                    "/deploy/",
-                    Object {
-                      "Ref": "Stage",
-                    },
-                    "/amiable/*",
+                    "/deploy/CODE/amiable/*",
                   ],
                 ],
               },
@@ -372,9 +313,7 @@ Object {
           },
           Object {
             "Key": "Stage",
-            "Value": Object {
-              "Ref": "Stage",
-            },
+            "Value": "CODE",
           },
         ],
         "VpcId": Object {
@@ -424,6 +363,44 @@ Object {
         "ToPort": 9000,
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "GuLogShippingPolicy981BFE5A": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "kinesis:Describe*",
+                "kinesis:Put*",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:kinesis:eu-west-1:",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":stream/",
+                    Object {
+                      "Ref": "LoggingStreamName",
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "GuLogShippingPolicy981BFE5A",
+        "Roles": Array [
+          Object {
+            "Ref": "InstanceRoleAmiable56110022",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "GuSESSenderPolicy2E2A75A2": Object {
       "Properties": Object {
@@ -494,9 +471,7 @@ Object {
           },
           Object {
             "Key": "Stage",
-            "Value": Object {
-              "Ref": "Stage",
-            },
+            "Value": "CODE",
           },
         ],
       },
@@ -546,17 +521,7 @@ Object {
           },
           Object {
             "Key": "access_logs.s3.prefix",
-            "Value": Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  "ELBLogs/deploy/amiable/",
-                  Object {
-                    "Ref": "Stage",
-                  },
-                ],
-              ],
-            },
+            "Value": "ELBLogs/deploy/amiable/CODE",
           },
         ],
         "Scheme": "internet-facing",
@@ -596,9 +561,7 @@ Object {
           },
           Object {
             "Key": "Stage",
-            "Value": Object {
-              "Ref": "Stage",
-            },
+            "Value": "CODE",
           },
         ],
         "Type": "application",
@@ -627,9 +590,7 @@ Object {
           },
           Object {
             "Key": "Stage",
-            "Value": Object {
-              "Ref": "Stage",
-            },
+            "Value": "CODE",
           },
         ],
         "VpcId": Object {
@@ -674,11 +635,26 @@ Object {
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/",
+                    ":parameter/CODE/deploy/amiable",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:ssm:eu-west-1:",
                     Object {
-                      "Ref": "Stage",
+                      "Ref": "AWS::AccountId",
                     },
-                    "/deploy/amiable",
+                    ":parameter/CODE/deploy/amiable/*",
                   ],
                 ],
               },
@@ -740,9 +716,7 @@ Object {
           },
           Object {
             "Key": "Stage",
-            "Value": Object {
-              "Ref": "Stage",
-            },
+            "Value": "CODE",
           },
         ],
         "VpcId": Object {
@@ -836,15 +810,17 @@ Object {
           },
           Object {
             "Key": "Stage",
-            "Value": Object {
-              "Ref": "Stage",
-            },
+            "Value": "CODE",
           },
         ],
         "TargetGroupAttributes": Array [
           Object {
             "Key": "deregistration_delay.timeout_seconds",
             "Value": "30",
+          },
+          Object {
+            "Key": "stickiness.enabled",
+            "Value": "false",
           },
         ],
         "TargetType": "instance",
@@ -889,9 +865,7 @@ Object {
           },
           Object {
             "Key": "Stage",
-            "Value": Object {
-              "Ref": "Stage",
-            },
+            "Value": "CODE",
           },
         ],
         "VpcId": Object {

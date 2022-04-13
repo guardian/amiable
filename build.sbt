@@ -64,5 +64,6 @@ riffRaffPackageType := (packageBin in Debian).value
 riffRaffArtifactResources  := Seq(
   riffRaffPackageType.value -> s"${name.value}/${name.value}.deb",
   baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml",
-  baseDirectory.value / "cdk/cdk.out/Amiable.template.json" -> "cloudformation/Amiable.template.json"
+  baseDirectory.value / "cdk/cdk.out/Amiable-CODE.template.json" -> "cloudformation/Amiable-CODE.template.json",
+  baseDirectory.value / "cdk/cdk.out/Amiable-PROD.template.json" -> "cloudformation/Amiable-PROD.template.json"
 )

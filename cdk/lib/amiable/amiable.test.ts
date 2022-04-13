@@ -9,7 +9,9 @@ describe("The Amiable stack", () => {
     const stack = new Amiable(app, "amiable", {
       migratedFromCloudFormation: true,
       stack: "deploy",
+      stage: "CODE",
       env: { region: "eu-west-1" },
+      domainName: "amiable.code.dev-gutools.co.uk",
     });
 
     expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
