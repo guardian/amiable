@@ -1,6 +1,6 @@
 import "@aws-cdk/assert/jest";
-import { SynthUtils } from "@aws-cdk/assert";
-import { App } from "@aws-cdk/core";
+import { App } from "aws-cdk-lib";
+import { Template } from "aws-cdk-lib/assertions";
 import { Amiable } from "./amiable";
 
 describe("The Amiable stack", () => {
@@ -14,6 +14,6 @@ describe("The Amiable stack", () => {
       domainName: "amiable.code.dev-gutools.co.uk",
     });
 
-    expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
+    expect(Template.fromStack(stack).toJSON()).toMatchSnapshot();
   });
 });

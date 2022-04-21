@@ -1,12 +1,11 @@
-import { InstanceClass, InstanceSize, InstanceType, Peer } from "@aws-cdk/aws-ec2";
-import type { App } from "@aws-cdk/core";
-import { Tags } from "@aws-cdk/core";
-import { GuStackProps, GuLoggingStreamNameParameter } from "@guardian/cdk/lib/constructs/core";
+import { AccessScope } from "@guardian/cdk/lib/constants/access";
+import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
 import { GuStack } from "@guardian/cdk/lib/constructs/core";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
 import { GuardianPublicNetworks } from "@guardian/private-infrastructure-config";
-import { AccessScope } from "@guardian/cdk/lib/constants/access";
+import type { App } from "aws-cdk-lib";
+import { InstanceClass, InstanceSize, InstanceType, Peer } from "aws-cdk-lib/aws-ec2";
 
 interface AmiableProps extends GuStackProps {
   domainName: string;
@@ -24,7 +23,7 @@ export class Amiable extends GuStack {
       GuardianPublicNetworks.NewYork2,
     ];
 
-    const app = new GuPlayApp(this, {
+    new GuPlayApp(this, {
       app: this.app,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
       userData: `#!/bin/bash -ev
@@ -36,7 +35,7 @@ export class Amiable extends GuStack {
 
           dpkg -i /amiable/amiable.deb`,
       certificateProps: {
-        domainName: props.domainName
+        domainName: props.domainName,
       },
       monitoringConfiguration: { noMonitoring: true },
       access: { scope: AccessScope.RESTRICTED, cidrRanges: allowedCIDRs.map((cidr) => Peer.ipv4(cidr)) },
@@ -50,9 +49,7 @@ export class Amiable extends GuStack {
         ],
       },
       accessLogging: { enabled: true, prefix: `ELBLogs/${this.stack}/${this.app}/${this.stage}` },
-      scaling: { minimumInstances: 1},
+      scaling: { minimumInstances: 1 },
     });
-
-    Tags.of(app.autoScalingGroup).add("LogKinesisStreamName", GuLoggingStreamNameParameter.getInstance(this).valueAsString)
   }
 }
