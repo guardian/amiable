@@ -15,7 +15,7 @@ deployments:
     parameters:
       amiParameter: AMIAmiable
       amiTags:
-        Recipe: arm64-bionic-java8-deploy-infrastructure-test
+        Recipe: arm64-bionic-java8-deploy-infrastructure
         AmigoStage: PROD
         BuiltBy: amigo
       amiEncrypted: true
