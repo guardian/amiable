@@ -5,6 +5,7 @@ import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/i
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
 import { GuardianPublicNetworks } from "@guardian/private-infrastructure-config";
 import type { App } from "aws-cdk-lib";
+import { Tags } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, Peer } from "aws-cdk-lib/aws-ec2";
 
 interface AmiableProps extends GuStackProps {
@@ -23,7 +24,7 @@ export class Amiable extends GuStack {
       GuardianPublicNetworks.NewYork2,
     ];
 
-    new GuPlayApp(this, {
+    const playApp = new GuPlayApp(this, {
       app: this.app,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
       userData: `#!/bin/bash -ev
@@ -51,5 +52,7 @@ export class Amiable extends GuStack {
       accessLogging: { enabled: true, prefix: `ELBLogs/${this.stack}/${this.app}/${this.stage}` },
       scaling: { minimumInstances: 1 },
     });
+
+    Tags.of(playApp.autoScalingGroup).add("SystemdUnit", `${this.app}.service`);
   }
 }

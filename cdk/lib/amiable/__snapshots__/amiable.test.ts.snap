@@ -108,6 +108,11 @@ Object {
             "PropagateAtLaunch": true,
             "Value": "CODE",
           },
+          Object {
+            "Key": "SystemdUnit",
+            "PropagateAtLaunch": true,
+            "Value": "amiable.service",
+          },
         ],
         "TargetGroupARNs": Array [
           Object {
