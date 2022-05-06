@@ -3,9 +3,7 @@
   <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%-5level - %logger - %message%n%xException</pattern>
-    </encoder>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
   </appender>
 
   <root level="INFO">

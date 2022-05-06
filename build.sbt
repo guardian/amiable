@@ -32,6 +32,27 @@ scalacOptions := Seq(
   "-Ywarn-unused"
 )
 
+// https://github.com/orgs/playframework/discussions/11222
+val jacksonVersion         = "2.13.2"
+val jacksonDatabindVersion = "2.13.2.2"
+
+val jacksonOverrides = Seq(
+  "com.fasterxml.jackson.core"     % "jackson-core",
+  "com.fasterxml.jackson.core"     % "jackson-annotations",
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
+).map(_ % jacksonVersion)
+
+val jacksonDatabindOverrides = Seq(
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion
+)
+
+val akkaSerializationJacksonOverrides = Seq(
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor",
+  "com.fasterxml.jackson.module"     % "jackson-module-parameter-names",
+  "com.fasterxml.jackson.module"     %% "jackson-module-scala",
+).map(_ % jacksonVersion)
+
 libraryDependencies ++= Seq(
   jdbc,
   ehcache,
@@ -47,8 +68,9 @@ libraryDependencies ++= Seq(
   specs2 % Test,
   "org.scalatest" %% "scalatest" % "3.2.10" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
-  "org.mockito" % "mockito-core" % "4.2.0" % Test
-)
+  "org.mockito" % "mockito-core" % "4.2.0" % Test,
+  "net.logstash.logback" % "logstash-logback-encoder" % "7.1.1"
+) ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
