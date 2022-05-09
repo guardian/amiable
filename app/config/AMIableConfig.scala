@@ -43,6 +43,10 @@ class AmiableConfigProvider @Inject() (val ws: WSClient, val playConfig: Configu
     playConfig, "stage"
   )
 
+  val cloudwatchReadNamespace: String = s"AMIable-$stage"
+  val cloudwatchWriteNamespace: String = s"AMIable-$stage"
+  val cloudwatchSecurityHqNamespace: String = "SecurityHQ"
+
   val requiredGoogleGroups: Set[String] = Set(requiredString(playConfig, "auth.google.2faGroupId"))
 
   val googleAuthConfig: GoogleAuthConfig = {
