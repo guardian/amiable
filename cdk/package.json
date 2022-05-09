@@ -17,7 +17,6 @@
     "synth": "cdk synth --path-metadata false --version-reporting false"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.152.0",
     "@guardian/eslint-config-typescript": "^0.6.0",
     "@guardian/private-infrastructure-config": "git+ssh://git@github.com:guardian/private-infrastructure-config.git#1.2.0",
     "@types/jest": "^27.4.1",
