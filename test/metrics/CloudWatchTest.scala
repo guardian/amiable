@@ -10,10 +10,10 @@ import scala.collection.JavaConverters._
 
 
 class CloudWatchTest extends AnyFreeSpec with Matchers with OptionValues {
-  val cloudwatch = new CloudWatch("TEST")
+  val cloudwatch = new CloudWatch()
   "putRequest" - {
     "sets provided count value" in {
-      val metricDataRequest = cloudwatch.putRequest("test-metric", 5)
+      val metricDataRequest = cloudwatch.putRequest("test-namespace","test-metric", 5)
       val metricDatum = metricDataRequest.getMetricData.asScala.headOption.value
       metricDatum.getValue shouldEqual 5
     }
