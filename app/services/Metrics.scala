@@ -18,6 +18,9 @@ class Metrics(cloudWatch: CloudWatch, shouldCreateMetrics: Boolean, namespace: S
       cloudWatch.put(namespace, CloudWatchMetrics.AmisAgePercentile75th.name, agents.amisAgePercentiles.flatMap(_.p75))
       cloudWatch.put(namespace, CloudWatchMetrics.AmisAgePercentile90th.name, agents.amisAgePercentiles.flatMap(_.p90))
       cloudWatch.put(namespace, CloudWatchMetrics.AmisAgePercentileHighest.name, agents.amisAgePercentiles.flatMap(_.highest))
+
+      // These metrics are used by a Grafana dashboard which graphs SecurityHQ related metrics
+      // TODO use the same namespace as other metrics, and filter in Grafana instead?
       cloudWatch.put(securityHqNamespace, CloudWatchMetrics.OldCountByAccount.name, agents.oldInstanceCountByAccount)
     }
 
