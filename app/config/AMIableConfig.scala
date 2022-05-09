@@ -43,7 +43,18 @@ class AmiableConfigProvider @Inject() (val ws: WSClient, val playConfig: Configu
     playConfig, "stage"
   )
 
-  val cloudwatchReadNamespace: String = s"AMIable-$stage"
+  /**
+    * Cloudwatch metrics are expensive.
+    * Our pre-PROD environments do not get much traffic, so in order to reduce AWS spend, only create metrics in PROD.
+    */
+  val shouldCreateCloudwatchMetrics: Boolean = stage == "PROD"
+
+  /**
+    * If our pre-PROD environments are not creating metrics, have them read PROD's so the app can be fully tested.
+    * @see [[`shouldCreateCloudwatchMetrics`]]
+    */
+  val cloudwatchReadNamespace: String = if (shouldCreateCloudwatchMetrics) s"AMIable-$stage" else s"AMIable-PROD"
+
   val cloudwatchWriteNamespace: String = s"AMIable-$stage"
   val cloudwatchSecurityHqNamespace: String = "SecurityHQ"
 

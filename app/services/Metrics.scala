@@ -8,10 +8,8 @@ import rx.lang.scala.Observable
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-class Metrics(cloudWatch: CloudWatch, stage: String, namespace: String, securityHqNamespace: String, agents: Agents, lifecycle: ApplicationLifecycle) {
-
-  // only add metrics from PROD
-  if (stage == "PROD") {
+class Metrics(cloudWatch: CloudWatch, shouldCreateMetrics: Boolean, namespace: String, securityHqNamespace: String, agents: Agents, lifecycle: ApplicationLifecycle) {
+  if (shouldCreateMetrics) {
 
     val subscription = Observable.interval(initialDelay = 10.seconds, period = 6.hours).subscribe { _ =>
       cloudWatch.put(namespace, CloudWatchMetrics.OldCount.name, agents.oldProdInstanceCount)
