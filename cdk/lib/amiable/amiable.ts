@@ -49,10 +49,9 @@ export class Amiable extends GuStack {
           }),
         ],
       },
+      applicationLogging: { enabled: true },
       accessLogging: { enabled: true, prefix: `ELBLogs/${this.stack}/${this.app}/${this.stage}` },
       scaling: { minimumInstances: 1 },
     });
-
-    Tags.of(playApp.autoScalingGroup).add("SystemdUnit", `${this.app}.service`);
   }
 }
