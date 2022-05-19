@@ -4,18 +4,21 @@ import { App } from "aws-cdk-lib";
 import { Amiable } from "../lib/amiable/amiable";
 
 const app = new App();
-new Amiable(app, "Amiable-CODE", {
-  migratedFromCloudFormation: true,
-  stack: "deploy",
-  stage: "CODE",
-  env: { region: "eu-west-1" },
-  domainName: "amiable.code.dev-gutools.co.uk",
-});
 
-new Amiable(app, "Amiable-PROD", {
-  migratedFromCloudFormation: true,
-  stack: "deploy",
+const commonProps = { migratedFromCloudFormation: true, stack: "deploy", env: { region: "eu-west-1" } };
+
+export const codeProps = {
+  ...commonProps,
+  stage: "CODE",
+  domainName: "amiable.code.dev-gutools.co.uk",
+};
+
+export const prodProps = {
+  ...commonProps,
   stage: "PROD",
-  env: { region: "eu-west-1" },
   domainName: "amiable.gutools.co.uk",
-});
+};
+
+new Amiable(app, "Amiable-CODE", codeProps);
+
+new Amiable(app, "Amiable-PROD", prodProps);
