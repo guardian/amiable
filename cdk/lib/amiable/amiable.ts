@@ -5,7 +5,6 @@ import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/i
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
 import { GuardianPublicNetworks } from "@guardian/private-infrastructure-config";
 import type { App } from "aws-cdk-lib";
-import { Tags } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, Peer } from "aws-cdk-lib/aws-ec2";
 
 interface AmiableProps extends GuStackProps {
@@ -24,7 +23,7 @@ export class Amiable extends GuStack {
       GuardianPublicNetworks.NewYork2,
     ];
 
-    const playApp = new GuPlayApp(this, {
+    new GuPlayApp(this, {
       app: this.app,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
       userData: `#!/bin/bash -ev
@@ -38,7 +37,17 @@ export class Amiable extends GuStack {
       certificateProps: {
         domainName: props.domainName,
       },
-      monitoringConfiguration: { noMonitoring: true },
+      monitoringConfiguration:
+        this.stage === "PROD"
+          ? {
+              snsTopicName: "devx-alerts",
+              http5xxAlarm: {
+                tolerated5xxPercentage: 99,
+                numberOfMinutesAboveThresholdBeforeAlarm: 2,
+              },
+              unhealthyInstancesAlarm: true,
+            }
+          : { noMonitoring: true },
       access: { scope: AccessScope.RESTRICTED, cidrRanges: allowedCIDRs.map((cidr) => Peer.ipv4(cidr)) },
       roleConfiguration: {
         additionalPolicies: [
