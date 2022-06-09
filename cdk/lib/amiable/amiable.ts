@@ -25,7 +25,7 @@ export class Amiable extends GuStack {
 
     new GuPlayApp(this, {
       app: this.app,
-      instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
+      instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.SMALL),
       userData: `#!/bin/bash -ev
 
           mkdir /amiable
