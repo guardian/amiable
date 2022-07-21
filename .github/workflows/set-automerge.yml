@@ -1,0 +1,10 @@
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches:
+      - dependency-updates
+
+jobs:
+  set-automerge:
+    name: Set automerge on opened PRs targeting the tracking branch
+    uses: guardian/.github/workflows/set-automerge.yml@js/auto-merge-workflow

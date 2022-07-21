@@ -1,0 +1,9 @@
+on:
+  push:
+    branches:
+      - main-like
+
+jobs:
+  update-dependency-update-branch:
+    name: Keep tracking branch up to date with main
+    uses: guardian/.github/workflows/tracking-branch.yml@js/auto-merge-workflow

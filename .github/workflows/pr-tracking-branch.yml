@@ -1,0 +1,9 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  pr-tracking-branch:
+    name: Open a PR from dependency-updates targeting main
+    uses: guardian/.github/workflows/pr-tracking-branch-to-default.yml@js/auto-merge-workflow
+    with:
+      DEFAULT_BRANCH: main-like
