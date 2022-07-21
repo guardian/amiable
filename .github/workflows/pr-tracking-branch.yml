@@ -1,5 +1,7 @@
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - ping-pr-tracking-branch
 
 jobs:
   pr-tracking-branch:
