@@ -7,4 +7,4 @@ on:
 jobs:
   set-automerge:
     name: Set automerge on opened PRs targeting the tracking branch
-    uses: guardian/.github/workflows/set-automerge.yml@js/auto-merge-workflow
+    uses: "guardian/.github/workflows/set-automerge.yml@js/auto-merge-workflow"

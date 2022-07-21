@@ -6,4 +6,4 @@ on:
 jobs:
   update-dependency-update-branch:
     name: Keep tracking branch up to date with main
-    uses: guardian/.github/workflows/tracking-branch.yml@js/auto-merge-workflow
+    uses: "guardian/.github/workflows/tracking-branch.yml@js/auto-merge-workflow"
