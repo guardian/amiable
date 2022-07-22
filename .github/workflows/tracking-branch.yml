@@ -1,0 +1,11 @@
+name: Maintain a branch that tracks default
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-dependency-update-branch:
+    name: Keep tracking branch up to date with main
+    uses: guardian/.github/.github/workflows/pr-batching/tracking-branch.yml@main
