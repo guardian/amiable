@@ -1,11 +1,12 @@
+name: Aggregate dependency updates
+
 on:
-  push:
-    branches:
-      - ping-pr-tracking-branch
+  schedule:
+    - cron: "35 10 * * MON"
+  # Provide support for manually triggering the workflow via GitHub.
+  workflow_dispatch:
 
 jobs:
   pr-tracking-branch:
     name: Open a PR from dependency-updates targeting main
-    uses: guardian/.github/.github/workflows/pr-tracking-branch-to-default.yml@js/auto-merge-workflow
-    with:
-      DEFAULT_BRANCH: main-like
+    uses: guardian/.github/.github/workflows/pr-batching_pr-tracking-branch-to-default.yml@v1

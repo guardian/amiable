@@ -1,10 +1,11 @@
+name: Auto-merge dependency updates to tracking branch
+
 on:
   pull_request:
-    types: [opened, reopened]
     branches:
       - dependency-updates
 
 jobs:
   set-automerge:
     name: Set automerge on opened PRs targeting the tracking branch
-    uses: guardian/.github/.github/workflows/set-automerge.yml@js/auto-merge-workflow
+    uses: guardian/.github/.github/workflows/pr-batching_set-automerge.yml@v1
