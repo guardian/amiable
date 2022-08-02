@@ -66,7 +66,7 @@ libraryDependencies ++= Seq(
   "org.quartz-scheduler" % "quartz" % "2.3.2",
   "com.typesafe.play" %% "play-json-joda" % "2.10.0-RC5",
   specs2 % Test,
-  "org.scalatest" %% "scalatest" % "3.2.12" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.13" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
   "org.mockito" % "mockito-core" % "4.2.0" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.1.1"
