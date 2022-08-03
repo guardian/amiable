@@ -3,7 +3,7 @@ name: Auto-merge dependency updates to tracking branch
 on:
   pull_request:
     branches:
-      - dependency-updates
+      - dependency-updates_1
 
 jobs:
   set-automerge:
