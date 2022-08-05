@@ -6,7 +6,7 @@ version := "1.0-SNAPSHOT"
 
 enablePlugins(PlayScala, RiffRaffArtifact, JDebPackaging, SystemdPlugin)
 
-scalaVersion := "2.13.7"
+scalaVersion := "2.13.8"
 
 javaOptions in Universal ++= Seq(
   "-Dpidfile.path=/dev/null",
@@ -33,7 +33,7 @@ scalacOptions := Seq(
 )
 
 // https://github.com/orgs/playframework/discussions/11222
-val jacksonVersion         = "2.13.2"
+val jacksonVersion         = "2.13.3"
 val jacksonDatabindVersion = "2.13.2.2"
 
 val jacksonOverrides = Seq(
@@ -59,12 +59,12 @@ libraryDependencies ++= Seq(
   ws,
   "com.typesafe.akka" %% "akka-agent" % "2.5.32",
   "io.reactivex" %% "rxscala" % "0.27.0",
-  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.12.275",
-  "com.amazonaws" % "aws-java-sdk-ses" % "1.12.275",
-  "com.google.code.gson" % "gson" % "2.9.1",
+  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.12.276",
+  "com.amazonaws" % "aws-java-sdk-ses" % "1.12.276",
+  "com.google.code.gson" % "gson" % "2.8.9",
   "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.6",
   "org.quartz-scheduler" % "quartz" % "2.3.2",
-  "com.typesafe.play" %% "play-json-joda" % "2.10.0-RC5",
+  "com.typesafe.play" %% "play-json-joda" % "2.10.0-RC6",
   specs2 % Test,
   "org.scalatest" %% "scalatest" % "3.2.13" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
