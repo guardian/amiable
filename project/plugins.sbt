@@ -17,4 +17,4 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-rjs" % "1.0.10")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.1.4")
 
-addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.5.1")
+addSbtPlugin("io.github.irundaia" % "sbt-sassify" % "1.5.2")
