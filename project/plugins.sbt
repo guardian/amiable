@@ -1,7 +1,7 @@
 // The Play plugin
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.8.16")
 
-addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.9")
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.10")
 addSbtPlugin("com.gu" % "sbt-riffraff-artifact" % "1.1.18")
 libraryDependencies += "org.vafer" % "jdeb" % "1.10" artifacts (Artifact("jdeb", "jar", "jar"))
 
