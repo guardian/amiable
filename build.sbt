@@ -8,7 +8,7 @@ enablePlugins(PlayScala, RiffRaffArtifact, JDebPackaging, SystemdPlugin)
 
 scalaVersion := "2.13.8"
 
-javaOptions in Universal ++= Seq(
+Universal / javaOptions ++= Seq(
   "-Dpidfile.path=/dev/null",
   s"-Dconfig.file=/etc/${name.value}.conf",
   "-J-XX:MaxRAMFraction=2",
@@ -19,7 +19,7 @@ javaOptions in Universal ++= Seq(
   s"-J-Xloggc:/var/log/${packageName.value}/gc.log"
 )
 
-javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
+Test / javaOptions += "-Dconfig.file=conf/application.test.conf"
 
 routesGenerator := InjectedRoutesGenerator
 
@@ -76,13 +76,13 @@ resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 PlayKeys.playDefaultPort := 9101
 
-packageName in Universal := name.value
+Universal / packageName := name.value
 maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
 packageDescription := """Web app for monitoring the use of AMIs"""
 debianPackageDependencies := Seq("openjdk-8-jre-headless")
 
-riffRaffPackageType := (packageBin in Debian).value
+riffRaffPackageType := (Debian / packageBin).value
 riffRaffArtifactResources  := Seq(
   riffRaffPackageType.value -> s"${name.value}/${name.value}.deb",
   baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml",
