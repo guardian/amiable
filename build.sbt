@@ -8,7 +8,7 @@ enablePlugins(PlayScala, RiffRaffArtifact, JDebPackaging, SystemdPlugin)
 
 scalaVersion := "2.13.8"
 
-javaOptions in Universal ++= Seq(
+Universal / javaOptions ++= Seq(
   "-Dpidfile.path=/dev/null",
   s"-Dconfig.file=/etc/${name.value}.conf",
   "-J-XX:MaxRAMFraction=2",
@@ -19,7 +19,7 @@ javaOptions in Universal ++= Seq(
   s"-J-Xloggc:/var/log/${packageName.value}/gc.log"
 )
 
-javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
+Test / javaOptions += "-Dconfig.file=conf/application.test.conf"
 
 routesGenerator := InjectedRoutesGenerator
 
@@ -34,7 +34,7 @@ scalacOptions := Seq(
 
 // https://github.com/orgs/playframework/discussions/11222
 val jacksonVersion         = "2.13.3"
-val jacksonDatabindVersion = "2.13.2.2"
+val jacksonDatabindVersion = "2.13.3"
 
 val jacksonOverrides = Seq(
   "com.fasterxml.jackson.core"     % "jackson-core",
@@ -61,7 +61,7 @@ libraryDependencies ++= Seq(
   "io.reactivex" %% "rxscala" % "0.27.0",
   "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.12.276",
   "com.amazonaws" % "aws-java-sdk-ses" % "1.12.276",
-  "com.google.code.gson" % "gson" % "2.9.1",
+  "com.google.code.gson" % "gson" % "2.8.9",
   "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.6",
   "org.quartz-scheduler" % "quartz" % "2.3.2",
   "com.typesafe.play" %% "play-json-joda" % "2.10.0-RC6",
@@ -76,13 +76,13 @@ resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 PlayKeys.playDefaultPort := 9101
 
-packageName in Universal := name.value
+Universal / packageName := name.value
 maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
 packageDescription := """Web app for monitoring the use of AMIs"""
 debianPackageDependencies := Seq("openjdk-8-jre-headless")
 
-riffRaffPackageType := (packageBin in Debian).value
+riffRaffPackageType := (Debian / packageBin).value
 riffRaffArtifactResources  := Seq(
   riffRaffPackageType.value -> s"${name.value}/${name.value}.deb",
   baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml",
