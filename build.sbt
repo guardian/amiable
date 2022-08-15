@@ -59,16 +59,16 @@ libraryDependencies ++= Seq(
   ws,
   "com.typesafe.akka" %% "akka-agent" % "2.5.32",
   "io.reactivex" %% "rxscala" % "0.27.0",
-  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.12.276",
-  "com.amazonaws" % "aws-java-sdk-ses" % "1.12.276",
-  "com.google.code.gson" % "gson" % "2.8.9",
+  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.12.281",
+  "com.amazonaws" % "aws-java-sdk-ses" % "1.12.281",
+  "com.google.code.gson" % "gson" % "2.9.1",
   "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.6",
   "org.quartz-scheduler" % "quartz" % "2.3.2",
   "com.typesafe.play" %% "play-json-joda" % "2.10.0-RC6",
   specs2 % Test,
   "org.scalatest" %% "scalatest" % "3.2.13" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
-  "org.mockito" % "mockito-core" % "4.2.0" % Test,
+  "org.mockito" % "mockito-core" % "4.7.0" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.2"
 ) ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
 
