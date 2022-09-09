@@ -63,8 +63,8 @@ Object {
         "LaunchConfigurationName": Object {
           "Ref": "AutoScalingGroupAmiableLaunchConfig09A6D8E3",
         },
-        "MaxSize": "2",
-        "MinSize": "1",
+        "MaxSize": "6",
+        "MinSize": "3",
         "Tags": Array [
           Object {
             "Key": "App",
@@ -946,8 +946,8 @@ Object {
         "LaunchConfigurationName": Object {
           "Ref": "AutoScalingGroupAmiableLaunchConfig09A6D8E3",
         },
-        "MaxSize": "2",
-        "MinSize": "1",
+        "MaxSize": "6",
+        "MinSize": "3",
         "Tags": Array [
           Object {
             "Key": "App",
