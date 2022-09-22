@@ -6,7 +6,7 @@ version := "1.0-SNAPSHOT"
 
 enablePlugins(PlayScala, RiffRaffArtifact, JDebPackaging, SystemdPlugin)
 
-scalaVersion := "2.13.8"
+scalaVersion := "2.13.9"
 
 Universal / javaOptions ++= Seq(
   "-Dpidfile.path=/dev/null",
