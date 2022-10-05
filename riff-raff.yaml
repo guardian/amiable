@@ -13,6 +13,7 @@ deployments:
     type: cloud-formation
     app: amiable
     parameters:
+      manageStackPolicy: false
       amiParameter: AMIAmiable
       amiTags:
         Recipe: arm64-bionic-java8-deploy-infrastructure
