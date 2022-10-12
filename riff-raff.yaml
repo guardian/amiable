@@ -6,7 +6,7 @@ deployments:
   amiable:
     type: autoscaling
     parameters:
-      bucket: deploy-tools-dist
+      bucketSsmLookup: true
     dependencies:
       - cloudformation
   cloudformation:
