@@ -1,6 +1,6 @@
 import { AccessScope } from "@guardian/cdk/lib/constants/access";
 import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
-import { GuStack } from "@guardian/cdk/lib/constructs/core";
+import { GuDistributionBucketParameter, GuStack } from "@guardian/cdk/lib/constructs/core";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
 import { GuardianPublicNetworks } from "@guardian/private-infrastructure-config";
@@ -12,10 +12,14 @@ interface AmiableProps extends GuStackProps {
 }
 
 export class Amiable extends GuStack {
-  private readonly app: string = "amiable";
-
   constructor(scope: App, id: string, props: AmiableProps) {
     super(scope, id, props);
+
+    const app = "amiable";
+    const { stack, stage } = this;
+    const isProd = stage === "PROD";
+
+    const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
 
     const allowedCIDRs = [
       GuardianPublicNetworks.London,
@@ -24,30 +28,29 @@ export class Amiable extends GuStack {
     ];
 
     new GuPlayApp(this, {
-      app: this.app,
+      app,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.SMALL),
       userData: `#!/bin/bash -ev
 
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/${this.stage}/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/${this.stage}/amiable/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/${this.stage}/amiable/amiable.deb /amiable/
+          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable-service-account-cert.json /amiable/
+          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable.conf /etc/
+          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable.deb /amiable/
 
           dpkg -i /amiable/amiable.deb`,
       certificateProps: {
         domainName: props.domainName,
       },
-      monitoringConfiguration:
-        this.stage === "PROD"
-          ? {
-              snsTopicName: "devx-alerts",
-              http5xxAlarm: {
-                tolerated5xxPercentage: 99,
-                numberOfMinutesAboveThresholdBeforeAlarm: 2,
-              },
-              unhealthyInstancesAlarm: true,
-            }
-          : { noMonitoring: true },
+      monitoringConfiguration: isProd
+        ? {
+            snsTopicName: "devx-alerts",
+            http5xxAlarm: {
+              tolerated5xxPercentage: 99,
+              numberOfMinutesAboveThresholdBeforeAlarm: 2,
+            },
+            unhealthyInstancesAlarm: true,
+          }
+        : { noMonitoring: true },
       access: { scope: AccessScope.RESTRICTED, cidrRanges: allowedCIDRs.map((cidr) => Peer.ipv4(cidr)) },
       roleConfiguration: {
         additionalPolicies: [
@@ -59,7 +62,7 @@ export class Amiable extends GuStack {
         ],
       },
       applicationLogging: { enabled: true },
-      accessLogging: { enabled: true, prefix: `ELBLogs/${this.stack}/${this.app}/${this.stage}` },
+      accessLogging: { enabled: true, prefix: `ELBLogs/${stack}/${app}/${stage}` },
       scaling: { minimumInstances: 1 },
     });
   }

@@ -165,14 +165,33 @@ Object {
           },
         ],
         "UserData": Object {
-          "Fn::Base64": "#!/bin/bash -ev
+          "Fn::Base64": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "#!/bin/bash -ev
 
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/CODE/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/CODE/amiable/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/CODE/amiable/amiable.deb /amiable/
+          aws --region eu-west-1 s3 cp s3://",
+                Object {
+                  "Ref": "DistributionBucketName",
+                },
+                "/deploy/CODE/amiable/conf/amiable-service-account-cert.json /amiable/
+          aws --region eu-west-1 s3 cp s3://",
+                Object {
+                  "Ref": "DistributionBucketName",
+                },
+                "/deploy/CODE/amiable/conf/amiable.conf /etc/
+          aws --region eu-west-1 s3 cp s3://",
+                Object {
+                  "Ref": "DistributionBucketName",
+                },
+                "/deploy/CODE/amiable/amiable.deb /amiable/
 
           dpkg -i /amiable/amiable.deb",
+              ],
+            ],
+          },
         },
       },
       "Type": "AWS::AutoScaling::LaunchConfiguration",
@@ -1048,14 +1067,33 @@ Object {
           },
         ],
         "UserData": Object {
-          "Fn::Base64": "#!/bin/bash -ev
+          "Fn::Base64": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "#!/bin/bash -ev
 
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/PROD/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/PROD/amiable/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://deploy-tools-dist/deploy/PROD/amiable/amiable.deb /amiable/
+          aws --region eu-west-1 s3 cp s3://",
+                Object {
+                  "Ref": "DistributionBucketName",
+                },
+                "/deploy/PROD/amiable/conf/amiable-service-account-cert.json /amiable/
+          aws --region eu-west-1 s3 cp s3://",
+                Object {
+                  "Ref": "DistributionBucketName",
+                },
+                "/deploy/PROD/amiable/conf/amiable.conf /etc/
+          aws --region eu-west-1 s3 cp s3://",
+                Object {
+                  "Ref": "DistributionBucketName",
+                },
+                "/deploy/PROD/amiable/amiable.deb /amiable/
 
           dpkg -i /amiable/amiable.deb",
+              ],
+            ],
+          },
         },
       },
       "Type": "AWS::AutoScaling::LaunchConfiguration",
