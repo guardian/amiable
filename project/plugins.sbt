@@ -6,6 +6,10 @@ addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.9") // scala-stewar
 addSbtPlugin("com.gu" % "sbt-riffraff-artifact" % "1.1.18")
 libraryDependencies += "org.vafer" % "jdeb" % "1.10" artifacts (Artifact("jdeb", "jar", "jar"))
 
+ThisBuild / libraryDependencySchemes ++= Seq(
+  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+)
+
 // web plugins
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-coffeescript" % "1.0.2")
