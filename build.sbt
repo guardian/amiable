@@ -72,6 +72,14 @@ libraryDependencies ++= Seq(
   "net.logstash.logback" % "logstash-logback-encoder" % "7.2"
 ) ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
 
+/*
+ * This is required for Scala Steward to run until SBT plugins all migrated to scala-xml 2.
+ * See https://github.com/scala-steward-org/scala-steward/blob/13d63e8ae98a714efcdac2c7af18f004130512fa/project/plugins.sbt#L16-L19
+ */
+libraryDependencySchemes ++= Seq(
+  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+)
+
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 PlayKeys.playDefaultPort := 9101
