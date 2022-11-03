@@ -6,6 +6,14 @@ addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.9") // scala-stewar
 addSbtPlugin("com.gu" % "sbt-riffraff-artifact" % "1.1.18")
 libraryDependencies += "org.vafer" % "jdeb" % "1.10" artifacts (Artifact("jdeb", "jar", "jar"))
 
+/*
+ * This is required for Scala Steward to run until SBT plugins all migrated to scala-xml 2.
+ * See https://github.com/scala-steward-org/scala-steward/blob/13d63e8ae98a714efcdac2c7af18f004130512fa/project/plugins.sbt#L16-L19
+ */
+libraryDependencySchemes ++= Seq(
+  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+)
+
 // web plugins
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-coffeescript" % "1.0.2")
