@@ -140,7 +140,7 @@ class Agents @Inject() (amiableConfigProvider: AmiableConfigProvider, lifecycle:
   }
 
   private def refreshHistory(agent: Agent[List[(DateTime, Double)]], metricName:String): Unit = {
-    cloudWatch.get(metricName).fold(
+    cloudWatch.get(amiableConfigProvider.cloudwatchReadNamespace, metricName).fold(
       { err =>
         logger.warn(s"Failed to update historical data for metric '$metricName': ${err.logString}")
       },

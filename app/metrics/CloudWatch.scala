@@ -28,7 +28,7 @@ object CloudWatchMetrics {
   case object OldCountByAccount extends CloudWatchMetric("Vulnerabilities")
 }
 
-class CloudWatch(stage: String) extends Logging {
+class CloudWatch() extends Logging {
   lazy val client = {
     val credentialsProvider = new AWSCredentialsProviderChain(
       InstanceProfileCredentialsProvider.getInstance(),
@@ -41,9 +41,7 @@ class CloudWatch(stage: String) extends Logging {
     acwac
   }
 
-  val defaultNamespace = s"AMIable-$stage"
-
-  private[metrics] def putRequest(metricName: String, value: Int, dimensions: List[Dimension] = List.empty, namespace: String = defaultNamespace): PutMetricDataRequest = {
+  private[metrics] def putRequest(namespace: String, metricName: String, value: Int, dimensions: List[Dimension] = List.empty): PutMetricDataRequest = {
     new PutMetricDataRequest()
       .withNamespace(namespace)
       .withMetricData {
@@ -54,10 +52,10 @@ class CloudWatch(stage: String) extends Logging {
       }
   }
 
-  private def getRequest(metricName: String): GetMetricStatisticsRequest = {
+  private def getRequest(namespace: String, metricName: String): GetMetricStatisticsRequest = {
     val now = DateTime.now(DateTimeZone.UTC)
     new GetMetricStatisticsRequest()
-      .withNamespace(defaultNamespace)
+      .withNamespace(namespace)
       .withMetricName(metricName)
       .withPeriod(60 * 60 * 24)  // 1 day (24 hrs)
       .withStartTime(now.minusDays(90).toDate)
@@ -79,29 +77,29 @@ class CloudWatch(stage: String) extends Logging {
     awsToScala(client.putMetricDataAsync)(request)
   }
 
-  def get(metricName: String)(implicit executionContext: ExecutionContext): Attempt[Option[List[(DateTime, Double)]]] = {
-    Attempt.fromFuture(getWithRequest(getRequest(metricName)).map(ds => Right(Option(ds)))){ case e =>
+  def get(namespace: String, metricName: String)(implicit executionContext: ExecutionContext): Attempt[Option[List[(DateTime, Double)]]] = {
+    Attempt.fromFuture(getWithRequest(getRequest(namespace, metricName)).map(ds => Right(Option(ds)))){ case e =>
       logger.warn("Failed to fetch CloudWatch data", e)
       Right(None)
     }
   }
 
-  def put(metricName: String, maybeValue: Option[Int]): Unit = {
+  def put(namespace: String, metricName: String, maybeValue: Option[Int]): Unit = {
     maybeValue.fold {
       logger.warn(s"Not updating CloudWatch - no value available for '$metricName'")
     }{ value =>
-      putWithRequest(putRequest(metricName, value))
+      putWithRequest(putRequest(namespace, metricName, value))
       logger.debug(s"Updated CloudWatch metric '$metricName' with value '$value'")
     }
   }
 
-  def put(metricName: String, oldInstanceAccountHistory: List[OldInstanceAccountHistory]): Unit = {
+  def put(namespace: String, metricName: String, oldInstanceAccountHistory: List[OldInstanceAccountHistory]): Unit = {
     oldInstanceAccountHistory.foreach { oldAMICount =>
       val dimensions = List(
         new Dimension().withName("Account").withValue(oldAMICount.accountName),
         new Dimension().withName("DataType").withValue("oldami/total")
       )
-      putWithRequest(putRequest(metricName, oldAMICount.count, dimensions, "SecurityHQ"))
+      putWithRequest(putRequest(namespace, metricName, oldAMICount.count, dimensions))
     }
   }
 }
