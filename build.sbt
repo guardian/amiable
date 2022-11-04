@@ -53,14 +53,16 @@ val akkaSerializationJacksonOverrides = Seq(
   "com.fasterxml.jackson.module"     %% "jackson-module-scala",
 ).map(_ % jacksonVersion)
 
+val awsSdkVersion = "1.12.334"
+
 libraryDependencies ++= Seq(
   jdbc,
   ehcache,
   ws,
   "com.typesafe.akka" %% "akka-agent" % "2.5.32",
   "io.reactivex" %% "rxscala" % "0.27.0",
-  "com.amazonaws" % "aws-java-sdk-cloudwatch" % "1.12.331",
-  "com.amazonaws" % "aws-java-sdk-ses" % "1.12.334",
+  "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsSdkVersion,
+  "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
   "com.google.code.gson" % "gson" % "2.10",
   "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.6",
   "org.quartz-scheduler" % "quartz" % "2.3.2",
