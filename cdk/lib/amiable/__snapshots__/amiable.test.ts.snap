@@ -2,6 +2,36 @@
 
 exports[`The Amiable stack matches the snapshot 1`] = `
 {
+  "Metadata": {
+    "gu:cdk:constructs": [
+      "GuDistributionBucketParameter",
+      "GuGuardianEmailSenderParameter",
+      "GuSESSenderPolicy",
+      "GuAllowPolicy",
+      "GuVpcParameter",
+      "GuSubnetListParameter",
+      "GuSubnetListParameter",
+      "GuPlayApp",
+      "GuCertificate",
+      "GuInstanceRole",
+      "GuSSMRunCommandPolicy",
+      "GuDescribeEC2Policy",
+      "GuLoggingStreamNameParameter",
+      "GuLogShippingPolicy",
+      "GuGetDistributablePolicy",
+      "GuParameterStoreReadPolicy",
+      "GuAmiParameter",
+      "GuHttpsEgressSecurityGroup",
+      "GuAutoScalingGroup",
+      "GuWazuhAccess",
+      "GuApplicationLoadBalancer",
+      "GuStringParameter",
+      "GuApplicationTargetGroup",
+      "GuHttpsApplicationListener",
+      "GuSecurityGroup",
+    ],
+    "gu:cdk:version": "TEST",
+  },
   "Outputs": {
     "LoadBalancerAmiableDnsName": {
       "Description": "DNS entry for LoadBalancerAmiable",
@@ -904,6 +934,38 @@ exports[`The Amiable stack matches the snapshot 1`] = `
 
 exports[`The Amiable stack matches the snapshot 2`] = `
 {
+  "Metadata": {
+    "gu:cdk:constructs": [
+      "GuDistributionBucketParameter",
+      "GuGuardianEmailSenderParameter",
+      "GuSESSenderPolicy",
+      "GuAllowPolicy",
+      "GuVpcParameter",
+      "GuSubnetListParameter",
+      "GuSubnetListParameter",
+      "GuPlayApp",
+      "GuCertificate",
+      "GuInstanceRole",
+      "GuSSMRunCommandPolicy",
+      "GuDescribeEC2Policy",
+      "GuLoggingStreamNameParameter",
+      "GuLogShippingPolicy",
+      "GuGetDistributablePolicy",
+      "GuParameterStoreReadPolicy",
+      "GuAmiParameter",
+      "GuHttpsEgressSecurityGroup",
+      "GuAutoScalingGroup",
+      "GuWazuhAccess",
+      "GuApplicationLoadBalancer",
+      "GuStringParameter",
+      "GuApplicationTargetGroup",
+      "GuHttpsApplicationListener",
+      "GuSecurityGroup",
+      "GuAlb5xxPercentageAlarm",
+      "GuUnhealthyInstancesAlarm",
+    ],
+    "gu:cdk:version": "TEST",
+  },
   "Outputs": {
     "LoadBalancerAmiableDnsName": {
       "Description": "DNS entry for LoadBalancerAmiable",
