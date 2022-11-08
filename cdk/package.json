@@ -31,7 +31,7 @@
     "@guardian/cdk": "46.0.1",
     "aws-cdk": "2.29.1",
     "aws-cdk-lib": "2.29.1",
-    "constructs": "10.1.42"
+    "constructs": "10.1.153"
   },
   "dependencies": {
     "source-map-support": "^0.5.16"
