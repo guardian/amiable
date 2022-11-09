@@ -1,189 +1,219 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`The Amiable stack matches the snapshot 1`] = `
-Object {
-  "Outputs": Object {
-    "LoadBalancerAmiableDnsName": Object {
+{
+  "Metadata": {
+    "gu:cdk:constructs": [
+      "GuDistributionBucketParameter",
+      "GuGuardianEmailSenderParameter",
+      "GuSESSenderPolicy",
+      "GuAllowPolicy",
+      "GuVpcParameter",
+      "GuSubnetListParameter",
+      "GuSubnetListParameter",
+      "GuPlayApp",
+      "GuCertificate",
+      "GuInstanceRole",
+      "GuSSMRunCommandPolicy",
+      "GuDescribeEC2Policy",
+      "GuLoggingStreamNameParameter",
+      "GuLogShippingPolicy",
+      "GuGetDistributablePolicy",
+      "GuParameterStoreReadPolicy",
+      "GuAmiParameter",
+      "GuHttpsEgressSecurityGroup",
+      "GuAutoScalingGroup",
+      "GuWazuhAccess",
+      "GuApplicationLoadBalancer",
+      "GuStringParameter",
+      "GuApplicationTargetGroup",
+      "GuHttpsApplicationListener",
+      "GuSecurityGroup",
+    ],
+    "gu:cdk:version": "TEST",
+  },
+  "Outputs": {
+    "LoadBalancerAmiableDnsName": {
       "Description": "DNS entry for LoadBalancerAmiable",
-      "Value": Object {
-        "Fn::GetAtt": Array [
+      "Value": {
+        "Fn::GetAtt": [
           "LoadBalancerAmiable9C4DD4AF",
           "DNSName",
         ],
       },
     },
   },
-  "Parameters": Object {
-    "AMIAmiable": Object {
+  "Parameters": {
+    "AMIAmiable": {
       "Description": "Amazon Machine Image ID for the app amiable. Use this in conjunction with AMIgo to keep AMIs up to date.",
       "Type": "AWS::EC2::Image::Id",
     },
-    "AccessLoggingBucket": Object {
+    "AccessLoggingBucket": {
       "Default": "/account/services/access-logging/bucket",
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "DistributionBucketName": Object {
+    "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
       "Description": "SSM parameter containing the S3 bucket name holding distribution artifacts",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "EmailSenderAddress": Object {
-      "AllowedPattern": "^[a-zA-Z]+(\\\\.[a-zA-Z]+)*@theguardian.com$",
+    "EmailSenderAddress": {
+      "AllowedPattern": "^[a-zA-Z]+(\\.[a-zA-Z]+)*@theguardian.com$",
       "ConstraintDescription": "Must be an @theguardian.com email address",
       "Description": "The sender of emails sent using SES.",
       "Type": "String",
     },
-    "LoggingStreamName": Object {
+    "LoggingStreamName": {
       "Default": "/account/services/logging.stream.name",
       "Description": "SSM parameter containing the Name (not ARN) on the kinesis stream",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "VpcId": Object {
+    "VpcId": {
       "Default": "/account/vpc/primary/id",
       "Description": "Virtual Private Cloud to run EC2 instances within. Should NOT be the account default VPC.",
       "Type": "AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>",
     },
-    "amiablePrivateSubnets": Object {
+    "amiablePrivateSubnets": {
       "Default": "/account/vpc/primary/subnets/private",
       "Description": "A list of private subnets",
       "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
     },
-    "amiablePublicSubnets": Object {
+    "amiablePublicSubnets": {
       "Default": "/account/vpc/primary/subnets/public",
       "Description": "A list of public subnets",
       "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
     },
   },
-  "Resources": Object {
-    "AutoScalingGroupAmiableASGFCD99427": Object {
-      "Properties": Object {
+  "Resources": {
+    "AutoScalingGroupAmiableASGFCD99427": {
+      "Properties": {
         "HealthCheckGracePeriod": 120,
         "HealthCheckType": "ELB",
-        "LaunchConfigurationName": Object {
+        "LaunchConfigurationName": {
           "Ref": "AutoScalingGroupAmiableLaunchConfig09A6D8E3",
         },
         "MaxSize": "2",
         "MinSize": "1",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "PropagateAtLaunch": true,
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:pattern-name",
             "PropagateAtLaunch": true,
             "Value": "GuPlayApp",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "PropagateAtLaunch": true,
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "PropagateAtLaunch": true,
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "LogKinesisStreamName",
             "PropagateAtLaunch": true,
-            "Value": Object {
+            "Value": {
               "Ref": "LoggingStreamName",
             },
           },
-          Object {
+          {
             "Key": "Name",
             "PropagateAtLaunch": true,
             "Value": "amiable/AutoScalingGroupAmiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "PropagateAtLaunch": true,
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "PropagateAtLaunch": true,
             "Value": "CODE",
           },
-          Object {
+          {
             "Key": "SystemdUnit",
             "PropagateAtLaunch": true,
             "Value": "amiable.service",
           },
         ],
-        "TargetGroupARNs": Array [
-          Object {
+        "TargetGroupARNs": [
+          {
             "Ref": "TargetGroupAmiable6987B5AC",
           },
         ],
-        "VPCZoneIdentifier": Object {
+        "VPCZoneIdentifier": {
           "Ref": "amiablePrivateSubnets",
         },
       },
       "Type": "AWS::AutoScaling::AutoScalingGroup",
     },
-    "AutoScalingGroupAmiableInstanceProfile386BEAE5": Object {
-      "Properties": Object {
-        "Roles": Array [
-          Object {
+    "AutoScalingGroupAmiableInstanceProfile386BEAE5": {
+      "Properties": {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::InstanceProfile",
     },
-    "AutoScalingGroupAmiableLaunchConfig09A6D8E3": Object {
-      "DependsOn": Array [
+    "AutoScalingGroupAmiableLaunchConfig09A6D8E3": {
+      "DependsOn": [
         "InstanceRoleAmiable56110022",
       ],
-      "Properties": Object {
-        "IamInstanceProfile": Object {
+      "Properties": {
+        "IamInstanceProfile": {
           "Ref": "AutoScalingGroupAmiableInstanceProfile386BEAE5",
         },
-        "ImageId": Object {
+        "ImageId": {
           "Ref": "AMIAmiable",
         },
         "InstanceType": "t4g.small",
-        "MetadataOptions": Object {
+        "MetadataOptions": {
           "HttpTokens": "required",
         },
-        "SecurityGroups": Array [
-          Object {
-            "Fn::GetAtt": Array [
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
               "GuHttpsEgressSecurityGroupAmiable42C3598C",
               "GroupId",
             ],
           },
-          Object {
-            "Fn::GetAtt": Array [
+          {
+            "Fn::GetAtt": [
               "WazuhSecurityGroup",
               "GroupId",
             ],
           },
         ],
-        "UserData": Object {
-          "Fn::Base64": Object {
-            "Fn::Join": Array [
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "#!/bin/bash -ev
 
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
-                Object {
+                {
                   "Ref": "DistributionBucketName",
                 },
                 "/deploy/CODE/amiable/conf/amiable-service-account-cert.json /amiable/
           aws --region eu-west-1 s3 cp s3://",
-                Object {
+                {
                   "Ref": "DistributionBucketName",
                 },
                 "/deploy/CODE/amiable/conf/amiable.conf /etc/
           aws --region eu-west-1 s3 cp s3://",
-                Object {
+                {
                   "Ref": "DistributionBucketName",
                 },
                 "/deploy/CODE/amiable/amiable.deb /amiable/
@@ -196,28 +226,28 @@ Object {
       },
       "Type": "AWS::AutoScaling::LaunchConfiguration",
     },
-    "CertificateAmiable3AC0F81D": Object {
+    "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
+      "Properties": {
         "DomainName": "amiable.code.dev-gutools.co.uk",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "CODE",
           },
@@ -227,11 +257,11 @@ Object {
       "Type": "AWS::CertificateManager::Certificate",
       "UpdateReplacePolicy": "Retain",
     },
-    "CloudwatchPolicyFEF3FFD1": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CloudwatchPolicyFEF3FFD1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "cloudwatch:*",
               "Effect": "Allow",
               "Resource": "*",
@@ -240,20 +270,20 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "CloudwatchPolicyFEF3FFD1",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DescribeEC2PolicyFF5F9295": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "DescribeEC2PolicyFF5F9295": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "autoscaling:DescribeAutoScalingInstances",
                 "autoscaling:DescribeAutoScalingGroups",
                 "ec2:DescribeTags",
@@ -266,27 +296,27 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "describe-ec2-policy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "GetDistributablePolicyAmiableE65882EA": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "GetDistributablePolicyAmiableE65882EA": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "s3:GetObject",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:s3:::",
-                    Object {
+                    {
                       "Ref": "DistributionBucketName",
                     },
                     "/deploy/CODE/amiable/*",
@@ -298,19 +328,19 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "GetDistributablePolicyAmiableE65882EA",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "GuHttpsEgressSecurityGroupAmiable42C3598C": Object {
-      "Properties": Object {
+    "GuHttpsEgressSecurityGroupAmiable42C3598C": {
+      "Properties": {
         "GroupDescription": "Allow all outbound HTTPS traffic",
-        "SecurityGroupEgress": Array [
-          Object {
+        "SecurityGroupEgress": [
+          {
             "CidrIp": "0.0.0.0/0",
             "Description": "Allow all outbound HTTPS traffic",
             "FromPort": 443,
@@ -318,47 +348,47 @@ Object {
             "ToPort": 443,
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "CODE",
           },
         ],
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "GuHttpsEgressSecurityGroupAmiablefromamiableLoadBalancerAmiableSecurityGroup8E8C9583900089C3896F": Object {
-      "Properties": Object {
+    "GuHttpsEgressSecurityGroupAmiablefromamiableLoadBalancerAmiableSecurityGroup8E8C9583900089C3896F": {
+      "Properties": {
         "Description": "Load balancer to target",
         "FromPort": 9000,
-        "GroupId": Object {
-          "Fn::GetAtt": Array [
+        "GroupId": {
+          "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
             "GroupId",
           ],
         },
         "IpProtocol": "tcp",
-        "SourceSecurityGroupId": Object {
-          "Fn::GetAtt": Array [
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
             "LoadBalancerAmiableSecurityGroupAE4F7AF8",
             "GroupId",
           ],
@@ -367,19 +397,19 @@ Object {
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
-    "GuHttpsEgressSecurityGroupAmiablefromamiableRestrictedIngressSecurityGroupAmiableFA2DDED29000D4E8B76E": Object {
-      "Properties": Object {
+    "GuHttpsEgressSecurityGroupAmiablefromamiableRestrictedIngressSecurityGroupAmiableFA2DDED29000D4E8B76E": {
+      "Properties": {
         "Description": "Load balancer to target",
         "FromPort": 9000,
-        "GroupId": Object {
-          "Fn::GetAtt": Array [
+        "GroupId": {
+          "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
             "GroupId",
           ],
         },
         "IpProtocol": "tcp",
-        "SourceSecurityGroupId": Object {
-          "Fn::GetAtt": Array [
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
             "RestrictedIngressSecurityGroupAmiableF2034457",
             "GroupId",
           ],
@@ -388,26 +418,26 @@ Object {
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
-    "GuLogShippingPolicy981BFE5A": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "GuLogShippingPolicy981BFE5A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "kinesis:Describe*",
                 "kinesis:Put*",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:kinesis:eu-west-1:",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":stream/",
-                    Object {
+                    {
                       "Ref": "LoggingStreamName",
                     },
                   ],
@@ -418,31 +448,31 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "GuLogShippingPolicy981BFE5A",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "GuSESSenderPolicy2E2A75A2": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "GuSESSenderPolicy2E2A75A2": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "ses:SendEmail",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:ses:eu-west-1:",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":identity/",
-                    Object {
+                    {
                       "Ref": "EmailSenderAddress",
                     },
                   ],
@@ -453,22 +483,22 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "GuSESSenderPolicy2E2A75A2",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "InstanceRoleAmiable56110022": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "InstanceRoleAmiable56110022": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "ec2.amazonaws.com",
               },
             },
@@ -476,24 +506,24 @@ Object {
           "Version": "2012-10-17",
         },
         "Path": "/",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "CODE",
           },
@@ -501,24 +531,24 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "ListenerAmiable4B1060D6": Object {
-      "Properties": Object {
-        "Certificates": Array [
-          Object {
-            "CertificateArn": Object {
+    "ListenerAmiable4B1060D6": {
+      "Properties": {
+        "Certificates": [
+          {
+            "CertificateArn": {
               "Ref": "CertificateAmiable3AC0F81D",
             },
           },
         ],
-        "DefaultActions": Array [
-          Object {
-            "TargetGroupArn": Object {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
               "Ref": "TargetGroupAmiable6987B5AC",
             },
             "Type": "forward",
           },
         ],
-        "LoadBalancerArn": Object {
+        "LoadBalancerArn": {
           "Ref": "LoadBalancerAmiable9C4DD4AF",
         },
         "Port": 443,
@@ -526,64 +556,64 @@ Object {
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
     },
-    "LoadBalancerAmiable9C4DD4AF": Object {
-      "Properties": Object {
-        "LoadBalancerAttributes": Array [
-          Object {
+    "LoadBalancerAmiable9C4DD4AF": {
+      "Properties": {
+        "LoadBalancerAttributes": [
+          {
             "Key": "deletion_protection.enabled",
             "Value": "true",
           },
-          Object {
+          {
             "Key": "access_logs.s3.enabled",
             "Value": "true",
           },
-          Object {
+          {
             "Key": "access_logs.s3.bucket",
-            "Value": Object {
+            "Value": {
               "Ref": "AccessLoggingBucket",
             },
           },
-          Object {
+          {
             "Key": "access_logs.s3.prefix",
             "Value": "ELBLogs/deploy/amiable/CODE",
           },
         ],
         "Scheme": "internet-facing",
-        "SecurityGroups": Array [
-          Object {
-            "Fn::GetAtt": Array [
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
               "LoadBalancerAmiableSecurityGroupAE4F7AF8",
               "GroupId",
             ],
           },
-          Object {
-            "Fn::GetAtt": Array [
+          {
+            "Fn::GetAtt": [
               "RestrictedIngressSecurityGroupAmiableF2034457",
               "GroupId",
             ],
           },
         ],
-        "Subnets": Object {
+        "Subnets": {
           "Ref": "amiablePublicSubnets",
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "CODE",
           },
@@ -592,49 +622,49 @@ Object {
       },
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
     },
-    "LoadBalancerAmiableSecurityGroupAE4F7AF8": Object {
-      "Properties": Object {
+    "LoadBalancerAmiableSecurityGroupAE4F7AF8": {
+      "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB amiableLoadBalancerAmiableD818374E",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "CODE",
           },
         ],
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "LoadBalancerAmiableSecurityGrouptoamiableGuHttpsEgressSecurityGroupAmiable7C2576F69000B827F6DB": Object {
-      "Properties": Object {
+    "LoadBalancerAmiableSecurityGrouptoamiableGuHttpsEgressSecurityGroupAmiable7C2576F69000B827F6DB": {
+      "Properties": {
         "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": Object {
-          "Fn::GetAtt": Array [
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
             "GroupId",
           ],
         },
         "FromPort": 9000,
-        "GroupId": Object {
-          "Fn::GetAtt": Array [
+        "GroupId": {
+          "Fn::GetAtt": [
             "LoadBalancerAmiableSecurityGroupAE4F7AF8",
             "GroupId",
           ],
@@ -644,19 +674,19 @@ Object {
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
-    "ParameterStoreReadAmiable24BF3AAC": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "ParameterStoreReadAmiable24BF3AAC": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "ssm:GetParametersByPath",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:ssm:eu-west-1:",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":parameter/CODE/deploy/amiable",
@@ -664,18 +694,18 @@ Object {
                 ],
               },
             },
-            Object {
-              "Action": Array [
+            {
+              "Action": [
                 "ssm:GetParameters",
                 "ssm:GetParameter",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:ssm:eu-west-1:",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":parameter/CODE/deploy/amiable/*",
@@ -687,33 +717,33 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "parameter-store-read-policy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "RestrictedIngressSecurityGroupAmiableF2034457": Object {
-      "Properties": Object {
+    "RestrictedIngressSecurityGroupAmiableF2034457": {
+      "Properties": {
         "GroupDescription": "Allow restricted ingress from CIDR ranges",
-        "SecurityGroupIngress": Array [
-          Object {
+        "SecurityGroupIngress": [
+          {
             "CidrIp": "192.168.1.1/22",
             "Description": "Allow access on port 443 from 192.168.1.1/22",
             "FromPort": 443,
             "IpProtocol": "tcp",
             "ToPort": 443,
           },
-          Object {
+          {
             "CidrIp": "192.168.1.2/22",
             "Description": "Allow access on port 443 from 192.168.1.2/22",
             "FromPort": 443,
             "IpProtocol": "tcp",
             "ToPort": 443,
           },
-          Object {
+          {
             "CidrIp": "192.168.1.3/22",
             "Description": "Allow access on port 443 from 192.168.1.3/22",
             "FromPort": 443,
@@ -721,46 +751,46 @@ Object {
             "ToPort": 443,
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "CODE",
           },
         ],
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "RestrictedIngressSecurityGroupAmiabletoamiableGuHttpsEgressSecurityGroupAmiable7C2576F69000C038BE6D": Object {
-      "Properties": Object {
+    "RestrictedIngressSecurityGroupAmiabletoamiableGuHttpsEgressSecurityGroupAmiable7C2576F69000C038BE6D": {
+      "Properties": {
         "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": Object {
-          "Fn::GetAtt": Array [
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
             "GroupId",
           ],
         },
         "FromPort": 9000,
-        "GroupId": Object {
-          "Fn::GetAtt": Array [
+        "GroupId": {
+          "Fn::GetAtt": [
             "RestrictedIngressSecurityGroupAmiableF2034457",
             "GroupId",
           ],
@@ -770,12 +800,12 @@ Object {
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
-    "SSMRunCommandPolicy244E1613": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "SSMRunCommandPolicy244E1613": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "ec2messages:AcknowledgeMessage",
                 "ec2messages:DeleteMessage",
                 "ec2messages:FailMessage",
@@ -798,16 +828,16 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "ssm-run-command-policy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "TargetGroupAmiable6987B5AC": Object {
-      "Properties": Object {
+    "TargetGroupAmiable6987B5AC": {
+      "Properties": {
         "HealthCheckIntervalSeconds": 10,
         "HealthCheckPath": "/healthcheck",
         "HealthCheckProtocol": "HTTP",
@@ -815,58 +845,58 @@ Object {
         "HealthyThresholdCount": 5,
         "Port": 9000,
         "Protocol": "HTTP",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "CODE",
           },
         ],
-        "TargetGroupAttributes": Array [
-          Object {
+        "TargetGroupAttributes": [
+          {
             "Key": "deregistration_delay.timeout_seconds",
             "Value": "30",
           },
-          Object {
+          {
             "Key": "stickiness.enabled",
             "Value": "false",
           },
         ],
         "TargetType": "instance",
         "UnhealthyThresholdCount": 2,
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
     },
-    "WazuhSecurityGroup": Object {
-      "Properties": Object {
+    "WazuhSecurityGroup": {
+      "Properties": {
         "GroupDescription": "Allow outbound traffic from wazuh agent to manager",
-        "SecurityGroupEgress": Array [
-          Object {
+        "SecurityGroupEgress": [
+          {
             "CidrIp": "0.0.0.0/0",
             "Description": "Wazuh event logging",
             "FromPort": 1514,
             "IpProtocol": "tcp",
             "ToPort": 1514,
           },
-          Object {
+          {
             "CidrIp": "0.0.0.0/0",
             "Description": "Wazuh agent registration",
             "FromPort": 1515,
@@ -874,25 +904,25 @@ Object {
             "ToPort": 1515,
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "CODE",
           },
         ],
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
@@ -903,189 +933,221 @@ Object {
 `;
 
 exports[`The Amiable stack matches the snapshot 2`] = `
-Object {
-  "Outputs": Object {
-    "LoadBalancerAmiableDnsName": Object {
+{
+  "Metadata": {
+    "gu:cdk:constructs": [
+      "GuDistributionBucketParameter",
+      "GuGuardianEmailSenderParameter",
+      "GuSESSenderPolicy",
+      "GuAllowPolicy",
+      "GuVpcParameter",
+      "GuSubnetListParameter",
+      "GuSubnetListParameter",
+      "GuPlayApp",
+      "GuCertificate",
+      "GuInstanceRole",
+      "GuSSMRunCommandPolicy",
+      "GuDescribeEC2Policy",
+      "GuLoggingStreamNameParameter",
+      "GuLogShippingPolicy",
+      "GuGetDistributablePolicy",
+      "GuParameterStoreReadPolicy",
+      "GuAmiParameter",
+      "GuHttpsEgressSecurityGroup",
+      "GuAutoScalingGroup",
+      "GuWazuhAccess",
+      "GuApplicationLoadBalancer",
+      "GuStringParameter",
+      "GuApplicationTargetGroup",
+      "GuHttpsApplicationListener",
+      "GuSecurityGroup",
+      "GuAlb5xxPercentageAlarm",
+      "GuUnhealthyInstancesAlarm",
+    ],
+    "gu:cdk:version": "TEST",
+  },
+  "Outputs": {
+    "LoadBalancerAmiableDnsName": {
       "Description": "DNS entry for LoadBalancerAmiable",
-      "Value": Object {
-        "Fn::GetAtt": Array [
+      "Value": {
+        "Fn::GetAtt": [
           "LoadBalancerAmiable9C4DD4AF",
           "DNSName",
         ],
       },
     },
   },
-  "Parameters": Object {
-    "AMIAmiable": Object {
+  "Parameters": {
+    "AMIAmiable": {
       "Description": "Amazon Machine Image ID for the app amiable. Use this in conjunction with AMIgo to keep AMIs up to date.",
       "Type": "AWS::EC2::Image::Id",
     },
-    "AccessLoggingBucket": Object {
+    "AccessLoggingBucket": {
       "Default": "/account/services/access-logging/bucket",
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "DistributionBucketName": Object {
+    "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
       "Description": "SSM parameter containing the S3 bucket name holding distribution artifacts",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "EmailSenderAddress": Object {
-      "AllowedPattern": "^[a-zA-Z]+(\\\\.[a-zA-Z]+)*@theguardian.com$",
+    "EmailSenderAddress": {
+      "AllowedPattern": "^[a-zA-Z]+(\\.[a-zA-Z]+)*@theguardian.com$",
       "ConstraintDescription": "Must be an @theguardian.com email address",
       "Description": "The sender of emails sent using SES.",
       "Type": "String",
     },
-    "LoggingStreamName": Object {
+    "LoggingStreamName": {
       "Default": "/account/services/logging.stream.name",
       "Description": "SSM parameter containing the Name (not ARN) on the kinesis stream",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "VpcId": Object {
+    "VpcId": {
       "Default": "/account/vpc/primary/id",
       "Description": "Virtual Private Cloud to run EC2 instances within. Should NOT be the account default VPC.",
       "Type": "AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>",
     },
-    "amiablePrivateSubnets": Object {
+    "amiablePrivateSubnets": {
       "Default": "/account/vpc/primary/subnets/private",
       "Description": "A list of private subnets",
       "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
     },
-    "amiablePublicSubnets": Object {
+    "amiablePublicSubnets": {
       "Default": "/account/vpc/primary/subnets/public",
       "Description": "A list of public subnets",
       "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
     },
   },
-  "Resources": Object {
-    "AutoScalingGroupAmiableASGFCD99427": Object {
-      "Properties": Object {
+  "Resources": {
+    "AutoScalingGroupAmiableASGFCD99427": {
+      "Properties": {
         "HealthCheckGracePeriod": 120,
         "HealthCheckType": "ELB",
-        "LaunchConfigurationName": Object {
+        "LaunchConfigurationName": {
           "Ref": "AutoScalingGroupAmiableLaunchConfig09A6D8E3",
         },
         "MaxSize": "2",
         "MinSize": "1",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "PropagateAtLaunch": true,
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:pattern-name",
             "PropagateAtLaunch": true,
             "Value": "GuPlayApp",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "PropagateAtLaunch": true,
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "PropagateAtLaunch": true,
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "LogKinesisStreamName",
             "PropagateAtLaunch": true,
-            "Value": Object {
+            "Value": {
               "Ref": "LoggingStreamName",
             },
           },
-          Object {
+          {
             "Key": "Name",
             "PropagateAtLaunch": true,
             "Value": "Amiable-PROD/AutoScalingGroupAmiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "PropagateAtLaunch": true,
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "PropagateAtLaunch": true,
             "Value": "PROD",
           },
-          Object {
+          {
             "Key": "SystemdUnit",
             "PropagateAtLaunch": true,
             "Value": "amiable.service",
           },
         ],
-        "TargetGroupARNs": Array [
-          Object {
+        "TargetGroupARNs": [
+          {
             "Ref": "TargetGroupAmiable6987B5AC",
           },
         ],
-        "VPCZoneIdentifier": Object {
+        "VPCZoneIdentifier": {
           "Ref": "amiablePrivateSubnets",
         },
       },
       "Type": "AWS::AutoScaling::AutoScalingGroup",
     },
-    "AutoScalingGroupAmiableInstanceProfile386BEAE5": Object {
-      "Properties": Object {
-        "Roles": Array [
-          Object {
+    "AutoScalingGroupAmiableInstanceProfile386BEAE5": {
+      "Properties": {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::InstanceProfile",
     },
-    "AutoScalingGroupAmiableLaunchConfig09A6D8E3": Object {
-      "DependsOn": Array [
+    "AutoScalingGroupAmiableLaunchConfig09A6D8E3": {
+      "DependsOn": [
         "InstanceRoleAmiable56110022",
       ],
-      "Properties": Object {
-        "IamInstanceProfile": Object {
+      "Properties": {
+        "IamInstanceProfile": {
           "Ref": "AutoScalingGroupAmiableInstanceProfile386BEAE5",
         },
-        "ImageId": Object {
+        "ImageId": {
           "Ref": "AMIAmiable",
         },
         "InstanceType": "t4g.small",
-        "MetadataOptions": Object {
+        "MetadataOptions": {
           "HttpTokens": "required",
         },
-        "SecurityGroups": Array [
-          Object {
-            "Fn::GetAtt": Array [
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
               "GuHttpsEgressSecurityGroupAmiable42C3598C",
               "GroupId",
             ],
           },
-          Object {
-            "Fn::GetAtt": Array [
+          {
+            "Fn::GetAtt": [
               "WazuhSecurityGroup",
               "GroupId",
             ],
           },
         ],
-        "UserData": Object {
-          "Fn::Base64": Object {
-            "Fn::Join": Array [
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "#!/bin/bash -ev
 
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
-                Object {
+                {
                   "Ref": "DistributionBucketName",
                 },
                 "/deploy/PROD/amiable/conf/amiable-service-account-cert.json /amiable/
           aws --region eu-west-1 s3 cp s3://",
-                Object {
+                {
                   "Ref": "DistributionBucketName",
                 },
                 "/deploy/PROD/amiable/conf/amiable.conf /etc/
           aws --region eu-west-1 s3 cp s3://",
-                Object {
+                {
                   "Ref": "DistributionBucketName",
                 },
                 "/deploy/PROD/amiable/amiable.deb /amiable/
@@ -1098,28 +1160,28 @@ Object {
       },
       "Type": "AWS::AutoScaling::LaunchConfiguration",
     },
-    "CertificateAmiable3AC0F81D": Object {
+    "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
+      "Properties": {
         "DomainName": "amiable.gutools.co.uk",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "PROD",
           },
@@ -1129,11 +1191,11 @@ Object {
       "Type": "AWS::CertificateManager::Certificate",
       "UpdateReplacePolicy": "Retain",
     },
-    "CloudwatchPolicyFEF3FFD1": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CloudwatchPolicyFEF3FFD1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "cloudwatch:*",
               "Effect": "Allow",
               "Resource": "*",
@@ -1142,20 +1204,20 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "CloudwatchPolicyFEF3FFD1",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DescribeEC2PolicyFF5F9295": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "DescribeEC2PolicyFF5F9295": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "autoscaling:DescribeAutoScalingInstances",
                 "autoscaling:DescribeAutoScalingGroups",
                 "ec2:DescribeTags",
@@ -1168,27 +1230,27 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "describe-ec2-policy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "GetDistributablePolicyAmiableE65882EA": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "GetDistributablePolicyAmiableE65882EA": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "s3:GetObject",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:s3:::",
-                    Object {
+                    {
                       "Ref": "DistributionBucketName",
                     },
                     "/deploy/PROD/amiable/*",
@@ -1200,19 +1262,19 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "GetDistributablePolicyAmiableE65882EA",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "GuHttpsEgressSecurityGroupAmiable42C3598C": Object {
-      "Properties": Object {
+    "GuHttpsEgressSecurityGroupAmiable42C3598C": {
+      "Properties": {
         "GroupDescription": "Allow all outbound HTTPS traffic",
-        "SecurityGroupEgress": Array [
-          Object {
+        "SecurityGroupEgress": [
+          {
             "CidrIp": "0.0.0.0/0",
             "Description": "Allow all outbound HTTPS traffic",
             "FromPort": 443,
@@ -1220,47 +1282,47 @@ Object {
             "ToPort": 443,
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "PROD",
           },
         ],
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "GuHttpsEgressSecurityGroupAmiablefromAmiablePRODLoadBalancerAmiableSecurityGroup7EE4175D900019DB4DAD": Object {
-      "Properties": Object {
+    "GuHttpsEgressSecurityGroupAmiablefromAmiablePRODLoadBalancerAmiableSecurityGroup7EE4175D900019DB4DAD": {
+      "Properties": {
         "Description": "Load balancer to target",
         "FromPort": 9000,
-        "GroupId": Object {
-          "Fn::GetAtt": Array [
+        "GroupId": {
+          "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
             "GroupId",
           ],
         },
         "IpProtocol": "tcp",
-        "SourceSecurityGroupId": Object {
-          "Fn::GetAtt": Array [
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
             "LoadBalancerAmiableSecurityGroupAE4F7AF8",
             "GroupId",
           ],
@@ -1269,19 +1331,19 @@ Object {
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
-    "GuHttpsEgressSecurityGroupAmiablefromAmiablePRODRestrictedIngressSecurityGroupAmiable2EAC591090005722D016": Object {
-      "Properties": Object {
+    "GuHttpsEgressSecurityGroupAmiablefromAmiablePRODRestrictedIngressSecurityGroupAmiable2EAC591090005722D016": {
+      "Properties": {
         "Description": "Load balancer to target",
         "FromPort": 9000,
-        "GroupId": Object {
-          "Fn::GetAtt": Array [
+        "GroupId": {
+          "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
             "GroupId",
           ],
         },
         "IpProtocol": "tcp",
-        "SourceSecurityGroupId": Object {
-          "Fn::GetAtt": Array [
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
             "RestrictedIngressSecurityGroupAmiableF2034457",
             "GroupId",
           ],
@@ -1290,26 +1352,26 @@ Object {
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
-    "GuLogShippingPolicy981BFE5A": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "GuLogShippingPolicy981BFE5A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "kinesis:Describe*",
                 "kinesis:Put*",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:kinesis:eu-west-1:",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":stream/",
-                    Object {
+                    {
                       "Ref": "LoggingStreamName",
                     },
                   ],
@@ -1320,31 +1382,31 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "GuLogShippingPolicy981BFE5A",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "GuSESSenderPolicy2E2A75A2": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "GuSESSenderPolicy2E2A75A2": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "ses:SendEmail",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:ses:eu-west-1:",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":identity/",
-                    Object {
+                    {
                       "Ref": "EmailSenderAddress",
                     },
                   ],
@@ -1355,24 +1417,24 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "GuSESSenderPolicy2E2A75A2",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "High5xxPercentageAlarmAmiableEE38499D": Object {
-      "Properties": Object {
+    "High5xxPercentageAlarmAmiableEE38499D": {
+      "Properties": {
         "ActionsEnabled": true,
-        "AlarmActions": Array [
-          Object {
-            "Fn::Join": Array [
+        "AlarmActions": [
+          {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:aws:sns:eu-west-1:",
-                Object {
+                {
                   "Ref": "AWS::AccountId",
                 },
                 ":devx-alerts",
@@ -1384,21 +1446,21 @@ Object {
         "AlarmName": "High 5XX error % from amiable in PROD",
         "ComparisonOperator": "GreaterThanThreshold",
         "EvaluationPeriods": 2,
-        "Metrics": Array [
-          Object {
+        "Metrics": [
+          {
             "Expression": "100*(m1+m2)/m3",
             "Id": "expr_1",
             "Label": "% of 5XX responses served for amiable (load balancer and instances combined)",
           },
-          Object {
+          {
             "Id": "m1",
-            "MetricStat": Object {
-              "Metric": Object {
-                "Dimensions": Array [
-                  Object {
+            "MetricStat": {
+              "Metric": {
+                "Dimensions": [
+                  {
                     "Name": "LoadBalancer",
-                    "Value": Object {
-                      "Fn::GetAtt": Array [
+                    "Value": {
+                      "Fn::GetAtt": [
                         "LoadBalancerAmiable9C4DD4AF",
                         "LoadBalancerFullName",
                       ],
@@ -1413,15 +1475,15 @@ Object {
             },
             "ReturnData": false,
           },
-          Object {
+          {
             "Id": "m2",
-            "MetricStat": Object {
-              "Metric": Object {
-                "Dimensions": Array [
-                  Object {
+            "MetricStat": {
+              "Metric": {
+                "Dimensions": [
+                  {
                     "Name": "LoadBalancer",
-                    "Value": Object {
-                      "Fn::GetAtt": Array [
+                    "Value": {
+                      "Fn::GetAtt": [
                         "LoadBalancerAmiable9C4DD4AF",
                         "LoadBalancerFullName",
                       ],
@@ -1436,15 +1498,15 @@ Object {
             },
             "ReturnData": false,
           },
-          Object {
+          {
             "Id": "m3",
-            "MetricStat": Object {
-              "Metric": Object {
-                "Dimensions": Array [
-                  Object {
+            "MetricStat": {
+              "Metric": {
+                "Dimensions": [
+                  {
                     "Name": "LoadBalancer",
-                    "Value": Object {
-                      "Fn::GetAtt": Array [
+                    "Value": {
+                      "Fn::GetAtt": [
                         "LoadBalancerAmiable9C4DD4AF",
                         "LoadBalancerFullName",
                       ],
@@ -1465,14 +1527,14 @@ Object {
       },
       "Type": "AWS::CloudWatch::Alarm",
     },
-    "InstanceRoleAmiable56110022": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "InstanceRoleAmiable56110022": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "ec2.amazonaws.com",
               },
             },
@@ -1480,24 +1542,24 @@ Object {
           "Version": "2012-10-17",
         },
         "Path": "/",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "PROD",
           },
@@ -1505,24 +1567,24 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "ListenerAmiable4B1060D6": Object {
-      "Properties": Object {
-        "Certificates": Array [
-          Object {
-            "CertificateArn": Object {
+    "ListenerAmiable4B1060D6": {
+      "Properties": {
+        "Certificates": [
+          {
+            "CertificateArn": {
               "Ref": "CertificateAmiable3AC0F81D",
             },
           },
         ],
-        "DefaultActions": Array [
-          Object {
-            "TargetGroupArn": Object {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
               "Ref": "TargetGroupAmiable6987B5AC",
             },
             "Type": "forward",
           },
         ],
-        "LoadBalancerArn": Object {
+        "LoadBalancerArn": {
           "Ref": "LoadBalancerAmiable9C4DD4AF",
         },
         "Port": 443,
@@ -1530,64 +1592,64 @@ Object {
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
     },
-    "LoadBalancerAmiable9C4DD4AF": Object {
-      "Properties": Object {
-        "LoadBalancerAttributes": Array [
-          Object {
+    "LoadBalancerAmiable9C4DD4AF": {
+      "Properties": {
+        "LoadBalancerAttributes": [
+          {
             "Key": "deletion_protection.enabled",
             "Value": "true",
           },
-          Object {
+          {
             "Key": "access_logs.s3.enabled",
             "Value": "true",
           },
-          Object {
+          {
             "Key": "access_logs.s3.bucket",
-            "Value": Object {
+            "Value": {
               "Ref": "AccessLoggingBucket",
             },
           },
-          Object {
+          {
             "Key": "access_logs.s3.prefix",
             "Value": "ELBLogs/deploy/amiable/PROD",
           },
         ],
         "Scheme": "internet-facing",
-        "SecurityGroups": Array [
-          Object {
-            "Fn::GetAtt": Array [
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
               "LoadBalancerAmiableSecurityGroupAE4F7AF8",
               "GroupId",
             ],
           },
-          Object {
-            "Fn::GetAtt": Array [
+          {
+            "Fn::GetAtt": [
               "RestrictedIngressSecurityGroupAmiableF2034457",
               "GroupId",
             ],
           },
         ],
-        "Subnets": Object {
+        "Subnets": {
           "Ref": "amiablePublicSubnets",
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "PROD",
           },
@@ -1596,49 +1658,49 @@ Object {
       },
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
     },
-    "LoadBalancerAmiableSecurityGroupAE4F7AF8": Object {
-      "Properties": Object {
+    "LoadBalancerAmiableSecurityGroupAE4F7AF8": {
+      "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB AmiablePRODLoadBalancerAmiable081EFE48",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "PROD",
           },
         ],
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "LoadBalancerAmiableSecurityGrouptoAmiablePRODGuHttpsEgressSecurityGroupAmiableB48C77C8900068773BC0": Object {
-      "Properties": Object {
+    "LoadBalancerAmiableSecurityGrouptoAmiablePRODGuHttpsEgressSecurityGroupAmiableB48C77C8900068773BC0": {
+      "Properties": {
         "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": Object {
-          "Fn::GetAtt": Array [
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
             "GroupId",
           ],
         },
         "FromPort": 9000,
-        "GroupId": Object {
-          "Fn::GetAtt": Array [
+        "GroupId": {
+          "Fn::GetAtt": [
             "LoadBalancerAmiableSecurityGroupAE4F7AF8",
             "GroupId",
           ],
@@ -1648,19 +1710,19 @@ Object {
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
-    "ParameterStoreReadAmiable24BF3AAC": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "ParameterStoreReadAmiable24BF3AAC": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "ssm:GetParametersByPath",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:ssm:eu-west-1:",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":parameter/PROD/deploy/amiable",
@@ -1668,18 +1730,18 @@ Object {
                 ],
               },
             },
-            Object {
-              "Action": Array [
+            {
+              "Action": [
                 "ssm:GetParameters",
                 "ssm:GetParameter",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:ssm:eu-west-1:",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":parameter/PROD/deploy/amiable/*",
@@ -1691,33 +1753,33 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "parameter-store-read-policy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "RestrictedIngressSecurityGroupAmiableF2034457": Object {
-      "Properties": Object {
+    "RestrictedIngressSecurityGroupAmiableF2034457": {
+      "Properties": {
         "GroupDescription": "Allow restricted ingress from CIDR ranges",
-        "SecurityGroupIngress": Array [
-          Object {
+        "SecurityGroupIngress": [
+          {
             "CidrIp": "192.168.1.1/22",
             "Description": "Allow access on port 443 from 192.168.1.1/22",
             "FromPort": 443,
             "IpProtocol": "tcp",
             "ToPort": 443,
           },
-          Object {
+          {
             "CidrIp": "192.168.1.2/22",
             "Description": "Allow access on port 443 from 192.168.1.2/22",
             "FromPort": 443,
             "IpProtocol": "tcp",
             "ToPort": 443,
           },
-          Object {
+          {
             "CidrIp": "192.168.1.3/22",
             "Description": "Allow access on port 443 from 192.168.1.3/22",
             "FromPort": 443,
@@ -1725,46 +1787,46 @@ Object {
             "ToPort": 443,
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "PROD",
           },
         ],
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "RestrictedIngressSecurityGroupAmiabletoAmiablePRODGuHttpsEgressSecurityGroupAmiableB48C77C89000768D85C3": Object {
-      "Properties": Object {
+    "RestrictedIngressSecurityGroupAmiabletoAmiablePRODGuHttpsEgressSecurityGroupAmiableB48C77C89000768D85C3": {
+      "Properties": {
         "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": Object {
-          "Fn::GetAtt": Array [
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
             "GroupId",
           ],
         },
         "FromPort": 9000,
-        "GroupId": Object {
-          "Fn::GetAtt": Array [
+        "GroupId": {
+          "Fn::GetAtt": [
             "RestrictedIngressSecurityGroupAmiableF2034457",
             "GroupId",
           ],
@@ -1774,12 +1836,12 @@ Object {
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
-    "SSMRunCommandPolicy244E1613": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "SSMRunCommandPolicy244E1613": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "ec2messages:AcknowledgeMessage",
                 "ec2messages:DeleteMessage",
                 "ec2messages:FailMessage",
@@ -1802,16 +1864,16 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "ssm-run-command-policy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "TargetGroupAmiable6987B5AC": Object {
-      "Properties": Object {
+    "TargetGroupAmiable6987B5AC": {
+      "Properties": {
         "HealthCheckIntervalSeconds": 10,
         "HealthCheckPath": "/healthcheck",
         "HealthCheckProtocol": "HTTP",
@@ -1819,56 +1881,56 @@ Object {
         "HealthyThresholdCount": 5,
         "Port": 9000,
         "Protocol": "HTTP",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "App",
             "Value": "amiable",
           },
-          Object {
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "PROD",
           },
         ],
-        "TargetGroupAttributes": Array [
-          Object {
+        "TargetGroupAttributes": [
+          {
             "Key": "deregistration_delay.timeout_seconds",
             "Value": "30",
           },
-          Object {
+          {
             "Key": "stickiness.enabled",
             "Value": "false",
           },
         ],
         "TargetType": "instance",
         "UnhealthyThresholdCount": 2,
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
     },
-    "UnhealthyInstancesAlarmAmiable2EC845C9": Object {
-      "Properties": Object {
+    "UnhealthyInstancesAlarmAmiable2EC845C9": {
+      "Properties": {
         "ActionsEnabled": true,
-        "AlarmActions": Array [
-          Object {
-            "Fn::Join": Array [
+        "AlarmActions": [
+          {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:aws:sns:eu-west-1:",
-                Object {
+                {
                   "Ref": "AWS::AccountId",
                 },
                 ":devx-alerts",
@@ -1884,20 +1946,20 @@ Object {
         "AlarmName": "Unhealthy instances for amiable in PROD",
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "DatapointsToAlarm": 30,
-        "Dimensions": Array [
-          Object {
+        "Dimensions": [
+          {
             "Name": "LoadBalancer",
-            "Value": Object {
-              "Fn::Join": Array [
+            "Value": {
+              "Fn::Join": [
                 "",
-                Array [
-                  Object {
-                    "Fn::Select": Array [
+                [
+                  {
+                    "Fn::Select": [
                       1,
-                      Object {
-                        "Fn::Split": Array [
+                      {
+                        "Fn::Split": [
                           "/",
-                          Object {
+                          {
                             "Ref": "ListenerAmiable4B1060D6",
                           },
                         ],
@@ -1905,13 +1967,13 @@ Object {
                     ],
                   },
                   "/",
-                  Object {
-                    "Fn::Select": Array [
+                  {
+                    "Fn::Select": [
                       2,
-                      Object {
-                        "Fn::Split": Array [
+                      {
+                        "Fn::Split": [
                           "/",
-                          Object {
+                          {
                             "Ref": "ListenerAmiable4B1060D6",
                           },
                         ],
@@ -1919,13 +1981,13 @@ Object {
                     ],
                   },
                   "/",
-                  Object {
-                    "Fn::Select": Array [
+                  {
+                    "Fn::Select": [
                       3,
-                      Object {
-                        "Fn::Split": Array [
+                      {
+                        "Fn::Split": [
                           "/",
-                          Object {
+                          {
                             "Ref": "ListenerAmiable4B1060D6",
                           },
                         ],
@@ -1936,10 +1998,10 @@ Object {
               ],
             },
           },
-          Object {
+          {
             "Name": "TargetGroup",
-            "Value": Object {
-              "Fn::GetAtt": Array [
+            "Value": {
+              "Fn::GetAtt": [
                 "TargetGroupAmiable6987B5AC",
                 "TargetGroupFullName",
               ],
@@ -1956,18 +2018,18 @@ Object {
       },
       "Type": "AWS::CloudWatch::Alarm",
     },
-    "WazuhSecurityGroup": Object {
-      "Properties": Object {
+    "WazuhSecurityGroup": {
+      "Properties": {
         "GroupDescription": "Allow outbound traffic from wazuh agent to manager",
-        "SecurityGroupEgress": Array [
-          Object {
+        "SecurityGroupEgress": [
+          {
             "CidrIp": "0.0.0.0/0",
             "Description": "Wazuh event logging",
             "FromPort": 1514,
             "IpProtocol": "tcp",
             "ToPort": 1514,
           },
-          Object {
+          {
             "CidrIp": "0.0.0.0/0",
             "Description": "Wazuh agent registration",
             "FromPort": 1515,
@@ -1975,25 +2037,25 @@ Object {
             "ToPort": 1515,
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
-          Object {
+          {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
           },
-          Object {
+          {
             "Key": "Stack",
             "Value": "deploy",
           },
-          Object {
+          {
             "Key": "Stage",
             "Value": "PROD",
           },
         ],
-        "VpcId": Object {
+        "VpcId": {
           "Ref": "VpcId",
         },
       },
