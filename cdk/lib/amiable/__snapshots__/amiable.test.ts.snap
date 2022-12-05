@@ -102,11 +102,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             "Value": "amiable",
           },
           {
-            "Key": "gu:cdk:pattern-name",
-            "PropagateAtLaunch": true,
-            "Value": "GuPlayApp",
-          },
-          {
             "Key": "gu:cdk:version",
             "PropagateAtLaunch": true,
             "Value": "TEST",
@@ -242,6 +237,10 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Name",
+            "Value": "amiable/CertificateAmiable",
           },
           {
             "Key": "Stack",
@@ -1036,11 +1035,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             "Value": "amiable",
           },
           {
-            "Key": "gu:cdk:pattern-name",
-            "PropagateAtLaunch": true,
-            "Value": "GuPlayApp",
-          },
-          {
             "Key": "gu:cdk:version",
             "PropagateAtLaunch": true,
             "Value": "TEST",
@@ -1176,6 +1170,10 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           {
             "Key": "gu:repo",
             "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Name",
+            "Value": "Amiable-PROD/CertificateAmiable",
           },
           {
             "Key": "Stack",
