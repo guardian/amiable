@@ -137,3 +137,6 @@ tramp
 .metals
 .vscode
 project/metals.sbt
+
+.bsp/
+project/project/
