@@ -4,10 +4,15 @@ case class Percentiles(values: Seq[Int]) {
 
   private val percentilesRange: Range = 0 to 100
   private def percentile(s: Seq[Int], p: Int): Option[Int] = {
-    if(p < percentilesRange.min || p > percentilesRange.max) None
+    if (p < percentilesRange.min || p > percentilesRange.max) None
     s.sortWith(_ < _) match {
       case Nil => None
-      case nonEmptySeq => Some(nonEmptySeq(Math.ceil((s.length - 1) * p / percentilesRange.max).toInt))
+      case nonEmptySeq =>
+        Some(
+          nonEmptySeq(
+            Math.ceil((s.length - 1) * p / percentilesRange.max).toInt
+          )
+        )
     }
   }
 
@@ -20,4 +25,3 @@ case class Percentiles(values: Seq[Int]) {
   def highest = percentile(values, percentilesRange.max)
 
 }
-

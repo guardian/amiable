@@ -12,8 +12,15 @@ import services.notification.Notifications
 
 import scala.concurrent.ExecutionContext
 
-class AMIable (val controllerComponents: ControllerComponents, val amiableConfigProvider: AmiableConfigProvider, agents: Agents, notifications: Notifications, authAction: AuthAction[AnyContent])
-             (implicit exec: ExecutionContext) extends BaseController with Logging {
+class AMIable(
+    val controllerComponents: ControllerComponents,
+    val amiableConfigProvider: AmiableConfigProvider,
+    agents: Agents,
+    notifications: Notifications,
+    authAction: AuthAction[AnyContent]
+)(implicit exec: ExecutionContext)
+    extends BaseController
+    with Logging {
 
   implicit val conf: AMIableConfig = amiableConfigProvider.conf
 
@@ -31,29 +38,51 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
         accountNames <- Prism.getAccounts
         oldInstances = PrismLogic.oldInstances(instancesWithAmis)
         oldStacks = PrismLogic.stacks(oldInstances)
-        agePercentiles = PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
-        metrics = Metrics(oldInstances.length, instancesWithAmis.length, agePercentiles)
-      } yield Ok(views.html.index(oldStacks.sorted, charts, metrics, accountNames.map(_.accountName)))
+        agePercentiles = PrismLogic.instancesAmisAgePercentiles(
+          instancesWithAmis
+        )
+        metrics = Metrics(
+          oldInstances.length,
+          instancesWithAmis.length,
+          agePercentiles
+        )
+      } yield Ok(
+        views.html.index(
+          oldStacks.sorted,
+          charts,
+          metrics,
+          accountNames.map(_.accountName)
+        )
+      )
     }
   }
 
-  def ami(imageId: String): Action[AnyContent] = authAction.async { implicit request =>
-    attempt {
-      for {
-        amis <- Prism.getAMIs()
-        ami <- AMI.extract(imageId, amis)
-        amiWithUpgrade = Recommendations.amiWithUpgrade(agents.allAmis)(ami)
-        instances <- Prism.imageUsage(ami)
-        launchConfigs <- Prism.launchConfigUsage(ami)
-      } yield Ok(views.html.ami(
-        amiWithUpgrade,
-        conf,
-        PrismLogic.sortInstancesByStack(instances),
-        PrismLogic.sortLCsByOwner(launchConfigs)))
-    }
+  def ami(imageId: String): Action[AnyContent] = authAction.async {
+    implicit request =>
+      attempt {
+        for {
+          amis <- Prism.getAMIs()
+          ami <- AMI.extract(imageId, amis)
+          amiWithUpgrade = Recommendations.amiWithUpgrade(agents.allAmis)(ami)
+          instances <- Prism.imageUsage(ami)
+          launchConfigs <- Prism.launchConfigUsage(ami)
+        } yield Ok(
+          views.html.ami(
+            amiWithUpgrade,
+            conf,
+            PrismLogic.sortInstancesByStack(instances),
+            PrismLogic.sortLCsByOwner(launchConfigs)
+          )
+        )
+      }
   }
 
-  def ssaInstanceAMIs(stackOpt: Option[String], stageOpt: Option[String], appOpt: Option[String], accountNameOpt: Option[String]): Action[AnyContent] = authAction.async { implicit request =>
+  def ssaInstanceAMIs(
+      stackOpt: Option[String],
+      stageOpt: Option[String],
+      appOpt: Option[String],
+      accountNameOpt: Option[String]
+  ): Action[AnyContent] = authAction.async { implicit request =>
     val ssaa = SSAA.fromParams(stackOpt, stageOpt, appOpt, accountNameOpt)
     attempt {
       for {
@@ -61,7 +90,9 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
         accounts <- Prism.getAccounts
         instances = instancesWithAmis.map(_._1)
         amis = instancesWithAmis.flatMap(_._2).distinct
-        amisWithUpgrades = amis.map(Recommendations.amiWithUpgrade(agents.allAmis))
+        amisWithUpgrades = amis.map(
+          Recommendations.amiWithUpgrade(agents.allAmis)
+        )
         amisWithInstances = PrismLogic.amiInstances(amisWithUpgrades, instances)
         oldInstances = PrismLogic.oldInstances(instancesWithAmis)
         amiSSAs = PrismLogic.amiSSAAs(amisWithInstances)
@@ -71,17 +102,22 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
           PrismLogic.instancesAmisAgePercentiles(instancesWithAmis)
         )
         allSSAs = ssaa :: PrismLogic.instanceSSAAs(instances)
-        instancesCount = PrismLogic.instancesCountPerSsaPerAmi(amisWithInstances, allSSAs)
+        instancesCount = PrismLogic.instancesCountPerSsaPerAmi(
+          amisWithInstances,
+          allSSAs
+        )
         accountNames = accounts.map(_.accountName)
-      } yield Ok(views.html.instanceAMIs(
-        ssaa,
-        metrics,
-        amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis)),
-        PrismLogic.sortSSAAmisByAge(amiSSAs),
-        instancesCount,
-        accountNames,
-        conf
-      ))
+      } yield Ok(
+        views.html.instanceAMIs(
+          ssaa,
+          metrics,
+          amisWithUpgrades.sortBy(_.creationDate.map(_.getMillis)),
+          PrismLogic.sortSSAAmisByAge(amiSSAs),
+          instancesCount,
+          accountNames,
+          conf
+        )
+      )
     }
   }
 
@@ -93,8 +129,7 @@ class AMIable (val controllerComponents: ControllerComponents, val amiableConfig
     }
   }
 
-  /**
-    * `Attempt` with nicely formatted error handling using the error template
+  /** `Attempt` with nicely formatted error handling using the error template
     */
   private def attempt[A](action: => Attempt[Result]) = {
     Attempt(action) { err =>

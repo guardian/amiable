@@ -15,27 +15,32 @@ import prism.JsonUtils._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
-class JsonUtilsTest extends AnyFreeSpec with Matchers with EitherValues with AttemptValues with OptionValues with MockitoSugar {
+class JsonUtilsTest
+    extends AnyFreeSpec
+    with Matchers
+    with EitherValues
+    with AttemptValues
+    with OptionValues
+    with MockitoSugar {
   "extractAMI" - {
     "should return an AMI from correct json" in {
       val json = Json.parse(AMIs.validAMI)
       val ami = extractAMI(json).awaitEither.right.value
       ami should have(
-        'arn ("arn:aws:ec2:region::image/ami-example"),
-        'name (Some("ami-name")),
-        'imageId ("ami-example"),
-        'region ("region"),
-        'description (Some("AMI description")),
-        'creationDate (Some(new DateTime(2016, 2, 11, 0, 0))),
-        'state ("available"),
-        'architecture ("x86_64"),
-        'ownerId ("0123456789"),
-        'virtualizationType ("hvm"),
-        'hypervisor ("xen"),
-        'rootDeviceType ("ebs"),
-        'sriovNetSupport (Some("simple")),
-        'upgrade (None)
+        'arn("arn:aws:ec2:region::image/ami-example"),
+        'name(Some("ami-name")),
+        'imageId("ami-example"),
+        'region("region"),
+        'description(Some("AMI description")),
+        'creationDate(Some(new DateTime(2016, 2, 11, 0, 0))),
+        'state("available"),
+        'architecture("x86_64"),
+        'ownerId("0123456789"),
+        'virtualizationType("hvm"),
+        'hypervisor("xen"),
+        'rootDeviceType("ebs"),
+        'sriovNetSupport(Some("simple")),
+        'upgrade(None)
       )
     }
 
@@ -66,7 +71,8 @@ class JsonUtilsTest extends AnyFreeSpec with Matchers with EitherValues with Att
       when(response.json).thenReturn(json)
 
       "returns the JsValue" in {
-        amiResponseJson(response).awaitEither.right.value shouldEqual Json.parse(AMIs.validAMI)
+        amiResponseJson(response).awaitEither.right.value shouldEqual Json
+          .parse(AMIs.validAMI)
       }
     }
   }
@@ -78,7 +84,9 @@ class JsonUtilsTest extends AnyFreeSpec with Matchers with EitherValues with Att
       when(response.json).thenReturn(json)
 
       "returns the JsValue" in {
-        amisResponseJson(response).awaitEither.right.value shouldEqual List(Json.parse(AMIs.validAMI))
+        amisResponseJson(response).awaitEither.right.value shouldEqual List(
+          Json.parse(AMIs.validAMI)
+        )
       }
     }
   }
@@ -88,11 +96,11 @@ class JsonUtilsTest extends AnyFreeSpec with Matchers with EitherValues with Att
       val json = Json.parse(Instances.validInstance)
       val instance = extractInstance(json).awaitEither.right.value
       instance should have(
-        'name ("instance-name"),
-        'arn ("arn:aws:ec2:region:0123456789:instance/i-id"),
-        'stack (Some("stack")),
-        'app (List("app")),
-        'stage (Some("STAGE"))
+        'name("instance-name"),
+        'arn("arn:aws:ec2:region:0123456789:instance/i-id"),
+        'stack(Some("stack")),
+        'app(List("app")),
+        'stage(Some("STAGE"))
       )
       instance.specification.get("imageId").value shouldEqual "ami-id"
     }
@@ -107,15 +115,18 @@ class JsonUtilsTest extends AnyFreeSpec with Matchers with EitherValues with Att
   "extractLaunchConfiguration" - {
     "should return a Launch Configuration from correct json" in {
       val json = Json.parse(LaunchConfigs.validLaunchConfiguration)
-      val launchConfig = extractLaunchConfiguration(json).awaitEither.right.value
+      val launchConfig =
+        extractLaunchConfiguration(json).awaitEither.right.value
       launchConfig should have(
-        'name ("LaunchConfig-123"),
-        'arn ("arn:aws:autoscaling:us-west-1:12343425:launchConfiguration:123-123-325-d121:launchConfigurationName/LaunchConfig-123"),
-        'imageId ("ami-12345"),
-        'region ("us-west-1"),
-        'createdTime (new DateTime(2015, 1, 2,17,0)),
-        'instanceType ("t2.micro"),
-        'keyName ("KeyPair")
+        'name("LaunchConfig-123"),
+        'arn(
+          "arn:aws:autoscaling:us-west-1:12343425:launchConfiguration:123-123-325-d121:launchConfigurationName/LaunchConfig-123"
+        ),
+        'imageId("ami-12345"),
+        'region("us-west-1"),
+        'createdTime(new DateTime(2015, 1, 2, 17, 0)),
+        'instanceType("t2.micro"),
+        'keyName("KeyPair")
       )
       launchConfig.securityGroups.head shouldEqual "arn:aws:ec2:us-west-1:12343243:security-group/sg-aa111111"
       launchConfig.meta.href shouldEqual "http://localhost:8080/configs/arn:aws:autoscaling:us-west-1:12343425:launchConfiguration:123-123-325-d121:launchConfigurationName:LaunchConfig-1233"
@@ -132,7 +143,7 @@ class JsonUtilsTest extends AnyFreeSpec with Matchers with EitherValues with Att
     "should return an accounts list from correct json" in {
       val json = Json.parse(Accounts.validAccount)
       val accounts = extractAccounts(json).awaitEither.right.value
-      accounts.accountName shouldEqual("barnard-castle")
+      accounts.accountName shouldEqual ("barnard-castle")
     }
 
     "should return a failure given invalid json" in {
