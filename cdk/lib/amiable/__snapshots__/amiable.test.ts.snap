@@ -29,6 +29,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuApplicationTargetGroup",
       "GuHttpsApplicationListener",
       "GuSecurityGroup",
+      "GuCname",
       "GuHttpsEgressSecurityGroup",
       "GuStringParameter",
     ],
@@ -92,6 +93,23 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     },
   },
   "Resources": {
+    "AmiableCname": {
+      "Properties": {
+        "Name": "public.amiable.code.dev-gutools.co.uk",
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerAmiable9C4DD4AF",
+              "DNSName",
+            ],
+          },
+        ],
+        "Stage": "CODE",
+        "TTL": 60,
+      },
+      "Type": "Guardian::DNS::RecordSet",
+    },
     "AutoScalingGroupAmiableASGFCD99427": {
       "Properties": {
         "HealthCheckGracePeriod": 120,
@@ -230,7 +248,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
       "Properties": {
-        "DomainName": "amiable.code.dev-gutools.co.uk",
+        "DomainName": "public.amiable.code.dev-gutools.co.uk",
         "Tags": [
           {
             "Key": "App",
@@ -1076,6 +1094,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuSecurityGroup",
       "GuAlb5xxPercentageAlarm",
       "GuUnhealthyInstancesAlarm",
+      "GuCname",
       "GuHttpsEgressSecurityGroup",
       "GuStringParameter",
     ],
@@ -1139,6 +1158,23 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     },
   },
   "Resources": {
+    "AmiableCname": {
+      "Properties": {
+        "Name": "public.amiable.gutools.co.uk",
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerAmiable9C4DD4AF",
+              "DNSName",
+            ],
+          },
+        ],
+        "Stage": "PROD",
+        "TTL": 60,
+      },
+      "Type": "Guardian::DNS::RecordSet",
+    },
     "AutoScalingGroupAmiableASGFCD99427": {
       "Properties": {
         "HealthCheckGracePeriod": 120,
@@ -1277,7 +1313,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
       "Properties": {
-        "DomainName": "amiable.gutools.co.uk",
+        "DomainName": "public.amiable.gutools.co.uk",
         "Tags": [
           {
             "Key": "App",

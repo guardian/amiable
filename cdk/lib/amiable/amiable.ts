@@ -1,12 +1,13 @@
 import { AccessScope } from "@guardian/cdk/lib/constants/access";
 import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
 import { GuDistributionBucketParameter, GuStack, GuStringParameter } from "@guardian/cdk/lib/constructs/core";
+import {GuCname} from "@guardian/cdk/lib/constructs/dns";
 import { GuHttpsEgressSecurityGroup } from "@guardian/cdk/lib/constructs/ec2";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
 import { GuardianPublicNetworks } from "@guardian/private-infrastructure-config";
 import type { App } from "aws-cdk-lib";
-import { SecretValue } from "aws-cdk-lib";
+import {Duration, SecretValue} from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, Peer } from "aws-cdk-lib/aws-ec2";
 import { ListenerAction, UnauthenticatedAction } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 
@@ -67,6 +68,13 @@ export class Amiable extends GuStack {
       applicationLogging: { enabled: true },
       accessLogging: { enabled: true, prefix: `ELBLogs/${stack}/${app}/${stage}` },
       scaling: { minimumInstances: 1 },
+    });
+
+    new GuCname(this, "AmiableCname", {
+      app,
+      domainName: props.domainName,
+      ttl: Duration.minutes(1),
+      resourceRecord: ec2App.loadBalancer.loadBalancerDnsName,
     });
 
     // Need to give the ALB outbound access on 443 for the IdP endpoints (to support Google Auth).
