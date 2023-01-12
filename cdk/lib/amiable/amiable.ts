@@ -5,7 +5,6 @@ import {GuCname} from "@guardian/cdk/lib/constructs/dns";
 import { GuHttpsEgressSecurityGroup } from "@guardian/cdk/lib/constructs/ec2";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
-import { GuardianPublicNetworks } from "@guardian/private-infrastructure-config";
 import type { App } from "aws-cdk-lib";
 import {Duration, SecretValue} from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, Peer } from "aws-cdk-lib/aws-ec2";
@@ -24,12 +23,6 @@ export class Amiable extends GuStack {
     const isProd = stage === "PROD";
 
     const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
-
-    const allowedCIDRs = [
-      GuardianPublicNetworks.London,
-      GuardianPublicNetworks.NewYork1,
-      GuardianPublicNetworks.NewYork2,
-    ];
 
     const ec2App = new GuPlayApp(this, {
       app,
@@ -55,7 +48,7 @@ export class Amiable extends GuStack {
             unhealthyInstancesAlarm: true,
           }
         : { noMonitoring: true },
-      access: { scope: AccessScope.RESTRICTED, cidrRanges: allowedCIDRs.map((cidr) => Peer.ipv4(cidr)) },
+      access: { scope: AccessScope.PUBLIC },
       roleConfiguration: {
         additionalPolicies: [
           new GuSESSenderPolicy(this),
