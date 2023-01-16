@@ -28,7 +28,9 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuStringParameter",
       "GuApplicationTargetGroup",
       "GuHttpsApplicationListener",
-      "GuSecurityGroup",
+      "GuCname",
+      "GuHttpsEgressSecurityGroup",
+      "GuStringParameter",
     ],
     "gu:cdk:version": "TEST",
   },
@@ -52,6 +54,10 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Default": "/account/services/access-logging/bucket",
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "ClientId": {
+      "Description": "Google OAuth client ID",
+      "Type": "String",
     },
     "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
@@ -86,6 +92,23 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     },
   },
   "Resources": {
+    "AmiableCname": {
+      "Properties": {
+        "Name": "public.amiable.code.dev-gutools.co.uk",
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerAmiable9C4DD4AF",
+              "DNSName",
+            ],
+          },
+        ],
+        "Stage": "CODE",
+        "TTL": 60,
+      },
+      "Type": "Guardian::DNS::RecordSet",
+    },
     "AutoScalingGroupAmiableASGFCD99427": {
       "Properties": {
         "HealthCheckGracePeriod": 120,
@@ -224,7 +247,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
       "Properties": {
-        "DomainName": "amiable.code.dev-gutools.co.uk",
+        "DomainName": "public.amiable.code.dev-gutools.co.uk",
         "Tags": [
           {
             "Key": "App",
@@ -396,7 +419,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
-    "GuHttpsEgressSecurityGroupAmiablefromamiableRestrictedIngressSecurityGroupAmiableFA2DDED29000D4E8B76E": {
+    "GuHttpsEgressSecurityGroupAmiablefromamiableldpaccessAmiable1EDD8FAB9000558E233C": {
       "Properties": {
         "Description": "Load balancer to target",
         "FromPort": 9000,
@@ -409,7 +432,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         "IpProtocol": "tcp",
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
-            "RestrictedIngressSecurityGroupAmiableF2034457",
+            "ldpaccessAmiable1869C179",
             "GroupId",
           ],
         },
@@ -541,6 +564,26 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         ],
         "DefaultActions": [
           {
+            "AuthenticateOidcConfig": {
+              "AuthenticationRequestExtraParams": {
+                "hd": "guardian.co.uk",
+              },
+              "AuthorizationEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+              "ClientId": {
+                "Ref": "ClientId",
+              },
+              "ClientSecret": "{{resolve:secretsmanager:/CODE/deploy/amiable/client-secret:SecretString:::}}",
+              "Issuer": "https://accounts.google.com",
+              "OnUnauthenticatedRequest": "authenticate",
+              "Scope": "openid",
+              "TokenEndpoint": "https://oauth2.googleapis.com/token",
+              "UserInfoEndpoint": "https://openidconnect.googleapis.com/v1/userinfo",
+            },
+            "Order": 1,
+            "Type": "authenticate-oidc",
+          },
+          {
+            "Order": 2,
             "TargetGroupArn": {
               "Ref": "TargetGroupAmiable6987B5AC",
             },
@@ -587,7 +630,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           },
           {
             "Fn::GetAtt": [
-              "RestrictedIngressSecurityGroupAmiableF2034457",
+              "ldpaccessAmiable1869C179",
               "GroupId",
             ],
           },
@@ -624,6 +667,15 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     "LoadBalancerAmiableSecurityGroupAE4F7AF8": {
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB amiableLoadBalancerAmiableD818374E",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 443",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
         "Tags": [
           {
             "Key": "App",
@@ -723,81 +775,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "RestrictedIngressSecurityGroupAmiableF2034457": {
-      "Properties": {
-        "GroupDescription": "Allow restricted ingress from CIDR ranges",
-        "SecurityGroupIngress": [
-          {
-            "CidrIp": "192.168.1.1/22",
-            "Description": "Allow access on port 443 from 192.168.1.1/22",
-            "FromPort": 443,
-            "IpProtocol": "tcp",
-            "ToPort": 443,
-          },
-          {
-            "CidrIp": "192.168.1.2/22",
-            "Description": "Allow access on port 443 from 192.168.1.2/22",
-            "FromPort": 443,
-            "IpProtocol": "tcp",
-            "ToPort": 443,
-          },
-          {
-            "CidrIp": "192.168.1.3/22",
-            "Description": "Allow access on port 443 from 192.168.1.3/22",
-            "FromPort": 443,
-            "IpProtocol": "tcp",
-            "ToPort": 443,
-          },
-        ],
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
-        "VpcId": {
-          "Ref": "VpcId",
-        },
-      },
-      "Type": "AWS::EC2::SecurityGroup",
-    },
-    "RestrictedIngressSecurityGroupAmiabletoamiableGuHttpsEgressSecurityGroupAmiable7C2576F69000C038BE6D": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "RestrictedIngressSecurityGroupAmiableF2034457",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
     },
     "SSMRunCommandPolicy244E1613": {
       "Properties": {
@@ -927,6 +904,67 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
+    "ldpaccessAmiable1869C179": {
+      "Properties": {
+        "GroupDescription": "Allow all outbound HTTPS traffic",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound HTTPS traffic",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "ldpaccessAmiabletoamiableGuHttpsEgressSecurityGroupAmiable7C2576F69000DD06C6C9": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "GuHttpsEgressSecurityGroupAmiable42C3598C",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
   },
 }
 `;
@@ -959,9 +997,11 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuStringParameter",
       "GuApplicationTargetGroup",
       "GuHttpsApplicationListener",
-      "GuSecurityGroup",
       "GuAlb5xxPercentageAlarm",
       "GuUnhealthyInstancesAlarm",
+      "GuCname",
+      "GuHttpsEgressSecurityGroup",
+      "GuStringParameter",
     ],
     "gu:cdk:version": "TEST",
   },
@@ -985,6 +1025,10 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Default": "/account/services/access-logging/bucket",
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "ClientId": {
+      "Description": "Google OAuth client ID",
+      "Type": "String",
     },
     "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
@@ -1019,6 +1063,23 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     },
   },
   "Resources": {
+    "AmiableCname": {
+      "Properties": {
+        "Name": "public.amiable.gutools.co.uk",
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerAmiable9C4DD4AF",
+              "DNSName",
+            ],
+          },
+        ],
+        "Stage": "PROD",
+        "TTL": 60,
+      },
+      "Type": "Guardian::DNS::RecordSet",
+    },
     "AutoScalingGroupAmiableASGFCD99427": {
       "Properties": {
         "HealthCheckGracePeriod": 120,
@@ -1157,7 +1218,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
       "Properties": {
-        "DomainName": "amiable.gutools.co.uk",
+        "DomainName": "public.amiable.gutools.co.uk",
         "Tags": [
           {
             "Key": "App",
@@ -1329,7 +1390,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
-    "GuHttpsEgressSecurityGroupAmiablefromAmiablePRODRestrictedIngressSecurityGroupAmiable2EAC591090005722D016": {
+    "GuHttpsEgressSecurityGroupAmiablefromAmiablePRODldpaccessAmiable77AFE83C90002BD662C0": {
       "Properties": {
         "Description": "Load balancer to target",
         "FromPort": 9000,
@@ -1342,7 +1403,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "IpProtocol": "tcp",
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
-            "RestrictedIngressSecurityGroupAmiableF2034457",
+            "ldpaccessAmiable1869C179",
             "GroupId",
           ],
         },
@@ -1576,6 +1637,26 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         ],
         "DefaultActions": [
           {
+            "AuthenticateOidcConfig": {
+              "AuthenticationRequestExtraParams": {
+                "hd": "guardian.co.uk",
+              },
+              "AuthorizationEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+              "ClientId": {
+                "Ref": "ClientId",
+              },
+              "ClientSecret": "{{resolve:secretsmanager:/PROD/deploy/amiable/client-secret:SecretString:::}}",
+              "Issuer": "https://accounts.google.com",
+              "OnUnauthenticatedRequest": "authenticate",
+              "Scope": "openid",
+              "TokenEndpoint": "https://oauth2.googleapis.com/token",
+              "UserInfoEndpoint": "https://openidconnect.googleapis.com/v1/userinfo",
+            },
+            "Order": 1,
+            "Type": "authenticate-oidc",
+          },
+          {
+            "Order": 2,
             "TargetGroupArn": {
               "Ref": "TargetGroupAmiable6987B5AC",
             },
@@ -1622,7 +1703,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           },
           {
             "Fn::GetAtt": [
-              "RestrictedIngressSecurityGroupAmiableF2034457",
+              "ldpaccessAmiable1869C179",
               "GroupId",
             ],
           },
@@ -1659,6 +1740,15 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     "LoadBalancerAmiableSecurityGroupAE4F7AF8": {
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB AmiablePRODLoadBalancerAmiable081EFE48",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 443",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
         "Tags": [
           {
             "Key": "App",
@@ -1758,81 +1848,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "RestrictedIngressSecurityGroupAmiableF2034457": {
-      "Properties": {
-        "GroupDescription": "Allow restricted ingress from CIDR ranges",
-        "SecurityGroupIngress": [
-          {
-            "CidrIp": "192.168.1.1/22",
-            "Description": "Allow access on port 443 from 192.168.1.1/22",
-            "FromPort": 443,
-            "IpProtocol": "tcp",
-            "ToPort": 443,
-          },
-          {
-            "CidrIp": "192.168.1.2/22",
-            "Description": "Allow access on port 443 from 192.168.1.2/22",
-            "FromPort": 443,
-            "IpProtocol": "tcp",
-            "ToPort": 443,
-          },
-          {
-            "CidrIp": "192.168.1.3/22",
-            "Description": "Allow access on port 443 from 192.168.1.3/22",
-            "FromPort": 443,
-            "IpProtocol": "tcp",
-            "ToPort": 443,
-          },
-        ],
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-        "VpcId": {
-          "Ref": "VpcId",
-        },
-      },
-      "Type": "AWS::EC2::SecurityGroup",
-    },
-    "RestrictedIngressSecurityGroupAmiabletoAmiablePRODGuHttpsEgressSecurityGroupAmiableB48C77C89000768D85C3": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "RestrictedIngressSecurityGroupAmiableF2034457",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
     },
     "SSMRunCommandPolicy244E1613": {
       "Properties": {
@@ -2058,6 +2073,67 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
+    },
+    "ldpaccessAmiable1869C179": {
+      "Properties": {
+        "GroupDescription": "Allow all outbound HTTPS traffic",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound HTTPS traffic",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "ldpaccessAmiabletoAmiablePRODGuHttpsEgressSecurityGroupAmiableB48C77C890002166BC9B": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "GuHttpsEgressSecurityGroupAmiable42C3598C",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
     },
   },
 }

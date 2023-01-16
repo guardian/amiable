@@ -77,7 +77,8 @@ class AmiableConfigProvider @Inject() (
   val cloudwatchSecurityHqNamespace: String = "SecurityHQ"
 
   val requiredGoogleGroups: Set[String] = Set(
-    requiredString(playConfig, "auth.google.2faGroupId")
+    requiredString(playConfig, "auth.google.2faGroupId"),
+    requiredString(playConfig, "auth.google.departmentGroupId")
   )
 
   val googleAuthConfig: GoogleAuthConfig = {

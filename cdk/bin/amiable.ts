@@ -10,13 +10,13 @@ const commonProps = { migratedFromCloudFormation: true, stack: "deploy", env: { 
 export const codeProps = {
   ...commonProps,
   stage: "CODE",
-  domainName: "amiable.code.dev-gutools.co.uk",
+  domainName: "public.amiable.code.dev-gutools.co.uk",
 };
 
 export const prodProps = {
   ...commonProps,
   stage: "PROD",
-  domainName: "amiable.gutools.co.uk",
+  domainName: "public.amiable.gutools.co.uk",
 };
 
 new Amiable(app, "Amiable-CODE", codeProps);
