@@ -5,14 +5,56 @@ import org.joda.time.DateTime
 
 object Fixtures {
   def emptyAmi(arn: String): AMI =
-    AMI(arn, None, "", "", None, Map.empty, None, "", "", "", "", "",  "", None, None)
+    AMI(
+      arn,
+      None,
+      "",
+      "",
+      None,
+      Map.empty,
+      None,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      None,
+      None
+    )
   def emptyInstance(arn: String): Instance =
-    Instance(arn, "", "", "", "", "", DateTime.now, "", "", "", Nil, Map.empty, None, None, Nil, Nil, Map.empty, Meta("", Origin("", None, "", "")))
+    Instance(
+      arn,
+      "",
+      "",
+      "",
+      "",
+      "",
+      DateTime.now,
+      "",
+      "",
+      "",
+      Nil,
+      Map.empty,
+      None,
+      None,
+      Nil,
+      Nil,
+      Map.empty,
+      Meta("", Origin("", None, "", ""))
+    )
   def instanceWithAmiArn(arn: String, amiArnOpt: Option[String]): Instance =
-    amiArnOpt.fold(emptyInstance(arn))(amiArn => emptyInstance(arn).copy(specification = Map("imageArn" -> amiArn)))
+    amiArnOpt.fold(emptyInstance(arn))(amiArn =>
+      emptyInstance(arn).copy(specification = Map("imageArn" -> amiArn))
+    )
   def instanceWithSSAA(arn: String, ssaa: SSAA): Instance = {
     val empty = emptyInstance(arn)
-    empty.copy(stack = ssaa.stack, stage = ssaa.stage, app = ssaa.app.toList,  meta = Meta("", Origin("", ssaa.accountName, "", "")))
+    empty.copy(
+      stack = ssaa.stack,
+      stage = ssaa.stage,
+      app = ssaa.app.toList,
+      meta = Meta("", Origin("", ssaa.accountName, "", ""))
+    )
   }
 
   object AMIs {

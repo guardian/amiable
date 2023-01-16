@@ -10,7 +10,11 @@ import play.api.mvc.AnyContent
 import play.filters.HttpFiltersComponents
 import router.Routes
 import services.{Agents, Metrics}
-import services.notification.{AWSMailClient, Notifications, ScheduledNotificationRunner}
+import services.notification.{
+  AWSMailClient,
+  Notifications,
+  ScheduledNotificationRunner
+}
 import services.notification.AmazonSimpleEmailServiceAsyncFactory._
 
 class AppLoader extends play.api.ApplicationLoader {
@@ -19,8 +23,7 @@ class AppLoader extends play.api.ApplicationLoader {
 
     new LogbackLoggerConfigurator().configure(context.environment)
 
-    println(
-      """
+    println("""
 
                                                          .---.
                   __  __   ___   .--.          /|        |   |      __.....__
@@ -42,24 +45,49 @@ class AppLoader extends play.api.ApplicationLoader {
 
 }
 
+class AppComponents(context: Context)
+    extends play.api.BuiltInComponentsFromContext(context)
+    with HttpFiltersComponents
+    with AhcWSComponents
+    with controllers.AssetsComponents {
 
-class AppComponents(context: Context) extends play.api.BuiltInComponentsFromContext(context) with HttpFiltersComponents with AhcWSComponents with controllers.AssetsComponents {
-
-  lazy val amiableConfigProvider = new AmiableConfigProvider(wsClient, configuration, httpConfiguration)
+  lazy val amiableConfigProvider =
+    new AmiableConfigProvider(wsClient, configuration, httpConfiguration)
 
   val cloudwatch = new CloudWatch()
 
-  val agents = new Agents(amiableConfigProvider, applicationLifecycle, actorSystem, environment, cloudwatch)
-  val metrics = new Metrics(cloudwatch, amiableConfigProvider.shouldCreateCloudwatchMetrics, amiableConfigProvider.cloudwatchWriteNamespace, amiableConfigProvider.cloudwatchSecurityHqNamespace, agents, applicationLifecycle)
+  val agents = new Agents(
+    amiableConfigProvider,
+    applicationLifecycle,
+    actorSystem,
+    environment,
+    cloudwatch
+  )
+  val metrics = new Metrics(
+    cloudwatch,
+    amiableConfigProvider.shouldCreateCloudwatchMetrics,
+    amiableConfigProvider.cloudwatchWriteNamespace,
+    amiableConfigProvider.cloudwatchSecurityHqNamespace,
+    agents,
+    applicationLifecycle
+  )
 
-
-  lazy val amazonMailClient: AmazonSimpleEmailServiceAsync = amazonSimpleEmailServiceAsync
+  lazy val amazonMailClient: AmazonSimpleEmailServiceAsync =
+    amazonSimpleEmailServiceAsync
 
   lazy val awsMailClient = new AWSMailClient(amazonMailClient)(executionContext)
 
-  lazy val scheduledNotificationRunner = new ScheduledNotificationRunner(awsMailClient, environment, amiableConfigProvider)
-  lazy val notifications = new Notifications(amiableConfigProvider, environment, applicationLifecycle, scheduledNotificationRunner)
-
+  lazy val scheduledNotificationRunner = new ScheduledNotificationRunner(
+    awsMailClient,
+    environment,
+    amiableConfigProvider
+  )
+  lazy val notifications = new Notifications(
+    amiableConfigProvider,
+    environment,
+    applicationLifecycle,
+    scheduledNotificationRunner
+  )
 
   private val authAction = new AuthAction[AnyContent](
     amiableConfigProvider.googleAuthConfig,
@@ -67,10 +95,27 @@ class AppComponents(context: Context) extends play.api.BuiltInComponentsFromCont
     controllerComponents.parsers.default
   )(executionContext)
 
-  lazy val amiableController = new AMIable(controllerComponents, amiableConfigProvider, agents, notifications, authAction)(executionContext)
+  lazy val amiableController = new AMIable(
+    controllerComponents,
+    amiableConfigProvider,
+    agents,
+    notifications,
+    authAction
+  )(executionContext)
   lazy val healthCheckController = new Healthcheck(controllerComponents)
-  lazy val loginController = new Login(controllerComponents, amiableConfigProvider, wsClient, amiableConfigProvider.googleAuthConfig)(executionContext)
+  lazy val loginController = new Login(
+    controllerComponents,
+    amiableConfigProvider,
+    wsClient,
+    amiableConfigProvider.googleAuthConfig
+  )(executionContext)
 
-  lazy val router = new Routes(httpErrorHandler, amiableController, healthCheckController, loginController, assets)
+  lazy val router = new Routes(
+    httpErrorHandler,
+    amiableController,
+    healthCheckController,
+    loginController,
+    assets
+  )
 
 }

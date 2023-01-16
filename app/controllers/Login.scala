@@ -1,18 +1,29 @@
 package controllers
 
-import com.gu.googleauth.{AuthAction, GoogleAuthConfig, GoogleGroupChecker, LoginSupport}
+import com.gu.googleauth.{
+  AuthAction,
+  GoogleAuthConfig,
+  GoogleGroupChecker,
+  LoginSupport
+}
 import config.AmiableConfigProvider
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 
-
-class Login (val controllerComponents: ControllerComponents, val amiableConfigProvider: AmiableConfigProvider, override val wsClient: WSClient, val authConfig: GoogleAuthConfig)
-                     (implicit exec: ExecutionContext) extends BaseController with LoginSupport {
+class Login(
+    val controllerComponents: ControllerComponents,
+    val amiableConfigProvider: AmiableConfigProvider,
+    override val wsClient: WSClient,
+    val authConfig: GoogleAuthConfig
+)(implicit exec: ExecutionContext)
+    extends BaseController
+    with LoginSupport {
 
   val requiredGroups: Set[String] = amiableConfigProvider.requiredGoogleGroups
-  val googleGroupChecker: GoogleGroupChecker = amiableConfigProvider.googleGroupChecker
+  val googleGroupChecker: GoogleGroupChecker =
+    amiableConfigProvider.googleGroupChecker
 
   def loginError: Action[AnyContent] = Action { request =>
     val error = request.flash.get("error")
@@ -41,7 +52,8 @@ class Login (val controllerComponents: ControllerComponents, val amiableConfigPr
   }
 
   def loggedOut: Action[AnyContent] = Action {
-    Ok(views.html.loggedOut())}
+    Ok(views.html.loggedOut())
+  }
 
   override val failureRedirectTarget: Call = routes.Login.startLogin
 

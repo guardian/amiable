@@ -37,4 +37,3 @@ class StatsTests extends AnyFreeSpec with Matchers {
     }
   }
 }
-
