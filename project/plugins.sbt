@@ -1,9 +1,9 @@
 // The Play plugin
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.8.18")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.8.19")
 
 // sbt-native-packager cannot be updated to >1.9.9 until Play supports scala-xml 2
 addSbtPlugin(
-  "com.github.sbt" % "sbt-native-packager" % "1.9.9"
+  "com.github.sbt" % "sbt-native-packager" % "1.9.12"
 ) // scala-steward:off
 addSbtPlugin("com.gu" % "sbt-riffraff-artifact" % "1.1.18")
 libraryDependencies += "org.vafer" % "jdeb" % "1.10" artifacts (Artifact(
@@ -12,7 +12,7 @@ libraryDependencies += "org.vafer" % "jdeb" % "1.10" artifacts (Artifact(
   "jar"
 ))
 
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.0")
 
 /*
  * This is required for Scala Steward to run until SBT plugins all migrated to scala-xml 2.
