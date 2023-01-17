@@ -19,10 +19,7 @@ source_nvm
 nvm install
 nvm use
 
-npm install -g yarn
-
-yarn install --frozen-lockfile
-
-yarn test
-yarn build
-yarn synth
+npm i
+npm test
+npm run build
+npm run synth

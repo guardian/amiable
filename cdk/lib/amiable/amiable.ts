@@ -1,13 +1,13 @@
 import { AccessScope } from "@guardian/cdk/lib/constants/access";
 import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
 import { GuDistributionBucketParameter, GuStack, GuStringParameter } from "@guardian/cdk/lib/constructs/core";
-import {GuCname} from "@guardian/cdk/lib/constructs/dns";
+import { GuCname } from "@guardian/cdk/lib/constructs/dns";
 import { GuHttpsEgressSecurityGroup } from "@guardian/cdk/lib/constructs/ec2";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
 import type { App } from "aws-cdk-lib";
-import {Duration, SecretValue} from "aws-cdk-lib";
-import { InstanceClass, InstanceSize, InstanceType, Peer } from "aws-cdk-lib/aws-ec2";
+import { Duration, SecretValue } from "aws-cdk-lib";
+import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { ListenerAction, UnauthenticatedAction } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 
 interface AmiableProps extends GuStackProps {
