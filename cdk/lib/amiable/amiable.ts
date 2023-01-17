@@ -9,6 +9,7 @@ import type { App } from "aws-cdk-lib";
 import { Duration, SecretValue } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { ListenerAction, UnauthenticatedAction } from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
 
 interface AmiableProps extends GuStackProps {
   domainName: string;
@@ -77,6 +78,16 @@ export class Amiable extends GuStack {
     });
 
     ec2App.loadBalancer.addSecurityGroup(outboundHttpsSecurityGroup);
+
+    // This parameter is used by https://github.com/guardian/waf
+    new StringParameter(this, "AlbSsmParam", {
+      parameterName: `/infosec/waf/services/${this.stage}/amiable-alb-arn`,
+      description: `The arn of the ALB for amiable-${this.stage}. N.B. this parameter is created via cdk`,
+      simpleName: false,
+      stringValue: ec2App.loadBalancer.loadBalancerArn,
+      tier: ParameterTier.STANDARD,
+      dataType: ParameterDataType.TEXT,
+    });
 
     const clientId = new GuStringParameter(this, "ClientId", {
       description: "Google OAuth client ID",

@@ -92,6 +92,25 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     },
   },
   "Resources": {
+    "AlbSsmParam485C1D52": {
+      "Properties": {
+        "DataType": "text",
+        "Description": "The arn of the ALB for amiable-CODE. N.B. this parameter is created via cdk",
+        "Name": "/infosec/waf/services/CODE/amiable-alb-arn",
+        "Tags": {
+          "Stack": "deploy",
+          "Stage": "CODE",
+          "gu:cdk:version": "TEST",
+          "gu:repo": "guardian/amiable",
+        },
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": {
+          "Ref": "LoadBalancerAmiable9C4DD4AF",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
     "AmiableCname": {
       "Properties": {
         "Name": "public.amiable.code.dev-gutools.co.uk",
@@ -1063,6 +1082,25 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     },
   },
   "Resources": {
+    "AlbSsmParam485C1D52": {
+      "Properties": {
+        "DataType": "text",
+        "Description": "The arn of the ALB for amiable-PROD. N.B. this parameter is created via cdk",
+        "Name": "/infosec/waf/services/PROD/amiable-alb-arn",
+        "Tags": {
+          "Stack": "deploy",
+          "Stage": "PROD",
+          "gu:cdk:version": "TEST",
+          "gu:repo": "guardian/amiable",
+        },
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": {
+          "Ref": "LoadBalancerAmiable9C4DD4AF",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
     "AmiableCname": {
       "Properties": {
         "Name": "public.amiable.gutools.co.uk",
