@@ -33,7 +33,7 @@ scalacOptions := Seq(
 )
 
 // https://github.com/orgs/playframework/discussions/11222
-val jacksonVersion = "2.14.1"
+val jacksonVersion = "2.14.2"
 val jacksonDatabindVersion = "2.14.2"
 
 val jacksonOverrides = Seq(
