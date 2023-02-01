@@ -7,9 +7,8 @@ import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/i
 import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
 import type { App } from "aws-cdk-lib";
 import { Duration, SecretValue } from "aws-cdk-lib";
-import { CfnCertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
-import { ListenerAction, ListenerCondition, UnauthenticatedAction } from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import { ListenerAction, UnauthenticatedAction } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
 
 interface AmiableProps extends GuStackProps {
@@ -25,7 +24,6 @@ export class Amiable extends GuStack {
     const isProd = stage === "PROD";
 
     const { domainName } = props;
-    const legacyDomainName = `public.${domainName}`;
 
     const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
 
@@ -41,7 +39,7 @@ export class Amiable extends GuStack {
 
           dpkg -i /amiable/amiable.deb`,
       certificateProps: {
-        domainName: legacyDomainName,
+        domainName,
       },
       monitoringConfiguration: isProd
         ? {
@@ -66,13 +64,6 @@ export class Amiable extends GuStack {
       applicationLogging: { enabled: true },
       accessLogging: { enabled: true, prefix: `ELBLogs/${stack}/${app}/${stage}` },
       scaling: { minimumInstances: 1 },
-    });
-
-    new GuCname(this, "AmiableCname", {
-      app,
-      domainName: legacyDomainName,
-      ttl: Duration.minutes(1),
-      resourceRecord: ec2App.loadBalancer.loadBalancerDnsName,
     });
 
     // Need to give the ALB outbound access on 443 for the IdP endpoints (to support Google Auth).
@@ -112,24 +103,11 @@ export class Amiable extends GuStack {
       }),
     });
 
-    const certificate = this.node.findAll().find((_) => _ instanceof CfnCertificate) as CfnCertificate;
-
-    certificate.subjectAlternativeNames = [...(certificate.subjectAlternativeNames ?? []), domainName];
-
     new GuCname(this, "DnsRecord", {
       app,
       domainName: domainName,
       ttl: Duration.hours(1),
       resourceRecord: ec2App.loadBalancer.loadBalancerDnsName,
-    });
-
-    ec2App.listener.addAction("redirect", {
-      action: ListenerAction.redirect({
-        permanent: true,
-        host: domainName,
-      }),
-      conditions: [ListenerCondition.hostHeaders([legacyDomainName])],
-      priority: 1,
     });
   }
 }
