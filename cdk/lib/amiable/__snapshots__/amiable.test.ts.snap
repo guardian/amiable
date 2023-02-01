@@ -31,6 +31,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuCname",
       "GuHttpsEgressSecurityGroup",
       "GuStringParameter",
+      "GuCname",
     ],
     "gu:cdk:version": "TEST",
   },
@@ -267,6 +268,9 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "DeletionPolicy": "Retain",
       "Properties": {
         "DomainName": "public.amiable.code.dev-gutools.co.uk",
+        "SubjectAlternativeNames": [
+          "amiable.code.dev-gutools.co.uk",
+        ],
         "Tags": [
           {
             "Key": "App",
@@ -344,6 +348,23 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "DnsRecord": {
+      "Properties": {
+        "Name": "amiable.code.dev-gutools.co.uk",
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerAmiable9C4DD4AF",
+              "DNSName",
+            ],
+          },
+        ],
+        "Stage": "CODE",
+        "TTL": 3600,
+      },
+      "Type": "Guardian::DNS::RecordSet",
     },
     "GetDistributablePolicyAmiableE65882EA": {
       "Properties": {
@@ -616,6 +637,34 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         "Protocol": "HTTPS",
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "ListenerAmiableredirectRuleE23C17FD": {
+      "Properties": {
+        "Actions": [
+          {
+            "RedirectConfig": {
+              "Host": "amiable.code.dev-gutools.co.uk",
+              "StatusCode": "HTTP_301",
+            },
+            "Type": "redirect",
+          },
+        ],
+        "Conditions": [
+          {
+            "Field": "host-header",
+            "HostHeaderConfig": {
+              "Values": [
+                "public.amiable.code.dev-gutools.co.uk",
+              ],
+            },
+          },
+        ],
+        "ListenerArn": {
+          "Ref": "ListenerAmiable4B1060D6",
+        },
+        "Priority": 1,
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
     },
     "LoadBalancerAmiable9C4DD4AF": {
       "Properties": {
@@ -1021,6 +1070,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuCname",
       "GuHttpsEgressSecurityGroup",
       "GuStringParameter",
+      "GuCname",
     ],
     "gu:cdk:version": "TEST",
   },
@@ -1257,6 +1307,9 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "DeletionPolicy": "Retain",
       "Properties": {
         "DomainName": "public.amiable.gutools.co.uk",
+        "SubjectAlternativeNames": [
+          "amiable.gutools.co.uk",
+        ],
         "Tags": [
           {
             "Key": "App",
@@ -1334,6 +1387,23 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "DnsRecord": {
+      "Properties": {
+        "Name": "amiable.gutools.co.uk",
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerAmiable9C4DD4AF",
+              "DNSName",
+            ],
+          },
+        ],
+        "Stage": "PROD",
+        "TTL": 3600,
+      },
+      "Type": "Guardian::DNS::RecordSet",
     },
     "GetDistributablePolicyAmiableE65882EA": {
       "Properties": {
@@ -1708,6 +1778,34 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "Protocol": "HTTPS",
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "ListenerAmiableredirectRuleE23C17FD": {
+      "Properties": {
+        "Actions": [
+          {
+            "RedirectConfig": {
+              "Host": "amiable.gutools.co.uk",
+              "StatusCode": "HTTP_301",
+            },
+            "Type": "redirect",
+          },
+        ],
+        "Conditions": [
+          {
+            "Field": "host-header",
+            "HostHeaderConfig": {
+              "Values": [
+                "public.amiable.gutools.co.uk",
+              ],
+            },
+          },
+        ],
+        "ListenerArn": {
+          "Ref": "ListenerAmiable4B1060D6",
+        },
+        "Priority": 1,
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
     },
     "LoadBalancerAmiable9C4DD4AF": {
       "Properties": {
