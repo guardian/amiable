@@ -13,7 +13,7 @@ import {
   ApplicationListenerRule,
   ListenerAction,
   ListenerCondition,
-  UnauthenticatedAction
+  UnauthenticatedAction,
 } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
 
@@ -102,8 +102,7 @@ export class Amiable extends GuStack {
       description: "Google OAuth client ID",
     });
 
-
-    const u2mRule  = new ApplicationListenerRule(this, "DefaultAction", {
+    new ApplicationListenerRule(this, "DefaultAction", {
       action: ListenerAction.authenticateOidc({
         authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
         issuer: "https://accounts.google.com",
@@ -119,7 +118,7 @@ export class Amiable extends GuStack {
       conditions: [ListenerCondition.hostHeaders(["GET"])],
       listener: ec2App.listener,
       priority: 1,
-    })
+    });
 
     const certificate = this.node.findAll().find((_) => _ instanceof CfnCertificate) as CfnCertificate;
 
