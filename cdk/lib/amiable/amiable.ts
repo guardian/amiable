@@ -115,7 +115,7 @@ export class Amiable extends GuStack {
         clientSecret: SecretValue.secretsManager(`/${this.stage}/deploy/amiable/client-secret`),
         next: ListenerAction.forward([ec2App.targetGroup]),
       }),
-      conditions: [ListenerCondition.hostHeaders(["GET"])],
+      conditions: [ListenerCondition.httpRequestMethods(["GET", "POST"])],
       listener: ec2App.listener,
       priority: 1,
     });
