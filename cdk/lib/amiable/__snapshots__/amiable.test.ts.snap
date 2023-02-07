@@ -323,6 +323,53 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DefaultActionC72BEA7F": {
+      "Properties": {
+        "Actions": [
+          {
+            "AuthenticateOidcConfig": {
+              "AuthenticationRequestExtraParams": {
+                "hd": "guardian.co.uk",
+              },
+              "AuthorizationEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+              "ClientId": {
+                "Ref": "ClientId",
+              },
+              "ClientSecret": "{{resolve:secretsmanager:/CODE/deploy/amiable/client-secret:SecretString:::}}",
+              "Issuer": "https://accounts.google.com",
+              "OnUnauthenticatedRequest": "authenticate",
+              "Scope": "openid",
+              "TokenEndpoint": "https://oauth2.googleapis.com/token",
+              "UserInfoEndpoint": "https://openidconnect.googleapis.com/v1/userinfo",
+            },
+            "Order": 1,
+            "Type": "authenticate-oidc",
+          },
+          {
+            "Order": 2,
+            "TargetGroupArn": {
+              "Ref": "TargetGroupAmiable6987B5AC",
+            },
+            "Type": "forward",
+          },
+        ],
+        "Conditions": [
+          {
+            "Field": "host-header",
+            "HostHeaderConfig": {
+              "Values": [
+                "GET",
+              ],
+            },
+          },
+        ],
+        "ListenerArn": {
+          "Ref": "ListenerAmiable4B1060D6",
+        },
+        "Priority": 1,
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+    },
     "DescribeEC2PolicyFF5F9295": {
       "Properties": {
         "PolicyDocument": {
@@ -604,26 +651,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         ],
         "DefaultActions": [
           {
-            "AuthenticateOidcConfig": {
-              "AuthenticationRequestExtraParams": {
-                "hd": "guardian.co.uk",
-              },
-              "AuthorizationEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
-              "ClientId": {
-                "Ref": "ClientId",
-              },
-              "ClientSecret": "{{resolve:secretsmanager:/CODE/deploy/amiable/client-secret:SecretString:::}}",
-              "Issuer": "https://accounts.google.com",
-              "OnUnauthenticatedRequest": "authenticate",
-              "Scope": "openid",
-              "TokenEndpoint": "https://oauth2.googleapis.com/token",
-              "UserInfoEndpoint": "https://openidconnect.googleapis.com/v1/userinfo",
-            },
-            "Order": 1,
-            "Type": "authenticate-oidc",
-          },
-          {
-            "Order": 2,
             "TargetGroupArn": {
               "Ref": "TargetGroupAmiable6987B5AC",
             },
@@ -1362,6 +1389,53 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DefaultActionC72BEA7F": {
+      "Properties": {
+        "Actions": [
+          {
+            "AuthenticateOidcConfig": {
+              "AuthenticationRequestExtraParams": {
+                "hd": "guardian.co.uk",
+              },
+              "AuthorizationEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+              "ClientId": {
+                "Ref": "ClientId",
+              },
+              "ClientSecret": "{{resolve:secretsmanager:/PROD/deploy/amiable/client-secret:SecretString:::}}",
+              "Issuer": "https://accounts.google.com",
+              "OnUnauthenticatedRequest": "authenticate",
+              "Scope": "openid",
+              "TokenEndpoint": "https://oauth2.googleapis.com/token",
+              "UserInfoEndpoint": "https://openidconnect.googleapis.com/v1/userinfo",
+            },
+            "Order": 1,
+            "Type": "authenticate-oidc",
+          },
+          {
+            "Order": 2,
+            "TargetGroupArn": {
+              "Ref": "TargetGroupAmiable6987B5AC",
+            },
+            "Type": "forward",
+          },
+        ],
+        "Conditions": [
+          {
+            "Field": "host-header",
+            "HostHeaderConfig": {
+              "Values": [
+                "GET",
+              ],
+            },
+          },
+        ],
+        "ListenerArn": {
+          "Ref": "ListenerAmiable4B1060D6",
+        },
+        "Priority": 1,
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+    },
     "DescribeEC2PolicyFF5F9295": {
       "Properties": {
         "PolicyDocument": {
@@ -1745,26 +1819,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         ],
         "DefaultActions": [
           {
-            "AuthenticateOidcConfig": {
-              "AuthenticationRequestExtraParams": {
-                "hd": "guardian.co.uk",
-              },
-              "AuthorizationEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
-              "ClientId": {
-                "Ref": "ClientId",
-              },
-              "ClientSecret": "{{resolve:secretsmanager:/PROD/deploy/amiable/client-secret:SecretString:::}}",
-              "Issuer": "https://accounts.google.com",
-              "OnUnauthenticatedRequest": "authenticate",
-              "Scope": "openid",
-              "TokenEndpoint": "https://oauth2.googleapis.com/token",
-              "UserInfoEndpoint": "https://openidconnect.googleapis.com/v1/userinfo",
-            },
-            "Order": 1,
-            "Type": "authenticate-oidc",
-          },
-          {
-            "Order": 2,
             "TargetGroupArn": {
               "Ref": "TargetGroupAmiable6987B5AC",
             },

@@ -9,7 +9,12 @@ import type { App } from "aws-cdk-lib";
 import { Duration, SecretValue } from "aws-cdk-lib";
 import { CfnCertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
-import { ListenerAction, ListenerCondition, UnauthenticatedAction } from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import {
+  ApplicationListenerRule,
+  ListenerAction,
+  ListenerCondition,
+  UnauthenticatedAction
+} from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
 
 interface AmiableProps extends GuStackProps {
@@ -97,7 +102,8 @@ export class Amiable extends GuStack {
       description: "Google OAuth client ID",
     });
 
-    ec2App.listener.addAction("DefaultAction", {
+
+    const u2mRule  = new ApplicationListenerRule(this, "DefaultAction", {
       action: ListenerAction.authenticateOidc({
         authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
         issuer: "https://accounts.google.com",
@@ -110,7 +116,10 @@ export class Amiable extends GuStack {
         clientSecret: SecretValue.secretsManager(`/${this.stage}/deploy/amiable/client-secret`),
         next: ListenerAction.forward([ec2App.targetGroup]),
       }),
-    });
+      conditions: [ListenerCondition.hostHeaders(["GET"])],
+      listener: ec2App.listener,
+      priority: 1,
+    })
 
     const certificate = this.node.findAll().find((_) => _ instanceof CfnCertificate) as CfnCertificate;
 
