@@ -71,7 +71,7 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.15" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
   "org.mockito" % "mockito-core" % "4.9.0" % Test,
-  "net.logstash.logback" % "logstash-logback-encoder" % "7.2"
+  "net.logstash.logback" % "logstash-logback-encoder" % "7.3"
 ) ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
