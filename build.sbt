@@ -53,7 +53,7 @@ val akkaSerializationJacksonOverrides = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala"
 ).map(_ % jacksonVersion)
 
-val awsSdkVersion = "1.12.415"
+val awsSdkVersion = "1.12.416"
 
 libraryDependencies ++= Seq(
   jdbc,
