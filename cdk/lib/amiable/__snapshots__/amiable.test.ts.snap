@@ -14,7 +14,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuPlayApp",
       "GuCertificate",
       "GuInstanceRole",
-      "GuSSMRunCommandPolicy",
       "GuDescribeEC2Policy",
       "GuLoggingStreamNameParameter",
       "GuLogShippingPolicy",
@@ -22,8 +21,8 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuParameterStoreReadPolicy",
       "GuAmiParameter",
       "GuHttpsEgressSecurityGroup",
-      "GuAutoScalingGroup",
       "GuWazuhAccess",
+      "GuAutoScalingGroup",
       "GuApplicationLoadBalancer",
       "GuStringParameter",
       "GuApplicationTargetGroup",
@@ -115,8 +114,16 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Properties": {
         "HealthCheckGracePeriod": 120,
         "HealthCheckType": "ELB",
-        "LaunchConfigurationName": {
-          "Ref": "AutoScalingGroupAmiableLaunchConfig09A6D8E3",
+        "LaunchTemplate": {
+          "LaunchTemplateId": {
+            "Ref": "deployCODEamiableCD81551B",
+          },
+          "Version": {
+            "Fn::GetAtt": [
+              "deployCODEamiableCD81551B",
+              "LatestVersionNumber",
+            ],
+          },
         },
         "MaxSize": "2",
         "MinSize": "1",
@@ -144,11 +151,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             },
           },
           {
-            "Key": "Name",
-            "PropagateAtLaunch": true,
-            "Value": "amiable/AutoScalingGroupAmiable",
-          },
-          {
             "Key": "Stack",
             "PropagateAtLaunch": true,
             "Value": "deploy",
@@ -174,77 +176,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         },
       },
       "Type": "AWS::AutoScaling::AutoScalingGroup",
-    },
-    "AutoScalingGroupAmiableInstanceProfile386BEAE5": {
-      "Properties": {
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::InstanceProfile",
-    },
-    "AutoScalingGroupAmiableLaunchConfig09A6D8E3": {
-      "DependsOn": [
-        "InstanceRoleAmiable56110022",
-      ],
-      "Properties": {
-        "IamInstanceProfile": {
-          "Ref": "AutoScalingGroupAmiableInstanceProfile386BEAE5",
-        },
-        "ImageId": {
-          "Ref": "AMIAmiable",
-        },
-        "InstanceType": "t4g.small",
-        "MetadataOptions": {
-          "HttpTokens": "required",
-        },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "GuHttpsEgressSecurityGroupAmiable42C3598C",
-              "GroupId",
-            ],
-          },
-          {
-            "Fn::GetAtt": [
-              "WazuhSecurityGroup",
-              "GroupId",
-            ],
-          },
-        ],
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "#!/bin/bash -ev
-
-          mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://",
-                {
-                  "Ref": "DistributionBucketName",
-                },
-                "/deploy/CODE/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://",
-                {
-                  "Ref": "DistributionBucketName",
-                },
-                "/deploy/CODE/amiable/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://",
-                {
-                  "Ref": "DistributionBucketName",
-                },
-                "/deploy/CODE/amiable/amiable.deb /amiable/
-
-          dpkg -i /amiable/amiable.deb",
-              ],
-            ],
-          },
-        },
-      },
-      "Type": "AWS::AutoScaling::LaunchConfiguration",
     },
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
@@ -546,6 +477,20 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           ],
           "Version": "2012-10-17",
         },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonSSMManagedInstanceCore",
+              ],
+            ],
+          },
+        ],
         "Path": "/",
         "Tags": [
           {
@@ -744,6 +689,27 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
+    "LoadBalancerAmiableSecurityGrouptoamiableWazuhSecurityGroup9F0B1D5090007F50784A": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
     "ParameterStoreReadAmiable24BF3AAC": {
       "Properties": {
         "PolicyDocument": {
@@ -787,42 +753,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           "Version": "2012-10-17",
         },
         "PolicyName": "parameter-store-read-policy",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "SSMRunCommandPolicy244E1613": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ec2messages:AcknowledgeMessage",
-                "ec2messages:DeleteMessage",
-                "ec2messages:FailMessage",
-                "ec2messages:GetEndpoint",
-                "ec2messages:GetMessages",
-                "ec2messages:SendReply",
-                "ssm:UpdateInstanceInformation",
-                "ssm:ListInstanceAssociations",
-                "ssm:DescribeInstanceProperties",
-                "ssm:DescribeDocumentParameters",
-                "ssmmessages:CreateControlChannel",
-                "ssmmessages:CreateDataChannel",
-                "ssmmessages:OpenControlChannel",
-                "ssmmessages:OpenDataChannel",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ssm-run-command-policy",
         "Roles": [
           {
             "Ref": "InstanceRoleAmiable56110022",
@@ -923,6 +853,202 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
+    "WazuhSecurityGroupfromamiableLoadBalancerAmiableSecurityGroup8E8C95839000B6C591F8": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "WazuhSecurityGroupfromamiableldpaccessAmiable1EDD8FAB900057F6702D": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "deployCODEamiableCD81551B": {
+      "Properties": {
+        "LaunchTemplateData": {
+          "IamInstanceProfile": {
+            "Arn": {
+              "Fn::GetAtt": [
+                "deployCODEamiableProfile73DE6E5D",
+                "Arn",
+              ],
+            },
+          },
+          "ImageId": {
+            "Ref": "AMIAmiable",
+          },
+          "InstanceType": "t4g.small",
+          "MetadataOptions": {
+            "HttpTokens": "required",
+          },
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "GuHttpsEgressSecurityGroupAmiable42C3598C",
+                "GroupId",
+              ],
+            },
+            {
+              "Fn::GetAtt": [
+                "WazuhSecurityGroup",
+                "GroupId",
+              ],
+            },
+          ],
+          "TagSpecifications": [
+            {
+              "ResourceType": "instance",
+              "Tags": [
+                {
+                  "Key": "gu:cdk:version",
+                  "Value": "TEST",
+                },
+                {
+                  "Key": "gu:repo",
+                  "Value": "guardian/amiable",
+                },
+                {
+                  "Key": "Name",
+                  "Value": "amiable/deploy-CODE-amiable",
+                },
+                {
+                  "Key": "Stack",
+                  "Value": "deploy",
+                },
+                {
+                  "Key": "Stage",
+                  "Value": "CODE",
+                },
+              ],
+            },
+            {
+              "ResourceType": "volume",
+              "Tags": [
+                {
+                  "Key": "gu:cdk:version",
+                  "Value": "TEST",
+                },
+                {
+                  "Key": "gu:repo",
+                  "Value": "guardian/amiable",
+                },
+                {
+                  "Key": "Name",
+                  "Value": "amiable/deploy-CODE-amiable",
+                },
+                {
+                  "Key": "Stack",
+                  "Value": "deploy",
+                },
+                {
+                  "Key": "Stage",
+                  "Value": "CODE",
+                },
+              ],
+            },
+          ],
+          "UserData": {
+            "Fn::Base64": {
+              "Fn::Join": [
+                "",
+                [
+                  "#!/bin/bash -ev
+
+          mkdir /amiable
+          aws --region eu-west-1 s3 cp s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/CODE/amiable/conf/amiable-service-account-cert.json /amiable/
+          aws --region eu-west-1 s3 cp s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/CODE/amiable/conf/amiable.conf /etc/
+          aws --region eu-west-1 s3 cp s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/CODE/amiable/amiable.deb /amiable/
+
+          dpkg -i /amiable/amiable.deb",
+                ],
+              ],
+            },
+          },
+        },
+        "TagSpecifications": [
+          {
+            "ResourceType": "launch-template",
+            "Tags": [
+              {
+                "Key": "gu:cdk:version",
+                "Value": "TEST",
+              },
+              {
+                "Key": "gu:repo",
+                "Value": "guardian/amiable",
+              },
+              {
+                "Key": "Name",
+                "Value": "amiable/deploy-CODE-amiable",
+              },
+              {
+                "Key": "Stack",
+                "Value": "deploy",
+              },
+              {
+                "Key": "Stage",
+                "Value": "CODE",
+              },
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::EC2::LaunchTemplate",
+    },
+    "deployCODEamiableProfile73DE6E5D": {
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "InstanceRoleAmiable56110022",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
     "ldpaccessAmiable1869C179": {
       "Properties": {
         "GroupDescription": "Allow all outbound HTTPS traffic",
@@ -984,6 +1110,27 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
+    "ldpaccessAmiabletoamiableWazuhSecurityGroup9F0B1D5090009AC69FD4": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
   },
 }
 `;
@@ -1002,7 +1149,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuPlayApp",
       "GuCertificate",
       "GuInstanceRole",
-      "GuSSMRunCommandPolicy",
       "GuDescribeEC2Policy",
       "GuLoggingStreamNameParameter",
       "GuLogShippingPolicy",
@@ -1010,8 +1156,8 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuParameterStoreReadPolicy",
       "GuAmiParameter",
       "GuHttpsEgressSecurityGroup",
-      "GuAutoScalingGroup",
       "GuWazuhAccess",
+      "GuAutoScalingGroup",
       "GuApplicationLoadBalancer",
       "GuStringParameter",
       "GuApplicationTargetGroup",
@@ -1105,8 +1251,16 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Properties": {
         "HealthCheckGracePeriod": 120,
         "HealthCheckType": "ELB",
-        "LaunchConfigurationName": {
-          "Ref": "AutoScalingGroupAmiableLaunchConfig09A6D8E3",
+        "LaunchTemplate": {
+          "LaunchTemplateId": {
+            "Ref": "deployPRODamiableED398871",
+          },
+          "Version": {
+            "Fn::GetAtt": [
+              "deployPRODamiableED398871",
+              "LatestVersionNumber",
+            ],
+          },
         },
         "MaxSize": "2",
         "MinSize": "1",
@@ -1134,11 +1288,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             },
           },
           {
-            "Key": "Name",
-            "PropagateAtLaunch": true,
-            "Value": "Amiable-PROD/AutoScalingGroupAmiable",
-          },
-          {
             "Key": "Stack",
             "PropagateAtLaunch": true,
             "Value": "deploy",
@@ -1164,77 +1313,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         },
       },
       "Type": "AWS::AutoScaling::AutoScalingGroup",
-    },
-    "AutoScalingGroupAmiableInstanceProfile386BEAE5": {
-      "Properties": {
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::InstanceProfile",
-    },
-    "AutoScalingGroupAmiableLaunchConfig09A6D8E3": {
-      "DependsOn": [
-        "InstanceRoleAmiable56110022",
-      ],
-      "Properties": {
-        "IamInstanceProfile": {
-          "Ref": "AutoScalingGroupAmiableInstanceProfile386BEAE5",
-        },
-        "ImageId": {
-          "Ref": "AMIAmiable",
-        },
-        "InstanceType": "t4g.small",
-        "MetadataOptions": {
-          "HttpTokens": "required",
-        },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "GuHttpsEgressSecurityGroupAmiable42C3598C",
-              "GroupId",
-            ],
-          },
-          {
-            "Fn::GetAtt": [
-              "WazuhSecurityGroup",
-              "GroupId",
-            ],
-          },
-        ],
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "#!/bin/bash -ev
-
-          mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://",
-                {
-                  "Ref": "DistributionBucketName",
-                },
-                "/deploy/PROD/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://",
-                {
-                  "Ref": "DistributionBucketName",
-                },
-                "/deploy/PROD/amiable/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://",
-                {
-                  "Ref": "DistributionBucketName",
-                },
-                "/deploy/PROD/amiable/amiable.deb /amiable/
-
-          dpkg -i /amiable/amiable.deb",
-              ],
-            ],
-          },
-        },
-      },
-      "Type": "AWS::AutoScaling::LaunchConfiguration",
     },
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
@@ -1638,6 +1716,20 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           ],
           "Version": "2012-10-17",
         },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonSSMManagedInstanceCore",
+              ],
+            ],
+          },
+        ],
         "Path": "/",
         "Tags": [
           {
@@ -1836,6 +1928,27 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
+    "LoadBalancerAmiableSecurityGrouptoAmiablePRODWazuhSecurityGroupC2FDCB8B9000F7466E51": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
     "ParameterStoreReadAmiable24BF3AAC": {
       "Properties": {
         "PolicyDocument": {
@@ -1879,42 +1992,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           "Version": "2012-10-17",
         },
         "PolicyName": "parameter-store-read-policy",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "SSMRunCommandPolicy244E1613": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ec2messages:AcknowledgeMessage",
-                "ec2messages:DeleteMessage",
-                "ec2messages:FailMessage",
-                "ec2messages:GetEndpoint",
-                "ec2messages:GetMessages",
-                "ec2messages:SendReply",
-                "ssm:UpdateInstanceInformation",
-                "ssm:ListInstanceAssociations",
-                "ssm:DescribeInstanceProperties",
-                "ssm:DescribeDocumentParameters",
-                "ssmmessages:CreateControlChannel",
-                "ssmmessages:CreateDataChannel",
-                "ssmmessages:OpenControlChannel",
-                "ssmmessages:OpenDataChannel",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ssm-run-command-policy",
         "Roles": [
           {
             "Ref": "InstanceRoleAmiable56110022",
@@ -2112,6 +2189,202 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
+    "WazuhSecurityGroupfromAmiablePRODLoadBalancerAmiableSecurityGroup7EE4175D9000F748E226": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "WazuhSecurityGroupfromAmiablePRODldpaccessAmiable77AFE83C900058EEED87": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "deployPRODamiableED398871": {
+      "Properties": {
+        "LaunchTemplateData": {
+          "IamInstanceProfile": {
+            "Arn": {
+              "Fn::GetAtt": [
+                "deployPRODamiableProfileF15CA793",
+                "Arn",
+              ],
+            },
+          },
+          "ImageId": {
+            "Ref": "AMIAmiable",
+          },
+          "InstanceType": "t4g.small",
+          "MetadataOptions": {
+            "HttpTokens": "required",
+          },
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "GuHttpsEgressSecurityGroupAmiable42C3598C",
+                "GroupId",
+              ],
+            },
+            {
+              "Fn::GetAtt": [
+                "WazuhSecurityGroup",
+                "GroupId",
+              ],
+            },
+          ],
+          "TagSpecifications": [
+            {
+              "ResourceType": "instance",
+              "Tags": [
+                {
+                  "Key": "gu:cdk:version",
+                  "Value": "TEST",
+                },
+                {
+                  "Key": "gu:repo",
+                  "Value": "guardian/amiable",
+                },
+                {
+                  "Key": "Name",
+                  "Value": "Amiable-PROD/deploy-PROD-amiable",
+                },
+                {
+                  "Key": "Stack",
+                  "Value": "deploy",
+                },
+                {
+                  "Key": "Stage",
+                  "Value": "PROD",
+                },
+              ],
+            },
+            {
+              "ResourceType": "volume",
+              "Tags": [
+                {
+                  "Key": "gu:cdk:version",
+                  "Value": "TEST",
+                },
+                {
+                  "Key": "gu:repo",
+                  "Value": "guardian/amiable",
+                },
+                {
+                  "Key": "Name",
+                  "Value": "Amiable-PROD/deploy-PROD-amiable",
+                },
+                {
+                  "Key": "Stack",
+                  "Value": "deploy",
+                },
+                {
+                  "Key": "Stage",
+                  "Value": "PROD",
+                },
+              ],
+            },
+          ],
+          "UserData": {
+            "Fn::Base64": {
+              "Fn::Join": [
+                "",
+                [
+                  "#!/bin/bash -ev
+
+          mkdir /amiable
+          aws --region eu-west-1 s3 cp s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/PROD/amiable/conf/amiable-service-account-cert.json /amiable/
+          aws --region eu-west-1 s3 cp s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/PROD/amiable/conf/amiable.conf /etc/
+          aws --region eu-west-1 s3 cp s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/PROD/amiable/amiable.deb /amiable/
+
+          dpkg -i /amiable/amiable.deb",
+                ],
+              ],
+            },
+          },
+        },
+        "TagSpecifications": [
+          {
+            "ResourceType": "launch-template",
+            "Tags": [
+              {
+                "Key": "gu:cdk:version",
+                "Value": "TEST",
+              },
+              {
+                "Key": "gu:repo",
+                "Value": "guardian/amiable",
+              },
+              {
+                "Key": "Name",
+                "Value": "Amiable-PROD/deploy-PROD-amiable",
+              },
+              {
+                "Key": "Stack",
+                "Value": "deploy",
+              },
+              {
+                "Key": "Stage",
+                "Value": "PROD",
+              },
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::EC2::LaunchTemplate",
+    },
+    "deployPRODamiableProfileF15CA793": {
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "InstanceRoleAmiable56110022",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
     "ldpaccessAmiable1869C179": {
       "Properties": {
         "GroupDescription": "Allow all outbound HTTPS traffic",
@@ -2158,6 +2431,27 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
+    "ldpaccessAmiabletoAmiablePRODWazuhSecurityGroupC2FDCB8B9000025FB59D": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
             "GroupId",
           ],
         },
