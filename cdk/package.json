@@ -17,7 +17,7 @@
     "synth": "cdk synth --path-metadata false --version-reporting false"
   },
   "devDependencies": {
-    "@guardian/eslint-config-typescript": "^4.0.0",
+    "@guardian/eslint-config-typescript": "^5.0.0",
     "@types/jest": "^29.4.0",
     "eslint": "^8.35.0",
     "@types/node": "18.14.3",
