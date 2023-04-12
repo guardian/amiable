@@ -91,3 +91,5 @@ riffRaffArtifactResources := Seq(
   baseDirectory.value / "cdk/cdk.out/Amiable-CODE.template.json" -> "cloudformation/Amiable-CODE.template.json",
   baseDirectory.value / "cdk/cdk.out/Amiable-PROD.template.json" -> "cloudformation/Amiable-PROD.template.json"
 )
+riffRaffManifestProjectName:= s"tools::${name.value}"
+riffRaffPackageName := s"tools::${name.value}" //test what happens if this is removed
