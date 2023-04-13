@@ -4,7 +4,7 @@ name := """amiable"""
 
 version := "1.0-SNAPSHOT"
 
-enablePlugins(PlayScala, RiffRaffArtifact, JDebPackaging, SystemdPlugin)
+enablePlugins(PlayScala, JDebPackaging, SystemdPlugin)
 
 scalaVersion := "2.13.10"
 
@@ -84,11 +84,3 @@ packageSummary := "AMIable"
 packageDescription := """Web app for monitoring the use of AMIs"""
 debianPackageDependencies := Seq("openjdk-8-jre-headless")
 
-riffRaffPackageType := (Debian / packageBin).value
-riffRaffArtifactResources := Seq(
-  riffRaffPackageType.value -> s"${name.value}/${name.value}.deb",
-  baseDirectory.value / "riff-raff.yaml" -> "riff-raff.yaml",
-  baseDirectory.value / "cdk/cdk.out/Amiable-CODE.template.json" -> "cloudformation/Amiable-CODE.template.json",
-  baseDirectory.value / "cdk/cdk.out/Amiable-PROD.template.json" -> "cloudformation/Amiable-PROD.template.json"
-)
-riffRaffManifestProjectName:= s"tools::${name.value}"

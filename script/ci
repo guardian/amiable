@@ -9,4 +9,5 @@ set -e
 )
 
 
-sbt clean scalafmtCheckAll compile test riffRaffUpload
+sbt clean scalafmtCheckAll compile test debian:packageBin
+mv target/*.deb ./amiable.deb
