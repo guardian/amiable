@@ -53,7 +53,7 @@ val akkaSerializationJacksonOverrides = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala"
 ).map(_ % jacksonVersion)
 
-val awsSdkVersion = "1.12.447"
+val awsSdkVersion = "1.12.448"
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -91,4 +91,4 @@ riffRaffArtifactResources := Seq(
   baseDirectory.value / "cdk/cdk.out/Amiable-CODE.template.json" -> "cloudformation/Amiable-CODE.template.json",
   baseDirectory.value / "cdk/cdk.out/Amiable-PROD.template.json" -> "cloudformation/Amiable-PROD.template.json"
 )
-riffRaffManifestProjectName:= s"tools::${name.value}"
+riffRaffManifestProjectName := s"tools::${name.value}"
