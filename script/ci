@@ -9,4 +9,4 @@ set -e
 )
 
 
-sbt clean scalafmtCheckAll compile test riffRaffNotifyTeamcity
+sbt clean scalafmtCheckAll compile test riffRaffUpload
