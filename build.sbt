@@ -53,7 +53,7 @@ val akkaSerializationJacksonOverrides = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala"
 ).map(_ % jacksonVersion)
 
-val awsSdkVersion = "1.12.448"
+val awsSdkVersion = "1.12.449"
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -83,4 +83,3 @@ maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
 packageDescription := """Web app for monitoring the use of AMIs"""
 debianPackageDependencies := Seq("openjdk-8-jre-headless")
-
