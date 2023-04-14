@@ -44,17 +44,13 @@ jobs:
 
       # See https://github.com/github/scripts-to-rule-them-all
       - name: Run script/ci
-        run: |
-          LAST_TEAMCITY_BUILD=1007
-          export GITHUB_RUN_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD ))
-          ./script/ci
+        run: ./script/ci
 
       - name: Upload to riff-raff
         uses: guardian/actions-riff-raff@v2
         with:
           app: amiable
           buildNumberOffset: 1007
-          buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
           projectName: tools::amiable
           configPath: riff-raff.yaml
           contentDirectories: |
