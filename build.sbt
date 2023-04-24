@@ -34,7 +34,7 @@ scalacOptions := Seq(
 
 // https://github.com/orgs/playframework/discussions/11222
 val jacksonVersion = "2.14.2"
-val jacksonDatabindVersion = "2.14.2"
+val jacksonDatabindVersion = "2.15.0"
 
 val jacksonOverrides = Seq(
   "com.fasterxml.jackson.core" % "jackson-core",
