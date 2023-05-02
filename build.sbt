@@ -33,8 +33,8 @@ scalacOptions := Seq(
 )
 
 // https://github.com/orgs/playframework/discussions/11222
-val jacksonVersion = "2.14.2"
-val jacksonDatabindVersion = "2.14.2"
+val jacksonVersion = "2.15.0"
+val jacksonDatabindVersion = "2.15.0"
 
 val jacksonOverrides = Seq(
   "com.fasterxml.jackson.core" % "jackson-core",
@@ -53,7 +53,7 @@ val akkaSerializationJacksonOverrides = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala"
 ).map(_ % jacksonVersion)
 
-val awsSdkVersion = "1.12.439"
+val awsSdkVersion = "1.12.458"
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -83,4 +83,3 @@ maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
 packageDescription := """Web app for monitoring the use of AMIs"""
 debianPackageDependencies := Seq("openjdk-8-jre-headless")
-
