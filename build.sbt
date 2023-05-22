@@ -82,4 +82,4 @@ Universal / packageName := name.value
 maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
 packageDescription := """Web app for monitoring the use of AMIs"""
-debianPackageDependencies := Seq("openjdk-8-jre-headless")
+debianPackageDependencies := Seq("java-11-amazon-corretto-jdk:arm64")
