@@ -39,7 +39,7 @@ jobs:
         uses: actions/setup-java@v3.11.0
         with:
           java-version: '11'
-          distribution: 'adopt'
+          distribution: 'corretto'
           cache: 'sbt'
 
       # See https://github.com/github/scripts-to-rule-them-all
