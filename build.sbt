@@ -32,8 +32,8 @@ scalacOptions := Seq(
 )
 
 // https://github.com/orgs/playframework/discussions/11222
-val jacksonVersion = "2.15.0"
-val jacksonDatabindVersion = "2.15.0"
+val jacksonVersion = "2.15.1"
+val jacksonDatabindVersion = "2.15.1"
 
 val jacksonOverrides = Seq(
   "com.fasterxml.jackson.core" % "jackson-core",
@@ -52,7 +52,7 @@ val akkaSerializationJacksonOverrides = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala"
 ).map(_ % jacksonVersion)
 
-val awsSdkVersion = "1.12.458"
+val awsSdkVersion = "1.12.473"
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -65,11 +65,11 @@ libraryDependencies ++= Seq(
   "com.google.code.gson" % "gson" % "2.10.1",
   "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.7",
   "org.quartz-scheduler" % "quartz" % "2.3.2",
-  "com.typesafe.play" %% "play-json-joda" % "2.10.0-RC7",
+  "com.typesafe.play" %% "play-json-joda" % "2.10.0-RC8",
   specs2 % Test,
-  "org.scalatest" %% "scalatest" % "3.2.15" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.16" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
-  "org.mockito" % "mockito-core" % "4.9.0" % Test,
+  "org.mockito" % "mockito-core" % "5.3.1" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3"
 ) ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
 
