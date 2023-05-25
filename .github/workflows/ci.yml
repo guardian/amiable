@@ -52,9 +52,9 @@ jobs:
           app: amiable
           buildNumberOffset: 1007
           projectName: tools::amiable
-          configPath: riff-raff.yaml
+          configPath: cdk/cdk.out/riff-raff.yaml
           contentDirectories: |
-            cloudformation:
+            cdk.out:
               - cdk/cdk.out
             amiable:
               - amiable.deb
