@@ -1,3 +1,5 @@
+# Part of the Scala Steward implementation on this repository, this workflow keeps the tracking branch up to date with main, to avoid conflicts.
+
 name: Maintain a branch that tracks default
 
 on:

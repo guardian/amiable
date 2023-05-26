@@ -1,3 +1,6 @@
+# Part of the Scala Steward implementation on this repository, this workflow will open a PR from dependency-updates_1 to main once a month.
+# The effect is we bump dependencies once a month, in one mega PR.
+
 name: Aggregate dependency updates
 
 on:

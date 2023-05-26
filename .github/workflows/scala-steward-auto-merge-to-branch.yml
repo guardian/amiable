@@ -1,3 +1,6 @@
+# Part of the Scala Steward implementation on this repository, this workflow will auto-merge any PRs opened against dependency-updates_1.
+# This works in conjunction with scala-steward-pr-to-main.yml, which will raise a PR from dependency-updates_1 to main once a month.
+
 name: Auto-merge dependency updates to tracking branch
 
 on:
