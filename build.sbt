@@ -32,8 +32,8 @@ scalacOptions := Seq(
 )
 
 // https://github.com/orgs/playframework/discussions/11222
-val jacksonVersion = "2.15.1"
-val jacksonDatabindVersion = "2.15.1"
+val jacksonVersion = "2.15.2"
+val jacksonDatabindVersion = "2.15.2"
 
 val jacksonOverrides = Seq(
   "com.fasterxml.jackson.core" % "jackson-core",
@@ -52,7 +52,7 @@ val akkaSerializationJacksonOverrides = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala"
 ).map(_ % jacksonVersion)
 
-val awsSdkVersion = "1.12.473"
+val awsSdkVersion = "1.12.480"
 
 libraryDependencies ++= Seq(
   jdbc,
