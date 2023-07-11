@@ -17,9 +17,9 @@ view.
 burden on the DevX team. We are already responsible for maintaining cloudquery
 so this has no additional maintenance cost except for perhaps occasionally
 modifying the cloudquery view.
+- AMIable does not provide a complete view of out of date AMI usage (Expand on this)
 - AMIable has an infrastructure cost of $40/month or $480 a year. Cloudquery
 has no additional cost.
-- Only collects information from instances associated with stacks (verify this)
 - Doesn't collect information about instances where the bake date is unavailable
 - The AMIable UI is inflexible, difficult to contextualise as there is no other
 data is available. Important additional information might be "Who do I email
@@ -48,3 +48,10 @@ see the 24 hour delay in cloudquery as a significant problem. However, if
 necessary, we could run the EC2 related tasks more frequently, several times a
 day at little additional cost. Running these jobs more frequently might also
 take us one step closer to deprecating Prism.
+
+We would also need to delete the AMIable stacks for code and prod, remove its
+entry from tools.gutools.co.uk, and archive this repository.
+
+### Status
+
+Pending review
