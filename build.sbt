@@ -69,7 +69,7 @@ libraryDependencies ++= Seq(
   specs2 % Test,
   "org.scalatest" %% "scalatest" % "3.2.16" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
-  "org.mockito" % "mockito-core" % "5.3.1" % Test,
+  "org.mockito" % "mockito-core" % "5.4.0" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3"
 ) ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
 
