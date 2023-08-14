@@ -54,7 +54,7 @@ export class Amiable extends GuStack {
       access: { scope: AccessScope.PUBLIC },
       roleConfiguration: {
         additionalPolicies: [
-          new GuSESSenderPolicy(this),
+          new GuSESSenderPolicy(this, { sendingAddress: "dig.dev.tooling@theguardian.com" }),
           new GuAllowPolicy(this, "CloudwatchPolicy", {
             actions: ["cloudwatch:*"],
             resources: ["*"],

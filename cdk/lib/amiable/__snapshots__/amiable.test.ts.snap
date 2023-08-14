@@ -5,7 +5,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
   "Metadata": {
     "gu:cdk:constructs": [
       "GuDistributionBucketParameter",
-      "GuGuardianEmailSenderParameter",
       "GuSESSenderPolicy",
       "GuAllowPolicy",
       "GuVpcParameter",
@@ -62,12 +61,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Default": "/account/services/artifact.bucket",
       "Description": "SSM parameter containing the S3 bucket name holding distribution artifacts",
       "Type": "AWS::SSM::Parameter::Value<String>",
-    },
-    "EmailSenderAddress": {
-      "AllowedPattern": "^[a-zA-Z]+(\\.[a-zA-Z]+)*@theguardian.com$",
-      "ConstraintDescription": "Must be an @theguardian.com email address",
-      "Description": "The sender of emails sent using SES.",
-      "Type": "String",
     },
     "LoggingStreamName": {
       "Default": "/account/services/logging.stream.name",
@@ -443,10 +436,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                     {
                       "Ref": "AWS::AccountId",
                     },
-                    ":identity/",
-                    {
-                      "Ref": "EmailSenderAddress",
-                    },
+                    ":identity/dig.dev.tooling@theguardian.com",
                   ],
                 ],
               },
@@ -631,6 +621,15 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     "LoadBalancerAmiableSecurityGroupAE4F7AF8": {
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB amiableLoadBalancerAmiableD818374E",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow to IdP endpoint",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -896,6 +895,9 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
     "deployCODEamiableCD81551B": {
+      "DependsOn": [
+        "InstanceRoleAmiable56110022",
+      ],
       "Properties": {
         "LaunchTemplateData": {
           "IamInstanceProfile": {
@@ -1140,7 +1142,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
   "Metadata": {
     "gu:cdk:constructs": [
       "GuDistributionBucketParameter",
-      "GuGuardianEmailSenderParameter",
       "GuSESSenderPolicy",
       "GuAllowPolicy",
       "GuVpcParameter",
@@ -1199,12 +1200,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Default": "/account/services/artifact.bucket",
       "Description": "SSM parameter containing the S3 bucket name holding distribution artifacts",
       "Type": "AWS::SSM::Parameter::Value<String>",
-    },
-    "EmailSenderAddress": {
-      "AllowedPattern": "^[a-zA-Z]+(\\.[a-zA-Z]+)*@theguardian.com$",
-      "ConstraintDescription": "Must be an @theguardian.com email address",
-      "Description": "The sender of emails sent using SES.",
-      "Type": "String",
     },
     "LoggingStreamName": {
       "Default": "/account/services/logging.stream.name",
@@ -1580,10 +1575,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                     {
                       "Ref": "AWS::AccountId",
                     },
-                    ":identity/",
-                    {
-                      "Ref": "EmailSenderAddress",
-                    },
+                    ":identity/dig.dev.tooling@theguardian.com",
                   ],
                 ],
               },
@@ -1870,6 +1862,15 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     "LoadBalancerAmiableSecurityGroupAE4F7AF8": {
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB AmiablePRODLoadBalancerAmiable081EFE48",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow to IdP endpoint",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -2232,6 +2233,9 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
     "deployPRODamiableED398871": {
+      "DependsOn": [
+        "InstanceRoleAmiable56110022",
+      ],
       "Properties": {
         "LaunchTemplateData": {
           "IamInstanceProfile": {
