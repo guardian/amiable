@@ -19,11 +19,11 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v3.6.0
+      - uses: actions/checkout@v4.0.0
 
       # Setup AWS credentials to enable uploading to S3 for Riff-Raff.
       # See https://github.com/aws-actions/configure-aws-credentials
-      - uses: aws-actions/configure-aws-credentials@v3.0.1
+      - uses: aws-actions/configure-aws-credentials@v3.0.2
         with:
           role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           aws-region: eu-west-1
