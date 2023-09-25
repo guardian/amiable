@@ -1610,7 +1610,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           },
         ],
         "AlarmDescription": "amiable exceeded 99% error rate",
-        "AlarmName": "High 5XX error % from amiable in PROD",
+        "AlarmName": "High 5XX error percentage from amiable in PROD",
         "ComparisonOperator": "GreaterThanThreshold",
         "EvaluationPeriods": 2,
         "Metrics": [
