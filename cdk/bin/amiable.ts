@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import "source-map-support/register";
-import { GuRootExperimental } from "@guardian/cdk/lib/experimental/constructs";
+import { GuRoot } from "@guardian/cdk/lib/constructs/root";
 import { Amiable } from "../lib/amiable/amiable";
 
-const app = new GuRootExperimental();
+const app = new GuRoot();
 
 const commonProps = { migratedFromCloudFormation: true, stack: "deploy", env: { region: "eu-west-1" } };
 
