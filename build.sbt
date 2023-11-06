@@ -65,7 +65,7 @@ libraryDependencies ++= Seq(
   "com.google.code.gson" % "gson" % "2.10.1",
   "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.7",
   "org.quartz-scheduler" % "quartz" % "2.3.2",
-  "org.playframework" %% "play-json-joda" % "3.0.0",
+  "org.playframework" %% "play-json-joda" % "3.0.1",
   specs2 % Test,
   "org.scalatest" %% "scalatest" % "3.2.17" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
