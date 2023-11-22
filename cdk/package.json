@@ -27,8 +27,8 @@
     "ts-node": "^10.9.1",
     "typescript": "~5.2.2",
     "@guardian/cdk": "52.2.1",
-    "aws-cdk": "2.100.0",
-    "aws-cdk-lib": "2.100.0",
+    "aws-cdk": "2.109.0",
+    "aws-cdk-lib": "2.109.0",
     "constructs": "10.3.0"
   },
   "dependencies": {
