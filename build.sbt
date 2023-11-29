@@ -32,8 +32,8 @@ scalacOptions := Seq(
 )
 
 // https://github.com/orgs/playframework/discussions/11222
-val jacksonVersion = "2.15.3"
-val jacksonDatabindVersion = "2.15.3"
+val jacksonVersion = "2.16.0"
+val jacksonDatabindVersion = "2.16.0"
 
 val jacksonOverrides = Seq(
   "com.fasterxml.jackson.core" % "jackson-core",
@@ -63,7 +63,7 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsSdkVersion,
   "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
   "com.google.code.gson" % "gson" % "2.10.1",
-  "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.7",
+  "com.gu.play-googleauth" % "play-v28_2.13" % "2.2.8",
   "org.quartz-scheduler" % "quartz" % "2.3.2",
   "org.playframework" %% "play-json-joda" % "3.0.0",
   specs2 % Test,
