@@ -36,7 +36,7 @@ jobs:
 
       # See https://github.com/actions/setup-java
       - name: Setup Java 11
-        uses: actions/setup-java@v3.13.0
+        uses: actions/setup-java@v4.0.0
         with:
           java-version: '11'
           distribution: 'corretto'
@@ -47,7 +47,7 @@ jobs:
         run: ./script/ci
 
       - name: Upload to riff-raff
-        uses: guardian/actions-riff-raff@v2
+        uses: guardian/actions-riff-raff@v3
         with:
           app: amiable
           buildNumberOffset: 1007
