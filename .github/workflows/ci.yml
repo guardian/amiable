@@ -18,6 +18,7 @@ jobs:
       # required by aws-actions/configure-aws-credentials
       id-token: write
       contents: read
+      pull-requests: write # required by guardian/actions-riff-raff@v3
     steps:
       - uses: actions/checkout@v4.1.1
 
@@ -50,6 +51,7 @@ jobs:
         uses: guardian/actions-riff-raff@v3
         with:
           app: amiable
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
           buildNumberOffset: 1007
           projectName: tools::amiable
           configPath: cdk/cdk.out/riff-raff.yaml
