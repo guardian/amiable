@@ -18,6 +18,7 @@ jobs:
       # required by aws-actions/configure-aws-credentials
       id-token: write
       contents: read
+      pull-requests: write # required by guardian/actions-riff-raff@v3
     steps:
       - uses: actions/checkout@v4.1.1
 
@@ -36,7 +37,7 @@ jobs:
 
       # See https://github.com/actions/setup-java
       - name: Setup Java 11
-        uses: actions/setup-java@v3.13.0
+        uses: actions/setup-java@v4.0.0
         with:
           java-version: '11'
           distribution: 'corretto'
@@ -47,9 +48,10 @@ jobs:
         run: ./script/ci
 
       - name: Upload to riff-raff
-        uses: guardian/actions-riff-raff@v2
+        uses: guardian/actions-riff-raff@v3
         with:
           app: amiable
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
           buildNumberOffset: 1007
           projectName: tools::amiable
           configPath: cdk/cdk.out/riff-raff.yaml
