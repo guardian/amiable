@@ -70,7 +70,9 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.17" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test",
   "org.mockito" % "mockito-core" % "5.6.0" % Test,
-  "net.logstash.logback" % "logstash-logback-encoder" % "7.3" // scala-steward:off
+  "net.logstash.logback" % "logstash-logback-encoder" % "7.3", // scala-steward:off
+  // Transient dependency of Play. No newer version of Play with this vulnerability fixed.
+  "ch.qos.logback" % "logback-classic" % "1.4.14",
 ) ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
