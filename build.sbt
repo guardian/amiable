@@ -52,7 +52,7 @@ val akkaSerializationJacksonOverrides = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala"
 ).map(_ % jacksonVersion)
 
-val awsSdkVersion = "1.12.606"
+val awsSdkVersion = "1.12.617"
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -72,7 +72,7 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-core" % "5.6.0" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3", // scala-steward:off
   // Transient dependency of Play. No newer version of Play with this vulnerability fixed.
-  "ch.qos.logback" % "logback-classic" % "1.4.14",
+  "ch.qos.logback" % "logback-classic" % "1.4.14"
 ) ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
