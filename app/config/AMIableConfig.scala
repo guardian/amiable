@@ -1,13 +1,11 @@
 package config
 
 import java.io.FileInputStream
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.auth.oauth2.ServiceAccountCredentials
 import com.gu.googleauth.{
   AntiForgeryChecker,
   GoogleAuthConfig,
-  GoogleGroupChecker,
-  GoogleServiceAccount
+  GoogleGroupChecker
 }
 import controllers.routes
 
