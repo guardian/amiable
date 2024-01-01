@@ -33,7 +33,7 @@ jobs:
       # Configuring caching is also recommended.
       # See https://github.com/guardian/actions-setup-node
       - name: Setup Node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
 
       # See https://github.com/actions/setup-java
       - name: Setup Java 11
