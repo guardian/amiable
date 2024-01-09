@@ -1,20 +1,19 @@
 package services
 
-import akka.actor.ActorSystem
-import akka.agent.Agent
-import config.AmiableConfigProvider
+import org.apache.pekko.actor.ActorSystem
+import config.{AMIableConfig, AmiableConfigProvider}
 
 import javax.inject.Inject
 import metrics.{CloudWatch, CloudWatchMetrics}
-import models._
+import models.*
 import org.joda.time.DateTime
 import play.api.inject.ApplicationLifecycle
 import play.api.{Environment, Logging, Mode}
 import prism.{Prism, PrismLogic}
-import rx.lang.scala.Observable
 import utils.Percentiles
 
-import scala.concurrent.duration._
+import java.util.concurrent.atomic.AtomicReference
+import scala.concurrent.duration.*
 import scala.concurrent.{ExecutionContext, Future}
 
 case class OldInstanceAccountHistory(
@@ -32,23 +31,25 @@ class Agents @Inject() (
 )(implicit exec: ExecutionContext)
     extends Logging {
 
-  lazy implicit val conf = amiableConfigProvider.conf
+  lazy implicit val conf: AMIableConfig = amiableConfigProvider.conf
   val refreshInterval = 5.minutes
 
-  private val amisAgent: Agent[Set[AMI]] = Agent(Set.empty)
-  private val ssasAgent: Agent[Set[SSAA]] = Agent(Set.empty)
-  private val oldProdInstanceCountAgent: Agent[Option[Int]] = Agent(None)
+  private val amisAgent: AtomicReference[Set[AMI]] = AtomicReference(Set.empty)
+  private val ssasAgent: AtomicReference[Set[SSAA]] = AtomicReference(Set.empty)
+  private val oldProdInstanceCountAgent: AtomicReference[Option[Int]] =
+    AtomicReference(None)
   private val oldProdInstanceCountHistoryAgent
-      : Agent[List[(DateTime, Double)]] = Agent(Nil)
-  private val amisAgePercentilesAgent: Agent[Option[Percentiles]] = Agent(None)
+      : AtomicReference[List[(DateTime, Double)]] = AtomicReference(Nil)
+  private val amisAgePercentilesAgent: AtomicReference[Option[Percentiles]] =
+    AtomicReference(None)
   private val amisAgePercentile25thHistoryAgent
-      : Agent[List[(DateTime, Double)]] = Agent(Nil)
+      : AtomicReference[List[(DateTime, Double)]] = AtomicReference(Nil)
   private val amisAgePercentile50thHistoryAgent
-      : Agent[List[(DateTime, Double)]] = Agent(Nil)
+      : AtomicReference[List[(DateTime, Double)]] = AtomicReference(Nil)
   private val amisAgePercentile75thHistoryAgent
-      : Agent[List[(DateTime, Double)]] = Agent(Nil)
+      : AtomicReference[List[(DateTime, Double)]] = AtomicReference(Nil)
   private val oldInstanceCountByAccountAgent
-      : Agent[List[OldInstanceAccountHistory]] = Agent(Nil)
+      : AtomicReference[List[OldInstanceAccountHistory]] = AtomicReference(Nil)
 
   def allAmis: Set[AMI] = amisAgent.get
   def allSSAs: Set[SSAA] = ssasAgent.get
@@ -71,22 +72,28 @@ class Agents @Inject() (
     refreshInstancesInfo()
     refreshHistory()
 
-    val prismDataSubscription =
-      Observable.interval(refreshInterval).subscribe { i =>
+    val prismDataSubscription = system.scheduler.scheduleAtFixedRate(
+      initialDelay = 0.seconds,
+      interval = refreshInterval
+    ) { () =>
+      {
         logger.debug(s"Refreshing agents")
         refreshAmis()
         refreshSSAs()
         refreshInstancesInfo()
       }
+    }(exec)
 
-    val cloudwatchDataSubscription =
-      Observable.interval(1.hour).subscribe { i =>
-        refreshHistory()
-      }
+    val cloudwatchDataSubscription = system.scheduler.scheduleAtFixedRate(
+      initialDelay = 0.seconds,
+      interval = 1.hour
+    ) { () =>
+      refreshHistory()
+    }(exec)
 
     lifecycle.addStopHook { () =>
-      prismDataSubscription.unsubscribe()
-      cloudwatchDataSubscription.unsubscribe()
+      prismDataSubscription.cancel()
+      cloudwatchDataSubscription.cancel()
       Future.successful(())
     }
   }
@@ -100,7 +107,7 @@ class Agents @Inject() (
         },
         { amis =>
           logger.debug(s"Loaded ${amis.size} AMIs")
-          amisAgent.send(amis.toSet)
+          amisAgent.set(amis.toSet)
         }
       )
   }
@@ -115,7 +122,7 @@ class Agents @Inject() (
         },
         { ssaas =>
           logger.debug(s"Loaded ${ssaas.size} SSAA combinations")
-          ssasAgent.send(ssaas.toSet)
+          ssasAgent.set(ssaas.toSet)
         }
       )
   }
@@ -130,14 +137,14 @@ class Agents @Inject() (
     logger.debug(
       s"Found ${oldProdInstances.size} PROD instances running on an out-of-date AMI"
     )
-    oldProdInstanceCountAgent.send(Some(oldProdInstances.size))
+    oldProdInstanceCountAgent.set(Some(oldProdInstances.size))
 
     val prodAgePercentiles =
       PrismLogic.instancesAmisAgePercentiles(prodInstancesWithAmis)
     logger.debug(
       s"Found AMIs age percentiles (p25: ${prodAgePercentiles.p25}, p50: ${prodAgePercentiles.p50}, p75: ${prodAgePercentiles.p75})"
     )
-    amisAgePercentilesAgent.send(Some(prodAgePercentiles))
+    amisAgePercentilesAgent.set(Some(prodAgePercentiles))
   }
 
   def refreshOldInstanceCountInfo(
@@ -161,7 +168,7 @@ class Agents @Inject() (
         )
       })
 
-      oldInstanceCountByAccountAgent.send(oldInstanceCountsByAccount)
+      oldInstanceCountByAccountAgent.set(oldInstanceCountsByAccount)
     }
   }
 
@@ -199,7 +206,7 @@ class Agents @Inject() (
   }
 
   private def refreshHistory(
-      agent: Agent[List[(DateTime, Double)]],
+      agent: AtomicReference[List[(DateTime, Double)]],
       metricName: String
   ): Unit = {
     cloudWatch
@@ -218,7 +225,7 @@ class Agents @Inject() (
             logger.debug(
               s"Found ${data.size} historical datapoints for metric '$metricName'"
             )
-            agent.send(data)
+            agent.set(data)
           }
         }
       )

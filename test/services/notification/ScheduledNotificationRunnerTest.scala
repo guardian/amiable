@@ -2,15 +2,14 @@ package services.notification
 
 import com.amazonaws.services.simpleemail.model.SendEmailRequest
 import config.AMIableConfig
-import models._
+import models.*
 import org.joda.time.DateTime
-import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.{any, anyString}
 import org.scalatestplus.mockito.MockitoSugar
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.EitherValues
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
-import org.specs2.mock.Mockito.anyObject
 import play.api.Mode
 import util.{AttemptValues, Fixtures}
 
@@ -207,7 +206,7 @@ class ScheduledNotificationRunnerTest
       request
     )
     res.awaitEither.right.value shouldBe ""
-    verify(mailClient, never()).send(anyString, anyObject)
+    verify(mailClient, never()).send(anyString, any())
   }
 
   "pairInstancesWithAmiAge should order unknown ages first and then decreasing age second" in {
