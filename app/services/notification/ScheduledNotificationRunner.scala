@@ -16,7 +16,7 @@ class ScheduledNotificationRunner @Inject() (
     environment: Environment,
     amiableConfigProvider: AmiableConfigProvider
 )(implicit ec: ExecutionContext) {
-  implicit val config = amiableConfigProvider.conf
+  implicit val config: AMIableConfig = amiableConfigProvider.conf
 
   def run(today: DateTime): Attempt[List[String]] = {
     for {

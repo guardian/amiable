@@ -8,7 +8,7 @@ import com.gu.googleauth.{
 }
 import config.AmiableConfigProvider
 import play.api.libs.ws.WSClient
-import play.api.mvc._
+import play.api.mvc.*
 
 import scala.concurrent.ExecutionContext
 

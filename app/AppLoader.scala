@@ -69,7 +69,8 @@ class AppComponents(context: Context)
     amiableConfigProvider.cloudwatchWriteNamespace,
     amiableConfigProvider.cloudwatchSecurityHqNamespace,
     agents,
-    applicationLifecycle
+    applicationLifecycle,
+    actorSystem
   )
 
   lazy val amazonMailClient: AmazonSimpleEmailServiceAsync =

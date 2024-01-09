@@ -1,12 +1,13 @@
 package services
 
 import metrics.{CloudWatch, CloudWatchMetrics}
+import org.apache.pekko.actor.ActorSystem
 import play.api.inject.ApplicationLifecycle
 import play.api.{Environment, Mode}
-import rx.lang.scala.Observable
+import play.api.libs.concurrent.Pekko
 
-import scala.concurrent.Future
-import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.*
 
 class Metrics(
     cloudWatch: CloudWatch,
@@ -14,13 +15,18 @@ class Metrics(
     namespace: String,
     securityHqNamespace: String,
     agents: Agents,
-    lifecycle: ApplicationLifecycle
+    lifecycle: ApplicationLifecycle,
+    system: ActorSystem
 ) {
+  implicit val ec: ExecutionContext = system.dispatcher
+
   if (shouldCreateMetrics) {
 
-    val subscription = Observable
-      .interval(initialDelay = 10.seconds, period = 6.hours)
-      .subscribe { _ =>
+    val subscription = system.scheduler.scheduleAtFixedRate(
+      initialDelay = 10.seconds,
+      interval = 6.hours
+    ) { () =>
+      {
         cloudWatch.put(
           namespace,
           CloudWatchMetrics.OldCount.name,
@@ -60,9 +66,10 @@ class Metrics(
           agents.oldInstanceCountByAccount
         )
       }
+    }
 
     lifecycle.addStopHook { () =>
-      subscription.unsubscribe()
+      subscription.cancel()
       Future.successful(())
     }
   }
