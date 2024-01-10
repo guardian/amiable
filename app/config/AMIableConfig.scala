@@ -1,12 +1,6 @@
 package config
 
 import java.io.FileInputStream
-import com.google.auth.oauth2.ServiceAccountCredentials
-import com.gu.googleauth.{
-  AntiForgeryChecker,
-  GoogleAuthConfig,
-  GoogleGroupChecker
-}
 import controllers.routes
 
 import javax.inject.Inject
@@ -24,12 +18,6 @@ case class AMIableConfig(
     ownerNotificationCron: Option[String],
     overrideToAddress: Option[String],
     amiableUrl: String
-)
-
-case class AuthConfig(
-    googleAuthConfig: GoogleAuthConfig,
-    googleGroupChecker: GoogleGroupChecker,
-    requiredGoogleGroups: Set[String]
 )
 
 class AmiableConfigProvider @Inject() (
@@ -73,52 +61,6 @@ class AmiableConfigProvider @Inject() (
 
   val cloudwatchWriteNamespace: String = s"AMIable-$stage"
   val cloudwatchSecurityHqNamespace: String = "SecurityHQ"
-
-  val requiredGoogleGroups: Set[String] = Set(
-    requiredString(playConfig, "auth.google.2faGroupId"),
-    requiredString(playConfig, "auth.google.departmentGroupId")
-  )
-
-  val googleAuthConfig: GoogleAuthConfig = {
-
-    // Different constructors depending on whether domain is available or not
-
-    playConfig
-      .getOptional[String]("auth.google.apps-domain")
-      .map(domain => {
-        GoogleAuthConfig(
-          clientId = requiredString(playConfig, "auth.google.clientId"),
-          clientSecret = requiredString(playConfig, "auth.google.clientSecret"),
-          redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback.url}",
-          domains = List(domain),
-          antiForgeryChecker =
-            AntiForgeryChecker.borrowSettingsFromPlay(httpConfiguration)
-        )
-      })
-      .getOrElse(
-        GoogleAuthConfig.withNoDomainRestriction(
-          clientId = requiredString(playConfig, "auth.google.clientId"),
-          clientSecret = requiredString(playConfig, "auth.google.clientSecret"),
-          redirectUrl = s"$amiableUrl${routes.Login.oauth2Callback.url}",
-          antiForgeryChecker =
-            AntiForgeryChecker.borrowSettingsFromPlay(httpConfiguration)
-        )
-      )
-
-  }
-
-  val googleGroupChecker: GoogleGroupChecker = {
-    val serviceAccountCertPath =
-      requiredString(playConfig, "auth.google.serviceAccountCertPath")
-    val creds = ServiceAccountCredentials.fromStream(
-      new FileInputStream(serviceAccountCertPath)
-    )
-
-    new GoogleGroupChecker(
-      impersonatedUser = requiredString(playConfig, "auth.google.2faUser"),
-      serviceAccountCredentials = creds
-    )
-  }
 
   private def requiredString(config: Configuration, key: String): String = {
     config.getOptional[String](key).getOrElse {

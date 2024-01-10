@@ -1,7 +1,6 @@
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync
-import com.gu.googleauth.AuthAction
 import config.AmiableConfigProvider
-import controllers.{AMIable, Healthcheck, Login, routes}
+import controllers.{AMIable, Healthcheck, routes}
 import metrics.CloudWatch
 import play.api.ApplicationLoader.Context
 import play.api.libs.logback.LogbackLoggerConfigurator
@@ -90,32 +89,18 @@ class AppComponents(context: Context)
     scheduledNotificationRunner
   )
 
-  private val authAction = new AuthAction[AnyContent](
-    amiableConfigProvider.googleAuthConfig,
-    routes.Login.startLogin,
-    controllerComponents.parsers.default
-  )(executionContext)
-
   lazy val amiableController = new AMIable(
     controllerComponents,
     amiableConfigProvider,
     agents,
-    notifications,
-    authAction
+    notifications
   )(executionContext)
   lazy val healthCheckController = new Healthcheck(controllerComponents)
-  lazy val loginController = new Login(
-    controllerComponents,
-    amiableConfigProvider,
-    wsClient,
-    amiableConfigProvider.googleAuthConfig
-  )(executionContext)
 
   lazy val router = new Routes(
     httpErrorHandler,
     amiableController,
     healthCheckController,
-    loginController,
     assets
   )
 

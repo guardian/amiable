@@ -1,6 +1,5 @@
 package controllers
 
-import com.gu.googleauth.AuthAction
 import config.{AMIableConfig, AmiableConfigProvider}
 import metrics.Charts
 import models._
@@ -16,15 +15,14 @@ class AMIable(
     val controllerComponents: ControllerComponents,
     val amiableConfigProvider: AmiableConfigProvider,
     agents: Agents,
-    notifications: Notifications,
-    authAction: AuthAction[AnyContent]
+    notifications: Notifications
 )(implicit exec: ExecutionContext)
     extends BaseController
     with Logging {
 
   implicit val conf: AMIableConfig = amiableConfigProvider.conf
 
-  def index: Action[AnyContent] = authAction.async { implicit request =>
+  def index: Action[AnyContent] = Action.async { implicit request =>
     val ssaa = SSAA()
     val charts = Charts.charts(
       instanceCountHistory = agents.oldProdInstanceCountHistory,
@@ -57,7 +55,7 @@ class AMIable(
     }
   }
 
-  def ami(imageId: String): Action[AnyContent] = authAction.async {
+  def ami(imageId: String): Action[AnyContent] = Action.async {
     implicit request =>
       attempt {
         for {
@@ -82,7 +80,7 @@ class AMIable(
       stageOpt: Option[String],
       appOpt: Option[String],
       accountNameOpt: Option[String]
-  ): Action[AnyContent] = authAction.async { implicit request =>
+  ): Action[AnyContent] = Action.async { implicit request =>
     val ssaa = SSAA.fromParams(stackOpt, stageOpt, appOpt, accountNameOpt)
     attempt {
       for {
@@ -121,7 +119,7 @@ class AMIable(
     }
   }
 
-  def sendEmail: Action[AnyContent] = authAction.async {
+  def sendEmail: Action[AnyContent] = Action.async {
     attempt {
       for {
         emailIds <- notifications.sendEmail()
