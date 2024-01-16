@@ -28,7 +28,7 @@ case class AMI(
 
 object AMI {
   import utils.DateUtils._
-  implicit val jsonFormat = Json.format[AMI]
+  implicit val jsonFormat: Format[AMI] = Json.format[AMI]
 
   def extract(imageId: String, amis: List[AMI]): Attempt[AMI] = {
     val imageOpt = amis.find(_.imageId == imageId)
@@ -78,7 +78,7 @@ case class Origin(
 )
 
 object Origin {
-  implicit val jsonFormat = Json.format[Origin]
+  implicit val jsonFormat: Format[Origin] = Json.format[Origin]
 }
 
 case class Meta(
@@ -87,7 +87,7 @@ case class Meta(
 )
 
 object Meta {
-  implicit val jsonFormat = Json.format[Meta]
+  implicit val jsonFormat: Format[Meta] = Json.format[Meta]
 }
 
 case class SSAA(
@@ -107,7 +107,7 @@ case class SSAA(
   }
 }
 object SSAA {
-  implicit val jsonFormat = Json.format[SSAA]
+  implicit val jsonFormat: Format[SSAA] = Json.format[SSAA]
 
   /** Filters empty strings to None, such as those provided by request
     * parameters.
@@ -177,7 +177,8 @@ case class LaunchConfiguration(
 
 object LaunchConfiguration {
   import utils.DateUtils._
-  implicit val jsonFormat = Json.format[LaunchConfiguration]
+  implicit val jsonFormat: Format[LaunchConfiguration] =
+    Json.format[LaunchConfiguration]
 }
 
 case class Owner(id: String, stacks: List[SSAA]) {
@@ -185,16 +186,16 @@ case class Owner(id: String, stacks: List[SSAA]) {
 }
 
 object Owner {
-  implicit val jsonFormat = Json.format[Owner]
+  implicit val jsonFormat: Format[Owner] = Json.format[Owner]
 }
 
 case class Owners(owners: List[Owner], defaultOwner: Owner)
 
 object Owners {
-  implicit val jsonFormat = Json.format[Owners]
+  implicit val jsonFormat: Format[Owners] = Json.format[Owners]
 }
 
 case class AWSAccount(accountNumber: Option[String], accountName: String)
 object AWSAccount {
-  implicit val jsonFormat = Json.format[AWSAccount]
+  implicit val jsonFormat: Format[AWSAccount] = Json.format[AWSAccount]
 }

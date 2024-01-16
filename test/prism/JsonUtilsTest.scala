@@ -27,20 +27,20 @@ class JsonUtilsTest
       val json = Json.parse(AMIs.validAMI)
       val ami = extractAMI(json).awaitEither.right.value
       ami should have(
-        'arn("arn:aws:ec2:region::image/ami-example"),
-        'name(Some("ami-name")),
-        'imageId("ami-example"),
-        'region("region"),
-        'description(Some("AMI description")),
-        'creationDate(Some(new DateTime(2016, 2, 11, 0, 0))),
-        'state("available"),
-        'architecture("x86_64"),
-        'ownerId("0123456789"),
-        'virtualizationType("hvm"),
-        'hypervisor("xen"),
-        'rootDeviceType("ebs"),
-        'sriovNetSupport(Some("simple")),
-        'upgrade(None)
+        Symbol("arn")("arn:aws:ec2:region::image/ami-example"),
+        Symbol("name")(Some("ami-name")),
+        Symbol("imageId")("ami-example"),
+        Symbol("region")("region"),
+        Symbol("description")(Some("AMI description")),
+        Symbol("creationDate")(Some(new DateTime(2016, 2, 11, 0, 0))),
+        Symbol("state")("available"),
+        Symbol("architecture")("x86_64"),
+        Symbol("ownerId")("0123456789"),
+        Symbol("virtualizationType")("hvm"),
+        Symbol("hypervisor")("xen"),
+        Symbol("rootDeviceType")("ebs"),
+        Symbol("sriovNetSupport")(Some("simple")),
+        Symbol("upgrade")(None)
       )
     }
 
@@ -96,11 +96,11 @@ class JsonUtilsTest
       val json = Json.parse(Instances.validInstance)
       val instance = extractInstance(json).awaitEither.right.value
       instance should have(
-        'name("instance-name"),
-        'arn("arn:aws:ec2:region:0123456789:instance/i-id"),
-        'stack(Some("stack")),
-        'app(List("app")),
-        'stage(Some("STAGE"))
+        Symbol("name")("instance-name"),
+        Symbol("arn")("arn:aws:ec2:region:0123456789:instance/i-id"),
+        Symbol("stack")(Some("stack")),
+        Symbol("app")(List("app")),
+        Symbol("stage")(Some("STAGE"))
       )
       instance.specification.get("imageId").value shouldEqual "ami-id"
     }
@@ -118,15 +118,15 @@ class JsonUtilsTest
       val launchConfig =
         extractLaunchConfiguration(json).awaitEither.right.value
       launchConfig should have(
-        'name("LaunchConfig-123"),
-        'arn(
+        Symbol("name")("LaunchConfig-123"),
+        Symbol("arn")(
           "arn:aws:autoscaling:us-west-1:12343425:launchConfiguration:123-123-325-d121:launchConfigurationName/LaunchConfig-123"
         ),
-        'imageId("ami-12345"),
-        'region("us-west-1"),
-        'createdTime(new DateTime(2015, 1, 2, 17, 0)),
-        'instanceType("t2.micro"),
-        'keyName("KeyPair")
+        Symbol("imageId")("ami-12345"),
+        Symbol("region")("us-west-1"),
+        Symbol("createdTime")(new DateTime(2015, 1, 2, 17, 0)),
+        Symbol("instanceType")("t2.micro"),
+        Symbol("keyName")("KeyPair")
       )
       launchConfig.securityGroups.head shouldEqual "arn:aws:ec2:us-west-1:12343243:security-group/sg-aa111111"
       launchConfig.meta.href shouldEqual "http://localhost:8080/configs/arn:aws:autoscaling:us-west-1:12343425:launchConfiguration:123-123-325-d121:launchConfigurationName:LaunchConfig-1233"
