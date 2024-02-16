@@ -65,8 +65,6 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.4.14"
 ) ++ jacksonOverrides
 
-resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
-
 PlayKeys.playDefaultPort := 9101
 
 Universal / packageName := name.value
