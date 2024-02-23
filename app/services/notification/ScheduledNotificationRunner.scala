@@ -21,9 +21,13 @@ class ScheduledNotificationRunner @Inject() (
   def run(today: DateTime): Attempt[List[String]] = {
     for {
       instancesWithAmis <- Prism.instancesWithAmis(SSAA(stage = Some("PROD")))
-      oldInstances = PrismLogic.oldInstances(instancesWithAmis)
+      giantInstances <- Prism.instancesWithAmis(
+        SSAA(stage = Some("rex"), stack = Some("pfi-giant"))
+      )
+      allProdInstancesWithAmis = instancesWithAmis ++ giantInstances
+      oldInstances = PrismLogic.oldInstances(allProdInstancesWithAmis)
       instanceAmiMap = ScheduledNotificationRunner.makeInstanceAmiMap(
-        instancesWithAmis
+        allProdInstancesWithAmis
       )
       ownersWithDefault <- Prism.getOwners
       ownersAndOldInstances = ScheduledNotificationRunner.findInstanceOwners(
