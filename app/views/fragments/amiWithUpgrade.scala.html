@@ -1,4 +1,5 @@
 @import config.AMIableConfig
+@import org.joda.time.DateTime
 @(ami: AMI, conf: AMIableConfig)
 
 @import utils.DateUtils.{getAgeColour}
@@ -9,7 +10,7 @@
     <div class="ami-details--this-ami">
         @amiDetails(ami, conf)
     </div>
-    @if(Recommendations.isObsoleteUbuntu(ami)) {
+    @if(Recommendations.isObsoleteUbuntu(ami, DateTime.now())) {
         <div class="ami-details--upgrade upgrade-image no-upgrade-image dist-eol">
             <div class="no-ami-upgrade--message">This version of Ubuntu is End of Life, you should upgrade.</div>
         </div>
