@@ -15,19 +15,13 @@ jobs:
 
     # See https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
     permissions:
-      # required by aws-actions/configure-aws-credentials
-      id-token: write
       contents: read
-      pull-requests: write # required by guardian/actions-riff-raff@v4
+
+      # These permissions are required by guardian/actions-riff-raff...
+      id-token: write # ...to exchange an OIDC JWT ID token for AWS credentials
+      pull-requests: write #...to comment on PRs
     steps:
       - uses: actions/checkout@v4.1.1
-
-      # Setup AWS credentials to enable uploading to S3 for Riff-Raff.
-      # See https://github.com/aws-actions/configure-aws-credentials
-      - uses: aws-actions/configure-aws-credentials@v4.0.2
-        with:
-          role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
-          aws-region: eu-west-1
 
       # Setup Node, checking common Node config files to determine the version of Node to use.
       # Configuring caching is also recommended.
@@ -54,8 +48,8 @@ jobs:
       - name: Upload to riff-raff
         uses: guardian/actions-riff-raff@v4
         with:
-          app: amiable
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           buildNumberOffset: 1007
           projectName: tools::amiable
           configPath: cdk/cdk.out/riff-raff.yaml
