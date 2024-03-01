@@ -34,6 +34,10 @@ jobs:
       # See https://github.com/guardian/actions-setup-node
       - name: Setup Node
         uses: actions/setup-node@v4.0.2
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: 'cdk/package-lock.json'
 
       # See https://github.com/actions/setup-java
       - name: Setup Java 11
