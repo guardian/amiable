@@ -1,6 +1,9 @@
 package prism
 
 import models.AMI
+import org.joda.time.DateTime
+
+import scala.util.Try
 
 object Recommendations {
 
@@ -65,21 +68,20 @@ object Recommendations {
     }) getOrElse false
   }
 
-  def isObsoleteUbuntu(ubuntuAmi: AMI): Boolean = {
-    val DistExtractor = ".*/ubuntu-(\\w+?)-(\\d{2}.\\d{2})-.*".r
+  def isObsoleteUbuntu(ubuntuAmi: AMI, now: DateTime): Boolean = {
+    val DistExtractor = ".*/ubuntu-(\\w+?)-(\\d{2}).(\\d{2})-.*".r
     ubuntuAmi.name.fold(false) {
-      case DistExtractor(distName, distNumber) =>
-        List(
-          "15.04",
-          "14.10",
-          "13.10",
-          "13.04",
-          "12.10",
-          "11.10",
-          "11.04",
-          "10.10",
-          "10.04"
-        ).contains(distNumber)
+      case DistExtractor(distName, distYear, distMonth) =>
+        Try {
+          val year = distYear.toInt
+          val month = distMonth.toInt
+          val releaseDate = new DateTime(2000 + year, month, 1, 0, 0)
+          if (year % 2 == 0 && distMonth == "04") {
+            releaseDate.plusYears(5).isBefore(now)
+          } else {
+            releaseDate.plusMonths(9).isBefore(now)
+          }
+        }.getOrElse(false)
       case _ =>
         false
     }

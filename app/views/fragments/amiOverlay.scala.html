@@ -1,4 +1,5 @@
 @import config.AMIableConfig
+@import org.joda.time.DateTime
 @(ami: AMI, conf: AMIableConfig ,instanceCount: Option[Int] = None, id: String = java.util.UUID.randomUUID.toString, stackStageApp: Option[SSAA] = None)
 
 @import utils.DateUtils.{getAgeColour, daysAgo}
@@ -35,7 +36,7 @@
         </div>
         <div class="ami-badge__icon-container">
             <a class="modal-trigger black-text" href="#modal-@id">
-                @if(Recommendations.isObsoleteUbuntu(ami)) {
+                @if(Recommendations.isObsoleteUbuntu(ami, DateTime.now())) {
                     <img src="/assets/images/upgrade-icons/dist-eol.png" class="ami-badge__icon" />
                 } else {
                     @ami.upgrade.map { upgrade =>
