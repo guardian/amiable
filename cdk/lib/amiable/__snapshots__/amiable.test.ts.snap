@@ -120,6 +120,15 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           },
         },
         "MaxSize": "2",
+        "MetricsCollection": [
+          {
+            "Granularity": "1Minute",
+            "Metrics": [
+              "GroupTotalInstances",
+              "GroupInServiceInstances",
+            ],
+          },
+        ],
         "MinSize": "1",
         "Tags": [
           {
@@ -536,6 +545,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         },
         "Port": 443,
         "Protocol": "HTTPS",
+        "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06",
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
     },
@@ -1302,6 +1312,15 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           },
         },
         "MaxSize": "2",
+        "MetricsCollection": [
+          {
+            "Granularity": "1Minute",
+            "Metrics": [
+              "GroupTotalInstances",
+              "GroupInServiceInstances",
+            ],
+          },
+        ],
         "MinSize": "1",
         "Tags": [
           {
@@ -1733,6 +1752,24 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             "ReturnData": false,
           },
         ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
         "Threshold": 99,
         "TreatMissingData": "notBreaching",
       },
@@ -1820,6 +1857,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         },
         "Port": 443,
         "Protocol": "HTTPS",
+        "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06",
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
     },
@@ -2216,6 +2254,24 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "Namespace": "AWS/ApplicationELB",
         "Period": 60,
         "Statistic": "Maximum",
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
         "Threshold": 1,
         "TreatMissingData": "notBreaching",
       },
