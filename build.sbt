@@ -45,7 +45,7 @@ val jacksonOverrides = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala"
 ).map(_ % jacksonVersion)
 
-val awsSdkVersion = "1.12.749"
+val awsSdkVersion = "1.12.754"
 
 libraryDependencies ++= Seq(
   jdbc,
