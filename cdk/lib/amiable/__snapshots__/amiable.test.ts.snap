@@ -955,6 +955,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           "InstanceType": "t4g.small",
           "MetadataOptions": {
             "HttpTokens": "required",
+            "InstanceMetadataTags": "enabled",
           },
           "SecurityGroupIds": [
             {
@@ -1035,7 +1036,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
               "Fn::Join": [
                 "",
                 [
-                  "#!/bin/bash -ev
+                  "#!/bin/bash
 
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
@@ -2382,6 +2383,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           "InstanceType": "t4g.small",
           "MetadataOptions": {
             "HttpTokens": "required",
+            "InstanceMetadataTags": "enabled",
           },
           "SecurityGroupIds": [
             {
@@ -2462,7 +2464,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
               "Fn::Join": [
                 "",
                 [
-                  "#!/bin/bash -ev
+                  "#!/bin/bash
 
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
