@@ -26,9 +26,9 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "~5.5.4",
-    "@guardian/cdk": "59.3.1",
-    "aws-cdk": "2.155.0",
-    "aws-cdk-lib": "2.155.0",
+    "@guardian/cdk": "59.3.5",
+    "aws-cdk": "2.157.0",
+    "aws-cdk-lib": "2.157.0",
     "constructs": "10.3.0"
   },
   "dependencies": {
