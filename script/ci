@@ -9,4 +9,6 @@ set -e
 
 
 sbt clean scalafmtCheckAll compile test debian:packageBin
-mv target/*.deb ./amiable.deb
+
+mkdir -p dist
+mv target/*.deb "dist/amiable-${BUILD_NUMBER}.deb"

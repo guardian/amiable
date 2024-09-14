@@ -10,7 +10,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuVpcParameter",
       "GuSubnetListParameter",
       "GuSubnetListParameter",
-      "GuPlayApp",
+      "GuEc2AppExperimental",
       "GuCertificate",
       "GuInstanceRole",
       "GuSsmSshPolicy",
@@ -104,8 +104,46 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::SSM::Parameter",
     },
-    "AutoScalingGroupAmiableASGFCD99427": {
+    "AsgRollingUpdatePolicy2A1DDC6F": {
       "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cloudformation:SignalResource",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "AWS::StackId",
+              },
+            },
+            {
+              "Action": "elasticloadbalancing:DescribeTargetHealth",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "AsgRollingUpdatePolicy2A1DDC6F",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleAmiable56110022",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "AutoScalingGroupAmiableASGFCD99427": {
+      "CreationPolicy": {
+        "AutoScalingCreationPolicy": {
+          "MinSuccessfulInstancesPercent": 100,
+        },
+        "ResourceSignal": {
+          "Count": 1,
+          "Timeout": "PT5M",
+        },
+      },
+      "Properties": {
+        "DesiredCapacity": "1",
         "HealthCheckGracePeriod": 120,
         "HealthCheckType": "ELB",
         "LaunchTemplate": {
@@ -123,10 +161,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         "MetricsCollection": [
           {
             "Granularity": "1Minute",
-            "Metrics": [
-              "GroupTotalInstances",
-              "GroupInServiceInstances",
-            ],
           },
         ],
         "MinSize": "1",
@@ -179,6 +213,18 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         },
       },
       "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MaxBatchSize": 2,
+          "MinInstancesInService": 1,
+          "MinSuccessfulInstancesPercent": 100,
+          "PauseTime": "PT5M",
+          "SuspendProcesses": [
+            "AlarmNotification",
+          ],
+          "WaitOnResourceSignals": true,
+        },
+      },
     },
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
@@ -1037,6 +1083,17 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                 "",
                 [
                   "#!/bin/bash
+function exitTrap(){
+exitCode=$?
+
+        cfn-signal --stack ",
+                  {
+                    "Ref": "AWS::StackId",
+                  },
+                  "           --resource AutoScalingGroupAmiableASGFCD99427           --region eu-west-1           --exit-code $exitCode || echo 'Failed to send Cloudformation Signal'
+        
+}
+trap exitTrap EXIT
 
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
@@ -1053,9 +1110,33 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                   {
                     "Ref": "DistributionBucketName",
                   },
-                  "/deploy/CODE/amiable/amiable.deb /amiable/
+                  "/deploy/CODE/amiable/amiable-TEST.deb /amiable/amiable.deb
 
-          dpkg -i /amiable/amiable.deb",
+          dpkg -i /amiable/amiable.deb
+# GuEc2AppExperimental UserData Start
+
+      TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+      INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/instance-id")
+
+      STATE=$(aws elbv2 describe-target-health         --target-group-arn ",
+                  {
+                    "Ref": "TargetGroupAmiable6987B5AC",
+                  },
+                  "         --region eu-west-1         --targets Id=$INSTANCE_ID,Port=9000         --query "TargetHealthDescriptions[0].TargetHealth.State")
+
+      until [ "$STATE" == "\\"healthy\\"" ]; do
+        echo "Instance not yet healthy within target group. Current state $STATE. Sleeping..."
+        sleep 5
+        STATE=$(aws elbv2 describe-target-health           --target-group-arn ",
+                  {
+                    "Ref": "TargetGroupAmiable6987B5AC",
+                  },
+                  "           --region eu-west-1           --targets Id=$INSTANCE_ID,Port=9000           --query "TargetHealthDescriptions[0].TargetHealth.State")
+      done
+
+      echo "Instance is healthy in target group."
+      
+# GuEc2AppExperimental UserData End",
                 ],
               ],
             },
@@ -1201,7 +1282,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuVpcParameter",
       "GuSubnetListParameter",
       "GuSubnetListParameter",
-      "GuPlayApp",
+      "GuEc2AppExperimental",
       "GuCertificate",
       "GuInstanceRole",
       "GuSsmSshPolicy",
@@ -1297,8 +1378,46 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::SSM::Parameter",
     },
-    "AutoScalingGroupAmiableASGFCD99427": {
+    "AsgRollingUpdatePolicy2A1DDC6F": {
       "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cloudformation:SignalResource",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "AWS::StackId",
+              },
+            },
+            {
+              "Action": "elasticloadbalancing:DescribeTargetHealth",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "AsgRollingUpdatePolicy2A1DDC6F",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleAmiable56110022",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "AutoScalingGroupAmiableASGFCD99427": {
+      "CreationPolicy": {
+        "AutoScalingCreationPolicy": {
+          "MinSuccessfulInstancesPercent": 100,
+        },
+        "ResourceSignal": {
+          "Count": 1,
+          "Timeout": "PT5M",
+        },
+      },
+      "Properties": {
+        "DesiredCapacity": "1",
         "HealthCheckGracePeriod": 120,
         "HealthCheckType": "ELB",
         "LaunchTemplate": {
@@ -1316,10 +1435,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "MetricsCollection": [
           {
             "Granularity": "1Minute",
-            "Metrics": [
-              "GroupTotalInstances",
-              "GroupInServiceInstances",
-            ],
           },
         ],
         "MinSize": "1",
@@ -1372,6 +1487,18 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         },
       },
       "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MaxBatchSize": 2,
+          "MinInstancesInService": 1,
+          "MinSuccessfulInstancesPercent": 100,
+          "PauseTime": "PT5M",
+          "SuspendProcesses": [
+            "AlarmNotification",
+          ],
+          "WaitOnResourceSignals": true,
+        },
+      },
     },
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
@@ -2465,6 +2592,17 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                 "",
                 [
                   "#!/bin/bash
+function exitTrap(){
+exitCode=$?
+
+        cfn-signal --stack ",
+                  {
+                    "Ref": "AWS::StackId",
+                  },
+                  "           --resource AutoScalingGroupAmiableASGFCD99427           --region eu-west-1           --exit-code $exitCode || echo 'Failed to send Cloudformation Signal'
+        
+}
+trap exitTrap EXIT
 
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
@@ -2481,9 +2619,33 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                   {
                     "Ref": "DistributionBucketName",
                   },
-                  "/deploy/PROD/amiable/amiable.deb /amiable/
+                  "/deploy/PROD/amiable/amiable-TEST.deb /amiable/amiable.deb
 
-          dpkg -i /amiable/amiable.deb",
+          dpkg -i /amiable/amiable.deb
+# GuEc2AppExperimental UserData Start
+
+      TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+      INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/instance-id")
+
+      STATE=$(aws elbv2 describe-target-health         --target-group-arn ",
+                  {
+                    "Ref": "TargetGroupAmiable6987B5AC",
+                  },
+                  "         --region eu-west-1         --targets Id=$INSTANCE_ID,Port=9000         --query "TargetHealthDescriptions[0].TargetHealth.State")
+
+      until [ "$STATE" == "\\"healthy\\"" ]; do
+        echo "Instance not yet healthy within target group. Current state $STATE. Sleeping..."
+        sleep 5
+        STATE=$(aws elbv2 describe-target-health           --target-group-arn ",
+                  {
+                    "Ref": "TargetGroupAmiable6987B5AC",
+                  },
+                  "           --region eu-west-1           --targets Id=$INSTANCE_ID,Port=9000           --query "TargetHealthDescriptions[0].TargetHealth.State")
+      done
+
+      echo "Instance is healthy in target group."
+      
+# GuEc2AppExperimental UserData End",
                 ],
               ],
             },

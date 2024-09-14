@@ -41,6 +41,10 @@ jobs:
           distribution: 'corretto'
           cache: 'sbt'
 
+      - run: |
+          LAST_TEAMCITY_BUILD=1007
+          echo "BUILD_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD ))" >> $GITHUB_ENV
+
       # See https://github.com/github/scripts-to-rule-them-all
       - name: Run script/ci
         run: ./script/ci
@@ -50,11 +54,11 @@ jobs:
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
-          buildNumberOffset: 1007
+          buildNumber: ${{ env.BUILD_NUMBER }}
           projectName: tools::amiable
           configPath: cdk/cdk.out/riff-raff.yaml
           contentDirectories: |
             cdk.out:
               - cdk/cdk.out
             amiable:
-              - amiable.deb
+              - dist

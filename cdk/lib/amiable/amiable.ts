@@ -4,7 +4,7 @@ import { GuDistributionBucketParameter, GuStack, GuStringParameter } from "@guar
 import { GuCname } from "@guardian/cdk/lib/constructs/dns";
 import { GuHttpsEgressSecurityGroup } from "@guardian/cdk/lib/constructs/ec2";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
-import { GuPlayApp } from "@guardian/cdk/lib/patterns/ec2-app";
+import { GuEc2AppExperimental } from "@guardian/cdk/lib/experimental/patterns/ec2-app";
 import type { App } from "aws-cdk-lib";
 import { Duration, SecretValue } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, UserData } from "aws-cdk-lib/aws-ec2";
@@ -27,16 +27,19 @@ export class Amiable extends GuStack {
 
     const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
 
+    const buildNumber = process.env.BUILD_NUMBER ?? "DEV";
+
     const userData = UserData.forLinux();
     userData.addCommands(`
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable-service-account-cert.json /amiable/
           aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable.deb /amiable/
+          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable-${buildNumber}.deb /amiable/amiable.deb
 
           dpkg -i /amiable/amiable.deb`);
 
-    const ec2App = new GuPlayApp(this, {
+    const ec2App = new GuEc2AppExperimental(this, {
+      applicationPort: 9000,
       app,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.SMALL),
       userData,
