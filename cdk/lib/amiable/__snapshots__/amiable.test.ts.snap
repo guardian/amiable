@@ -1110,7 +1110,7 @@ trap exitTrap EXIT
                   {
                     "Ref": "DistributionBucketName",
                   },
-                  "/deploy/CODE/amiable/amiable.deb /amiable/
+                  "/deploy/CODE/amiable/amiable-TEST.deb /amiable/amiable.deb
 
           dpkg -i /amiable/amiable.deb
 # GuEc2AppExperimental UserData Start
@@ -2619,7 +2619,7 @@ trap exitTrap EXIT
                   {
                     "Ref": "DistributionBucketName",
                   },
-                  "/deploy/PROD/amiable/amiable.deb /amiable/
+                  "/deploy/PROD/amiable/amiable-TEST.deb /amiable/amiable.deb
 
           dpkg -i /amiable/amiable.deb
 # GuEc2AppExperimental UserData Start

@@ -27,12 +27,14 @@ export class Amiable extends GuStack {
 
     const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
 
+    const buildNumber = process.env.BUILD_NUMBER ?? "DEV";
+
     const userData = UserData.forLinux();
     userData.addCommands(`
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable-service-account-cert.json /amiable/
           aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable.deb /amiable/
+          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable-${buildNumber}.deb /amiable/amiable.deb
 
           dpkg -i /amiable/amiable.deb`);
 
