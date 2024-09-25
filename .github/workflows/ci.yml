@@ -56,7 +56,7 @@ jobs:
           roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           buildNumber: ${{ env.BUILD_NUMBER }}
           projectName: tools::amiable
-          configPath: cdk/cdk.out/riff-raff.yaml
+          configPath: riff-raff.yaml
           contentDirectories: |
             cdk.out:
               - cdk/cdk.out

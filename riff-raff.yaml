@@ -1,0 +1,34 @@
+$schema: https://raw.githubusercontent.com/guardian/riff-raff/refs/heads/main/contrib/riff-raff-yaml-schema.json
+allowedStages:
+  - CODE
+deployments:
+  asg-upload-eu-west-1-deploy-amiable:
+    type: autoscaling
+    actions:
+      - uploadArtifacts
+    regions:
+      - eu-west-1
+    stacks:
+      - deploy
+    app: amiable
+    parameters:
+      bucketSsmLookup: true
+      prefixApp: true
+    contentDirectory: amiable
+  ami-cloudformation-parameter:
+    type: ami-cloudformation-parameter
+    regions:
+      - eu-west-1
+    stacks:
+      - deploy
+    app: amiable
+    parameters:
+      amiParametersToTags:
+        AMIAmiable:
+          BuiltBy: amigo
+          AmigoStage: PROD
+          Recipe: arm64-focal-java11-deploy-infrastructure
+          Encrypted: 'true'
+      cloudFormationStackName: amiable-gucdk-CODE
+      prependStackToCloudFormationStackName: false
+      appendStageToCloudFormationStackName: false
