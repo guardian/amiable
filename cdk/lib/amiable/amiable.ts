@@ -40,6 +40,7 @@ export class Amiable extends GuStack {
 
     const ec2App = new GuEc2AppExperimental(this, {
       applicationPort: 9000,
+      buildIdentifier: buildNumber,
       app,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.SMALL),
       userData,
