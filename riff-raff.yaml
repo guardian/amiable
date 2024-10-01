@@ -15,6 +15,8 @@ deployments:
       bucketSsmLookup: true
       prefixApp: true
     contentDirectory: amiable
+    dependencies:
+      - ami-cloudformation-parameter-again
   ami-cloudformation-parameter:
     type: ami-cloudformation-parameter
     regions:
@@ -32,3 +34,22 @@ deployments:
       cloudFormationStackName: amiable-gucdk-CODE
       prependStackToCloudFormationStackName: false
       appendStageToCloudFormationStackName: false
+  ami-cloudformation-parameter-again:
+    type: ami-cloudformation-parameter
+    regions:
+      - eu-west-1
+    stacks:
+      - deploy
+    app: amiable
+    parameters:
+      amiTags:
+        Recipe: arm64-focal-java11-deploy-infrastructure
+        AmigoStage: PROD
+        BuiltBy: amigo
+      amiEncrypted: 'true'
+      amiParameter: AMIAmiable
+      cloudFormationStackName: amiable-gucdk-CODE
+      prependStackToCloudFormationStackName: false
+      appendStageToCloudFormationStackName: false
+    dependencies:
+      - ami-cloudformation-parameter
