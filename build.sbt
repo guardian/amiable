@@ -57,7 +57,7 @@ libraryDependencies ++= Seq(
   "com.gu.play-googleauth" %% "play-v30" % "15.1.0",
   "org.quartz-scheduler" % "quartz" % "2.3.2",
   "org.playframework" %% "play-json-joda" % "3.0.4",
-  "org.scalatest" %% "scalatest" % "3.2.17" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % Test,
   "org.mockito" % "mockito-core" % "5.14.2" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3", // scala-steward:off
