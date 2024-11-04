@@ -1,8 +1,8 @@
 // The Play plugin
-addSbtPlugin("org.playframework" % "sbt-plugin" % "3.0.1")
+addSbtPlugin("org.playframework" % "sbt-plugin" % "3.0.5")
 
-addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.16")
-libraryDependencies += "org.vafer" % "jdeb" % "1.10" artifacts (Artifact(
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.10.4")
+libraryDependencies += "org.vafer" % "jdeb" % "1.11" artifacts (Artifact(
   "jdeb",
   "jar",
   "jar"
@@ -11,14 +11,14 @@ libraryDependencies += "org.vafer" % "jdeb" % "1.10" artifacts (Artifact(
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
 
 // web plugins
-addSbtPlugin("com.typesafe.sbt" % "sbt-coffeescript" % "1.0.2")
+addSbtPlugin("com.github.sbt" % "sbt-coffeescript" % "1.11.0")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-less" % "1.1.2")
+addSbtPlugin("com.github.sbt" % "sbt-less" % "1.5.0")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-jshint" % "1.0.6")
+addSbtPlugin("com.github.sbt" % "sbt-jshint" % "2.0.1")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-rjs" % "1.0.10")
+addSbtPlugin("com.github.sbt" % "sbt-rjs" % "2.0.0")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.1.4")
+addSbtPlugin("com.github.sbt" % "sbt-digest" % "2.0.0")
 
 addSbtPlugin("io.github.irundaia" % "sbt-sassify" % "1.5.2")
