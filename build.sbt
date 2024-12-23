@@ -62,7 +62,7 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-core" % "5.14.2" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3", // scala-steward:off
   // Transient dependency of Play. No newer version of Play with this vulnerability fixed.
-  "ch.qos.logback" % "logback-classic" % "1.5.12"
+  "ch.qos.logback" % "logback-classic" % "1.5.15"
 ) ++ jacksonOverrides
 
 PlayKeys.playDefaultPort := 9101
