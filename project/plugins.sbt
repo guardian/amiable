@@ -8,7 +8,7 @@ libraryDependencies += "org.vafer" % "jdeb" % "1.12" artifacts (Artifact(
   "jar"
 ))
 
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.4")
 
 // web plugins
 addSbtPlugin("com.github.sbt" % "sbt-coffeescript" % "2.0.1")
