@@ -6,7 +6,7 @@ version := "1.0-SNAPSHOT"
 
 enablePlugins(PlayScala, JDebPackaging, SystemdPlugin)
 
-ThisBuild / scalaVersion := "3.3.4"
+ThisBuild / scalaVersion := "3.3.5"
 
 Universal / javaOptions ++= Seq(
   "-Dpidfile.path=/dev/null",
@@ -53,8 +53,8 @@ libraryDependencies ++= Seq(
   ws,
   "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsSdkVersion,
   "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
-  "com.google.code.gson" % "gson" % "2.11.0",
-  "com.gu.play-googleauth" %% "play-v30" % "19.0.1",
+  "com.google.code.gson" % "gson" % "2.12.1",
+  "com.gu.play-googleauth" %% "play-v30" % "20.0.0",
   "org.quartz-scheduler" % "quartz" % "2.5.0",
   "org.playframework" %% "play-json-joda" % "3.0.4",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
