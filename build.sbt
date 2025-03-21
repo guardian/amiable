@@ -54,15 +54,15 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsSdkVersion,
   "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
   "com.google.code.gson" % "gson" % "2.12.1",
-  "com.gu.play-googleauth" %% "play-v30" % "20.3.0",
+  "com.gu.play-googleauth" %% "play-v30" % "21.0.1",
   "org.quartz-scheduler" % "quartz" % "2.5.0",
   "org.playframework" %% "play-json-joda" % "3.0.4",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % Test,
-  "org.mockito" % "mockito-core" % "5.16.0" % Test,
+  "org.mockito" % "mockito-core" % "5.16.1" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3", // scala-steward:off
   // Transient dependency of Play. No newer version of Play with this vulnerability fixed.
-  "ch.qos.logback" % "logback-classic" % "1.5.17"
+  "ch.qos.logback" % "logback-classic" % "1.5.18"
 ) ++ jacksonOverrides
 
 PlayKeys.playDefaultPort := 9101
