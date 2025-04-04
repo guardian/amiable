@@ -27,7 +27,7 @@ jobs:
       # Configuring caching is also recommended.
       # See https://github.com/guardian/actions-setup-node
       - name: Setup Node
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
