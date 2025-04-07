@@ -12,6 +12,6 @@ do
 done
 
 java $DEBUG_PARAMS \
-    -Xms1024M -Xmx2048M -Xss1M -XX:+CMSClassUnloadingEnabled \
+    -Xms1024M -Xmx2048M -Xss1M \
     -Dconfig.file=$HOME/.gu/amiable.local.conf \
     -jar sbt-launch.jar "$@"
