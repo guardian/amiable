@@ -21,7 +21,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuParameterStoreReadPolicy",
       "GuAmiParameter",
       "GuHttpsEgressSecurityGroup",
-      "GuWazuhAccess",
       "GuAutoScalingGroup",
       "GuApplicationLoadBalancer",
       "GuAccessLoggingBucketParameter",
@@ -742,27 +741,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
-    "LoadBalancerAmiableSecurityGrouptoamiableWazuhSecurityGroup9F0B1D5090007F50784A": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "WazuhSecurityGroup",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
-    },
     "ParameterStoreReadAmiable24BF3AAC": {
       "Properties": {
         "PolicyDocument": {
@@ -899,91 +877,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
     },
-    "WazuhSecurityGroup": {
-      "Properties": {
-        "GroupDescription": "Allow outbound traffic from wazuh agent to manager",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Wazuh event logging",
-            "FromPort": 1514,
-            "IpProtocol": "tcp",
-            "ToPort": 1514,
-          },
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Wazuh agent registration",
-            "FromPort": 1515,
-            "IpProtocol": "tcp",
-            "ToPort": 1515,
-          },
-        ],
-        "Tags": [
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
-        "VpcId": {
-          "Ref": "VpcId",
-        },
-      },
-      "Type": "AWS::EC2::SecurityGroup",
-    },
-    "WazuhSecurityGroupfromamiableLoadBalancerAmiableSecurityGroup8E8C95839000B6C591F8": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "WazuhSecurityGroup",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
-    "WazuhSecurityGroupfromamiableldpaccessAmiable1EDD8FAB900057F6702D": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "WazuhSecurityGroup",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
     "deployCODEamiableCD81551B": {
       "DependsOn": [
         "InstanceRoleAmiable56110022",
@@ -1010,12 +903,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             {
               "Fn::GetAtt": [
                 "GuHttpsEgressSecurityGroupAmiable42C3598C",
-                "GroupId",
-              ],
-            },
-            {
-              "Fn::GetAtt": [
-                "WazuhSecurityGroup",
                 "GroupId",
               ],
             },
@@ -1262,27 +1149,6 @@ trap exitTrap EXIT
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
-    "ldpaccessAmiabletoamiableWazuhSecurityGroup9F0B1D5090009AC69FD4": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "WazuhSecurityGroup",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
-    },
   },
 }
 `;
@@ -1308,7 +1174,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuParameterStoreReadPolicy",
       "GuAmiParameter",
       "GuHttpsEgressSecurityGroup",
-      "GuWazuhAccess",
       "GuAutoScalingGroup",
       "GuApplicationLoadBalancer",
       "GuAccessLoggingBucketParameter",
@@ -2151,27 +2016,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
-    "LoadBalancerAmiableSecurityGrouptoAmiablePRODWazuhSecurityGroupC2FDCB8B9000F7466E51": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "WazuhSecurityGroup",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
-    },
     "ParameterStoreReadAmiable24BF3AAC": {
       "Properties": {
         "PolicyDocument": {
@@ -2423,91 +2267,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::CloudWatch::Alarm",
     },
-    "WazuhSecurityGroup": {
-      "Properties": {
-        "GroupDescription": "Allow outbound traffic from wazuh agent to manager",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Wazuh event logging",
-            "FromPort": 1514,
-            "IpProtocol": "tcp",
-            "ToPort": 1514,
-          },
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Wazuh agent registration",
-            "FromPort": 1515,
-            "IpProtocol": "tcp",
-            "ToPort": 1515,
-          },
-        ],
-        "Tags": [
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-        "VpcId": {
-          "Ref": "VpcId",
-        },
-      },
-      "Type": "AWS::EC2::SecurityGroup",
-    },
-    "WazuhSecurityGroupfromAmiablePRODLoadBalancerAmiableSecurityGroup7EE4175D9000F748E226": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "WazuhSecurityGroup",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
-    "WazuhSecurityGroupfromAmiablePRODldpaccessAmiable77AFE83C900058EEED87": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "WazuhSecurityGroup",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
     "deployPRODamiableED398871": {
       "DependsOn": [
         "InstanceRoleAmiable56110022",
@@ -2534,12 +2293,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             {
               "Fn::GetAtt": [
                 "GuHttpsEgressSecurityGroupAmiable42C3598C",
-                "GroupId",
-              ],
-            },
-            {
-              "Fn::GetAtt": [
-                "WazuhSecurityGroup",
                 "GroupId",
               ],
             },
@@ -2771,27 +2524,6 @@ trap exitTrap EXIT
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
             "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
-    },
-    "ldpaccessAmiabletoAmiablePRODWazuhSecurityGroupC2FDCB8B9000025FB59D": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "WazuhSecurityGroup",
             "GroupId",
           ],
         },
