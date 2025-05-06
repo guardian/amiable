@@ -17,12 +17,12 @@
     "synth": "cdk synth --path-metadata false --version-reporting false"
   },
   "devDependencies": {
-    "@guardian/cdk": "61.5.0",
+    "@guardian/cdk": "61.5.1",
     "@guardian/eslint-config-typescript": "^12.0.0",
     "@types/jest": "^29.5.14",
     "@types/node": "22.15.3",
-    "aws-cdk": "2.1005.0",
-    "aws-cdk-lib": "2.185.0",
+    "aws-cdk": "2.1007.0",
+    "aws-cdk-lib": "2.189.0",
     "constructs": "10.4.2",
     "eslint": "^8.57.1",
     "eslint-import-resolver-typescript": "^4.3.4",
@@ -31,7 +31,7 @@
     "prettier": "^3.5.3",
     "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
-    "typescript": "~5.8.3"
+    "typescript": "~5.5.4"
   },
   "dependencies": {
     "source-map-support": "^0.5.16"
