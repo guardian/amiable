@@ -33,7 +33,7 @@ scalacOptions := Seq(
 
 // https://github.com/orgs/playframework/discussions/11222
 // Ensure all Jackson versions used by Amiable are identical. Jackson will throw an error if the versions do not match.
-val jacksonVersion = "2.18.3"
+val jacksonVersion = "2.19.0"
 val jacksonOverrides = Seq(
   "com.fasterxml.jackson.core" % "jackson-core",
   "com.fasterxml.jackson.core" % "jackson-annotations",
@@ -53,7 +53,7 @@ libraryDependencies ++= Seq(
   ws,
   "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsSdkVersion,
   "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
-  "com.google.code.gson" % "gson" % "2.13.0",
+  "com.google.code.gson" % "gson" % "2.13.1",
   "com.gu.play-googleauth" %% "play-v30" % "22.0.0",
   "org.quartz-scheduler" % "quartz" % "2.5.0",
   "org.playframework" %% "play-json-joda" % "3.0.4",
