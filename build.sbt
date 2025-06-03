@@ -65,6 +65,12 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.5.18"
 ) ++ jacksonOverrides
 
+// See https://github.com/guardian/amiable/security/dependabot/35
+excludeDependencies += ExclusionRule(
+  organization = "net.sourceforge.htmlunit",
+  name = "htmlunit"
+)
+
 PlayKeys.playDefaultPort := 9101
 
 Universal / packageName := name.value
