@@ -71,6 +71,7 @@ export class Amiable extends GuStack {
       accessLogging: { enabled: true, prefix: `ELBLogs/${stack}/${app}/${stage}` },
       scaling: { minimumInstances: 1 },
       imageRecipe: "arm64-focal-java11-deploy-infrastructure",
+      instanceMetricGranularity: "5Minute"
     });
 
     // Need to give the ALB outbound access on 443 for the IdP endpoints (to support Google Auth).
