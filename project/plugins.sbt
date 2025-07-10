@@ -1,5 +1,5 @@
 // The Play plugin
-addSbtPlugin("org.playframework" % "sbt-plugin" % "3.0.7")
+addSbtPlugin("org.playframework" % "sbt-plugin" % "3.0.8")
 
 addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.1")
 libraryDependencies += "org.vafer" % "jdeb" % "1.14" artifacts Artifact(
@@ -8,7 +8,7 @@ libraryDependencies += "org.vafer" % "jdeb" % "1.14" artifacts Artifact(
   "jar"
 )
 
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.4")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.5")
 
 // web plugins
 addSbtPlugin("com.github.sbt" % "sbt-coffeescript" % "2.0.1")
