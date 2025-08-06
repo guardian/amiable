@@ -1669,6 +1669,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             "Expression": "100*(m1+m2)/m3",
             "Id": "expr_1",
             "Label": "% of 5XX responses served for amiable (load balancer and instances combined)",
+            "ReturnData": true,
           },
           {
             "Id": "m1",
