@@ -1,7 +1,7 @@
 # Amiable
 Amiable is a web app for monitoring the use of AMIs.
 You can access it here:
-https://amiable.gutools.co.uk
+https://amiable.gutools.co.uk.
 
 
 ## How to run Amiable locally
