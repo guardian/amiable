@@ -1,28 +1,37 @@
 package services.notification
 
-import com.amazonaws.auth.{
-  AWSCredentialsProviderChain,
+import software.amazon.awssdk.auth.credentials.{
+  AwsCredentialsProvider,
+  DefaultCredentialsProvider,
+  ProfileCredentialsProvider,
   InstanceProfileCredentialsProvider
 }
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.simpleemail._
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.ses.SesAsyncClient
 
 object AmazonSimpleEmailServiceAsyncFactory {
 
-  private lazy val provider = new AWSCredentialsProviderChain(
-    new ProfileCredentialsProvider("deployTools"),
-    new InstanceProfileCredentialsProvider(false)
-  )
+  private lazy val provider: AwsCredentialsProvider = {
+    import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain
+    
+    val profileProvider = ProfileCredentialsProvider.builder()
+      .profileName("deployTools")
+      .build()
+    
+    val instanceProvider = InstanceProfileCredentialsProvider.builder()
+      .build()
+    
+    AwsCredentialsProviderChain.builder()
+      .addCredentialsProvider(profileProvider)
+      .addCredentialsProvider(instanceProvider)
+      .build()
+  }
 
-  private val region: Region = Option(Regions.getCurrentRegion).getOrElse(
-    Region.getRegion(Regions.EU_WEST_1)
-  )
+  private val region: Region = Region.EU_WEST_1
 
-  def amazonSimpleEmailServiceAsync: AmazonSimpleEmailServiceAsync =
-    AmazonSimpleEmailServiceAsyncClientBuilder
-      .standard()
-      .withRegion(region.getName)
-      .withCredentials(provider)
+  def amazonSimpleEmailServiceAsync: SesAsyncClient =
+    SesAsyncClient.builder()
+      .region(region)
+      .credentialsProvider(provider)
       .build()
 }

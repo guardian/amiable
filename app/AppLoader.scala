@@ -1,4 +1,4 @@
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync
+import software.amazon.awssdk.services.ses.SesAsyncClient
 import com.gu.googleauth.AuthAction
 import config.AmiableConfigProvider
 import controllers.{AMIable, Healthcheck, Login, routes}
@@ -73,7 +73,7 @@ class AppComponents(context: Context)
     actorSystem
   )
 
-  lazy val amazonMailClient: AmazonSimpleEmailServiceAsync =
+  lazy val amazonMailClient: SesAsyncClient =
     amazonSimpleEmailServiceAsync
 
   lazy val awsMailClient = new AWSMailClient(amazonMailClient)(executionContext)

@@ -1,6 +1,6 @@
 package services.notification
 
-import com.amazonaws.services.simpleemail.model.SendEmailRequest
+import software.amazon.awssdk.services.ses.model.SendEmailRequest
 import config.AMIableConfig
 import models.*
 import org.joda.time.DateTime
@@ -113,7 +113,7 @@ class ScheduledNotificationRunnerTest
       config,
       date
     )
-    req.getDestination.getToAddresses.get(0) should be("admin@guardian.co.uk")
+    req.destination().toAddresses().get(0) should be("admin@guardian.co.uk")
   }
 
   "createEmailRequest should use the date in the subject line" in {
@@ -134,7 +134,7 @@ class ScheduledNotificationRunnerTest
       config,
       date
     )
-    req.getMessage.getSubject.getData should include("2017-06-01")
+    req.message().subject().data() should include("2017-06-01")
   }
 
   "createEmailRequest should use the owner's id in the To address if the override address is not defined" in {
@@ -155,7 +155,7 @@ class ScheduledNotificationRunnerTest
       config,
       date
     )
-    req.getDestination.getToAddresses.get(0) should be(
+    req.destination().toAddresses().get(0) should be(
       "john.doe@guardian.co.uk"
     )
   }
