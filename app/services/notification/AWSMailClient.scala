@@ -1,6 +1,5 @@
 package services.notification
 
-import aws.AwsAsyncHandler.awsToScala
 import software.amazon.awssdk.services.ses.SesAsyncClient
 import software.amazon.awssdk.services.ses.model._
 
@@ -9,6 +8,7 @@ import models._
 import play.api.Logging
 
 import scala.concurrent.ExecutionContext
+import scala.jdk.FutureConverters._
 
 class AWSMailClient @Inject() (amazonMailClient: SesAsyncClient)(
     implicit exec: ExecutionContext
@@ -22,7 +22,7 @@ class AWSMailClient @Inject() (amazonMailClient: SesAsyncClient)(
         .build())
       .build()
 
-    val messageId = awsToScala(amazonMailClient.sendEmail(updatedRequest))
+    val messageId = amazonMailClient.sendEmail(updatedRequest).asScala
       .map(_.messageId())
 
     Attempt.future(messageId) { case e =>

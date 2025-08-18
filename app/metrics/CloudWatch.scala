@@ -1,6 +1,5 @@
 package metrics
 
-import aws.AwsAsyncHandler.awsToScala
 import software.amazon.awssdk.auth.credentials.{
   AwsCredentialsProvider,
   DefaultCredentialsProvider
@@ -17,6 +16,7 @@ import services.OldInstanceAccountHistory
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.FutureConverters._
 
 sealed abstract class CloudWatchMetric(val name: String)
 object CloudWatchMetrics {
@@ -105,12 +105,12 @@ class CloudWatch() extends Logging {
   private def getWithRequest(request: GetMetricStatisticsRequest)(implicit
       executionContext: ExecutionContext
   ): Future[List[(DateTime, Double)]] = {
-    awsToScala(client.getMetricStatistics(request))
+    client.getMetricStatistics(request).asScala
       .map(extractDataFromResult)
   }
 
   private def putWithRequest(request: PutMetricDataRequest) = {
-    awsToScala(client.putMetricData(request))
+    client.putMetricData(request).asScala
   }
 
   def get(namespace: String, metricName: String)(implicit
