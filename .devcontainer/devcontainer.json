@@ -1,0 +1,40 @@
+{
+  "name": "amiable-dev",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/mise:1": {}
+  },
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": true,
+
+  "forwardPorts": [9101],
+  "portsAttributes": {
+    "9101": {
+      "label": "Amiable (sbt)"
+    }
+  },
+
+  "containerEnv": {},
+
+  // Mount host-side claude configuration into the devcontainer
+  "mounts": [
+    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
+  ],
+
+  // Make sure mise is active, tools are installed, ripgrep is present for Claude Code,
+  // and install the Claude Code CLI inside the container (uses Node from mise)
+  "postCreateCommand": [
+    "bash",
+    "-lc",
+    "sudo apt-get update && sudo apt-get install -y ripgrep \u0026\u0026 echo 'eval \"$(mise activate bash)\"' >> ~/.bashrc  \u0026\u0026 source ~/.bashrc \u0026\u0026 mise trust \u0026\u0026 mise settings add idiomatic_version_file_enable_tools node \u0026\u0026 mise install \u0026\u0026 npm i -g @anthropic-ai/claude-code \u0026\u0026 claude --version"
+  ],
+
+  "customizations": {
+    "jetbrains": {
+      "plugins": ["org.intellij.scala", "Mise", "com.anthropic.code.plugin"]
+    },
+    "vscode": {
+      "extensions": ["scala-lang.scala", "hverlin.mise-vscode", "anthropic.claude-code"]
+    }
+  }
+}

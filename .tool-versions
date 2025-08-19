@@ -1,1 +1,3 @@
-java corretto-11.0.25.9.1
+java corretto-11
+sbt
+aws-cli
