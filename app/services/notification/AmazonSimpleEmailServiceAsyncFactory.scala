@@ -13,15 +13,18 @@ object AmazonSimpleEmailServiceAsyncFactory {
 
   private lazy val provider: AwsCredentialsProvider = {
     import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain
-    
-    val profileProvider = ProfileCredentialsProvider.builder()
+
+    val profileProvider = ProfileCredentialsProvider
+      .builder()
       .profileName("deployTools")
       .build()
-    
-    val instanceProvider = InstanceProfileCredentialsProvider.builder()
+
+    val instanceProvider = InstanceProfileCredentialsProvider
+      .builder()
       .build()
-    
-    AwsCredentialsProviderChain.builder()
+
+    AwsCredentialsProviderChain
+      .builder()
       .addCredentialsProvider(profileProvider)
       .addCredentialsProvider(instanceProvider)
       .build()
@@ -30,7 +33,8 @@ object AmazonSimpleEmailServiceAsyncFactory {
   private val region: Region = Region.EU_WEST_1
 
   def amazonSimpleEmailServiceAsync: SesAsyncClient =
-    SesAsyncClient.builder()
+    SesAsyncClient
+      .builder()
       .region(region)
       .credentialsProvider(provider)
       .build()

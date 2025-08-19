@@ -25,9 +25,11 @@ class CloudWatchTest extends AnyFreeSpec with Matchers with OptionValues {
   "extractCountRequestData" - {
     val dateTime = new DateTime(2016, 4, 11, 0, 0)
     val value = 10.0
-    val result = GetMetricStatisticsResponse.builder()
+    val result = GetMetricStatisticsResponse
+      .builder()
       .datapoints(
-        Datapoint.builder()
+        Datapoint
+          .builder()
           .maximum(value)
           .timestamp(dateTime.toDate.toInstant)
           .build()

@@ -109,23 +109,31 @@ object ScheduledNotificationRunner extends Logging {
     val toAddress =
       config.overrideToAddress.getOrElse(s"${owner.id}@guardian.co.uk")
     val todaysDate = DateUtils.yearMonthDay.print(today)
-    val destination = Destination.builder()
+    val destination = Destination
+      .builder()
       .toAddresses(toAddress)
       .build()
-    val emailSubject = Content.builder()
-      .data(s"Instances using out of date AMIs (as of $todaysDate, owned by ${owner.id})")
+    val emailSubject = Content
+      .builder()
+      .data(
+        s"Instances using out of date AMIs (as of $todaysDate, owned by ${owner.id})"
+      )
       .build()
-    val htmlBody = Content.builder()
+    val htmlBody = Content
+      .builder()
       .data(views.html.email(config.amiableUrl, instances, owner).toString())
       .build()
-    val body = Body.builder()
+    val body = Body
+      .builder()
       .html(htmlBody)
       .build()
-    val emailMessage = Message.builder()
+    val emailMessage = Message
+      .builder()
       .subject(emailSubject)
       .body(body)
       .build()
-    val request = SendEmailRequest.builder()
+    val request = SendEmailRequest
+      .builder()
       .source(config.mailAddress)
       .destination(destination)
       .message(emailMessage)
