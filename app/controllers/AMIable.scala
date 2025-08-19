@@ -121,6 +121,10 @@ class AMIable(
     }
   }
 
+  def sendEmailForm: Action[AnyContent] = authAction { implicit request =>
+    Ok(views.html.sendEmailForm())
+  }
+
   def sendEmail: Action[AnyContent] = authAction.async {
     attempt {
       for {
