@@ -35,7 +35,17 @@ mise trust || true
 
 # installing application toolchain with mise
 echo -e "\033[1;34m[setup] Installing developer tools...\033[0m"
-mise install
+MAX_INSTALL_RETRIES=3
+INSTALL_RETRY_COUNT=0
+until mise install; do
+  INSTALL_RETRY_COUNT=$((INSTALL_RETRY_COUNT + 1))
+  if [[ INSTALL_RETRY_COUNT -ge MAX_INSTALL_RETRIES ]]; then
+    echo -e "\033[1;31m[setup] mise install failed after $MAX_INSTALL_RETRIES attempts\033[0m"
+    exit 1
+  fi
+  echo -e "\033[1;31m[setup] mise install failed, retrying (INSTALL_RETRY_COUNT/$MAX_INSTALL_RETRIES)...\033[0m"
+  sleep 2
+done
 
 # ---- install other tools on the container ----
 echo -e "\033[1;34m[setup] Installing global dev tools on the container...\033[0m"
