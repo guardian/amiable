@@ -12,13 +12,18 @@ sudo rm -rf /var/lib/apt/lists/*
 
 # ---- set up mise for this script ----
 echo -e "\033[1;34m[setup] Setting up mise for this script...\033[0m"
-
-export PATH="$HOME/.local/bin:$PATH"
 eval "$(mise activate bash 2>/dev/null || mise hook-env -s bash)"
+echo -e "\033[1;34m[setup] mise activated. Current version:\033[0m"
+mise --version
 
-# installing dev tools with mise
-echo -e "\033[1;34m[setup] Installing developer tools...\033[0m"
-mise install
+# Check if mise is activated by inspecting 'mise current' output
+if mise current | grep -q 'No tools are currently active'; then
+  echo -e "\033[1;31m[setup] WARNING: mise is on PATH but not activated for this shell (no tools active).\033[0m"
+  echo -e "\033[1;31m[setup] Current PATH: $PATH\033[0m"
+  echo -e "\033[1;31m[setup] Current SHELL: $SHELL\033[0m"
+else
+  echo -e "\033[1;32m[setup] mise is activated and tools are available.\033[0m"
+fi
 
 # ---- persist mise setup for future bash sessions ----
 echo -e "\033[1;34m[setup] Persisting mise setup for future bash sessions...\033[0m"
@@ -50,10 +55,14 @@ if ! grep -q 'BASH_VERSION' "$HOME/.profile" 2>/dev/null; then
   } >> "$HOME/.profile"
 fi
 
-# ---- install global dev tools on the container ----
+# ---- install dev tools on the container ----
 echo -e "\033[1;34m[setup] Installing global dev tools on the container...\033[0m"
 
-# (example) Claude Code CLI via Node from mise
+# installing dev tools with mise
+echo -e "\033[1;34m[setup] Installing developer tools...\033[0m"
+mise install
+
+# Make sure Claude Code is available in the container
 npm i -g @anthropic-ai/claude-code
 claude --version || true
 
