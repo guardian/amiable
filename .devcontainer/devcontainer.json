@@ -17,10 +17,11 @@
   "containerEnv": {},
 
   "mounts": [
-    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.gu/amiable,target=/home/vscode/.gu/amiable,type=bind,consistency=cached"
   ],
 
-  "postCreateCommand": "bash -lc 'pwd && git rev-parse --abbrev-ref HEAD && git log -n 5 && ls -la .devcontainer && ./.devcontainer/setup.sh'",
+  "postCreateCommand": "bash -lc '[ -x .devcontainer/bootstrap.sh ] || (echo \".devcontainer/bootstrap.sh missing or not executable\" && exit 1); .devcontainer/bootstrap.sh'",
   "postStartCommand": "bash -lc 'mise doctor || true'",
 
   "customizations": {
