@@ -1,4 +1,4 @@
 java    corretto-11
 node    20
 sbt     latest
-aws-cli latest
+aws     latest
