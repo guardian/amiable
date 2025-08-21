@@ -45,6 +45,7 @@ until mise install; do
   fi
   echo -e "\033[1;31m[setup] mise install failed, retrying (INSTALL_RETRY_COUNT/$MAX_INSTALL_RETRIES)...\033[0m"
   sleep 2
+  mise reshim
 done
 
 # ---- install other tools on the container ----
