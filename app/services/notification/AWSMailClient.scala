@@ -1,14 +1,15 @@
 package services.notification
 
 import software.amazon.awssdk.services.ses.SesAsyncClient
-import software.amazon.awssdk.services.ses.model._
+import software.amazon.awssdk.services.ses.model.*
 
 import javax.inject.Inject
-import models._
+import models.*
 import play.api.Logging
+import utils.Aws
 
 import scala.concurrent.ExecutionContext
-import scala.jdk.FutureConverters._
+import scala.jdk.FutureConverters.*
 
 class AWSMailClient @Inject() (amazonMailClient: SesAsyncClient)(implicit
     exec: ExecutionContext
@@ -16,7 +17,7 @@ class AWSMailClient @Inject() (amazonMailClient: SesAsyncClient)(implicit
 
   def send(toAddress: String, request: SendEmailRequest): Attempt[String] = {
 
-    val updatedRequest = request
+    val requestWithDestination = request
       .toBuilder()
       .destination(
         Destination
@@ -27,7 +28,7 @@ class AWSMailClient @Inject() (amazonMailClient: SesAsyncClient)(implicit
       .build()
 
     val messageId = amazonMailClient
-      .sendEmail(updatedRequest)
+      .sendEmail(requestWithDestination)
       .asScala
       .map(_.messageId())
 
@@ -45,4 +46,12 @@ class AWSMailClient @Inject() (amazonMailClient: SesAsyncClient)(implicit
     }
 
   }
+}
+object AWSMailClient {
+  def amazonMailClient: SesAsyncClient =
+    SesAsyncClient
+      .builder()
+      .region(Aws.region)
+      .credentialsProvider(Aws.credentialsProvider)
+      .build()
 }

@@ -1,17 +1,16 @@
-package services.notification
+package utils
 
 import software.amazon.awssdk.auth.credentials.{
   AwsCredentialsProvider,
-  DefaultCredentialsProvider,
-  ProfileCredentialsProvider,
-  InstanceProfileCredentialsProvider
+  InstanceProfileCredentialsProvider,
+  ProfileCredentialsProvider
 }
 import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.ses.SesAsyncClient
 
-object AmazonSimpleEmailServiceAsyncFactory {
+object Aws {
+  val region: Region = Region.EU_WEST_1
 
-  private lazy val provider: AwsCredentialsProvider = {
+  val credentialsProvider: AwsCredentialsProvider = {
     import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain
 
     val profileProvider = ProfileCredentialsProvider
@@ -29,13 +28,4 @@ object AmazonSimpleEmailServiceAsyncFactory {
       .addCredentialsProvider(instanceProvider)
       .build()
   }
-
-  private val region: Region = Region.EU_WEST_1
-
-  def amazonSimpleEmailServiceAsync: SesAsyncClient =
-    SesAsyncClient
-      .builder()
-      .region(region)
-      .credentialsProvider(provider)
-      .build()
 }

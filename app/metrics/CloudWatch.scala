@@ -6,17 +6,18 @@ import software.amazon.awssdk.auth.credentials.{
 }
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient
-import software.amazon.awssdk.services.cloudwatch.model._
+import software.amazon.awssdk.services.cloudwatch.model.*
 import config.AmiableConfigProvider
 import models.Attempt
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logging
 import play.api.mvc.Handler.Stage
 import services.OldInstanceAccountHistory
+import utils.Aws
 
-import scala.collection.JavaConverters._
+import scala.collection.JavaConverters.*
 import scala.concurrent.{ExecutionContext, Future}
-import scala.jdk.FutureConverters._
+import scala.jdk.FutureConverters.*
 
 sealed abstract class CloudWatchMetric(val name: String)
 object CloudWatchMetrics {
@@ -36,37 +37,12 @@ object CloudWatchMetrics {
 }
 
 class CloudWatch() extends Logging {
-  lazy val client = {
-    import software.amazon.awssdk.auth.credentials.{
-      AwsCredentialsProviderChain,
-      ProfileCredentialsProvider,
-      InstanceProfileCredentialsProvider
-    }
-
-    val profileProvider = ProfileCredentialsProvider
-      .builder()
-      .profileName("deployTools")
-      .build()
-
-    val instanceProvider = InstanceProfileCredentialsProvider
-      .builder()
-      .build()
-
-    val credentialsProvider: AwsCredentialsProvider =
-      AwsCredentialsProviderChain
-        .builder()
-        .addCredentialsProvider(instanceProvider)
-        .addCredentialsProvider(profileProvider)
-        .build()
-
-    val region = Region.EU_WEST_1
-
+  lazy val client =
     CloudWatchAsyncClient
       .builder()
-      .credentialsProvider(credentialsProvider)
-      .region(region)
+      .credentialsProvider(Aws.credentialsProvider)
+      .region(Aws.region)
       .build()
-  }
 
   private[metrics] def putRequest(
       namespace: String,

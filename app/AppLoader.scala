@@ -15,7 +15,6 @@ import services.notification.{
   Notifications,
   ScheduledNotificationRunner
 }
-import services.notification.AmazonSimpleEmailServiceAsyncFactory._
 
 class AppLoader extends play.api.ApplicationLoader {
 
@@ -74,8 +73,7 @@ class AppComponents(context: Context)
   )
 
   lazy val amazonMailClient: SesAsyncClient =
-    amazonSimpleEmailServiceAsync
-
+    AWSMailClient.amazonMailClient
   lazy val awsMailClient = new AWSMailClient(amazonMailClient)(executionContext)
 
   lazy val scheduledNotificationRunner = new ScheduledNotificationRunner(
