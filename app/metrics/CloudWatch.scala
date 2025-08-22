@@ -1,23 +1,23 @@
 package metrics
 
-import aws.AwsAsyncHandler.awsToScala
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{
-  AWSCredentialsProviderChain,
-  InstanceProfileCredentialsProvider
+import software.amazon.awssdk.auth.credentials.{
+  AwsCredentialsProvider,
+  DefaultCredentialsProvider
 }
-import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClientBuilder
-import com.amazonaws.services.cloudwatch.model._
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient
+import software.amazon.awssdk.services.cloudwatch.model.*
 import config.AmiableConfigProvider
 import models.Attempt
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logging
 import play.api.mvc.Handler.Stage
 import services.OldInstanceAccountHistory
+import utils.Aws
 
-import scala.collection.JavaConverters._
+import scala.collection.JavaConverters.*
 import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.FutureConverters.*
 
 sealed abstract class CloudWatchMetric(val name: String)
 object CloudWatchMetrics {
@@ -37,21 +37,12 @@ object CloudWatchMetrics {
 }
 
 class CloudWatch() extends Logging {
-  lazy val client = {
-    val credentialsProvider = new AWSCredentialsProviderChain(
-      InstanceProfileCredentialsProvider.getInstance(),
-      new ProfileCredentialsProvider("deployTools")
-    )
-    val region = Option(Regions.getCurrentRegion).getOrElse(
-      Region.getRegion(Regions.EU_WEST_1)
-    )
-    val acwac = AmazonCloudWatchAsyncClientBuilder
-      .standard()
-      .withCredentials(credentialsProvider)
-      .withRegion(region.getName)
+  lazy val client =
+    CloudWatchAsyncClient
+      .builder()
+      .credentialsProvider(Aws.credentialsProvider)
+      .region(Aws.region)
       .build()
-    acwac
-  }
 
   private[metrics] def putRequest(
       namespace: String,
@@ -59,14 +50,18 @@ class CloudWatch() extends Logging {
       value: Int,
       dimensions: List[Dimension] = List.empty
   ): PutMetricDataRequest = {
-    new PutMetricDataRequest()
-      .withNamespace(namespace)
-      .withMetricData {
-        new MetricDatum()
-          .withMetricName(metricName)
-          .withValue(value.toDouble)
-          .withDimensions(dimensions.asJava)
-      }
+    PutMetricDataRequest
+      .builder()
+      .namespace(namespace)
+      .metricData(
+        MetricDatum
+          .builder()
+          .metricName(metricName)
+          .value(value.toDouble)
+          .dimensions(dimensions.asJava)
+          .build()
+      )
+      .build()
   }
 
   private def getRequest(
@@ -74,21 +69,26 @@ class CloudWatch() extends Logging {
       metricName: String
   ): GetMetricStatisticsRequest = {
     val now = DateTime.now(DateTimeZone.UTC)
-    new GetMetricStatisticsRequest()
-      .withNamespace(namespace)
-      .withMetricName(metricName)
-      .withPeriod(60 * 60 * 24) // 1 day (24 hrs)
-      .withStartTime(now.minusDays(90).toDate)
-      .withEndTime(now.toDate)
-      .withStatistics(Statistic.Maximum)
+    GetMetricStatisticsRequest
+      .builder()
+      .namespace(namespace)
+      .metricName(metricName)
+      .period(60 * 60 * 24) // 1 day (24 hrs)
+      .startTime(now.minusDays(90).toDate.toInstant)
+      .endTime(now.toDate.toInstant)
+      .statistics(Statistic.MAXIMUM)
+      .build()
   }
 
   private[metrics] def extractDataFromResult(
-      result: GetMetricStatisticsResult
+      result: GetMetricStatisticsResponse
   ): List[(DateTime, Double)] = {
-    result.getDatapoints.asScala.toList
+    result
+      .datapoints()
+      .asScala
+      .toList
       .map { dp =>
-        new DateTime(dp.getTimestamp) -> dp.getMaximum.toDouble
+        new DateTime(dp.timestamp().toEpochMilli) -> dp.maximum().doubleValue()
       }
       .sortBy(_._1.getMillis)
   }
@@ -96,12 +96,14 @@ class CloudWatch() extends Logging {
   private def getWithRequest(request: GetMetricStatisticsRequest)(implicit
       executionContext: ExecutionContext
   ): Future[List[(DateTime, Double)]] = {
-    awsToScala(client.getMetricStatisticsAsync)(request)
+    client
+      .getMetricStatistics(request)
+      .asScala
       .map(extractDataFromResult)
   }
 
   private def putWithRequest(request: PutMetricDataRequest) = {
-    awsToScala(client.putMetricDataAsync)(request)
+    client.putMetricData(request).asScala
   }
 
   def get(namespace: String, metricName: String)(implicit
@@ -141,8 +143,12 @@ class CloudWatch() extends Logging {
   ): Unit = {
     oldInstanceAccountHistory.foreach { oldAMICount =>
       val dimensions = List(
-        new Dimension().withName("Account").withValue(oldAMICount.accountName),
-        new Dimension().withName("DataType").withValue("oldami/total")
+        Dimension
+          .builder()
+          .name("Account")
+          .value(oldAMICount.accountName)
+          .build(),
+        Dimension.builder().name("DataType").value("oldami/total").build()
       )
       putWithRequest(
         putRequest(namespace, metricName, oldAMICount.count, dimensions)

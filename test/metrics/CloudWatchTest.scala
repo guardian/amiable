@@ -1,8 +1,8 @@
 package metrics
 
-import com.amazonaws.services.cloudwatch.model.{
+import software.amazon.awssdk.services.cloudwatch.model.{
   Datapoint,
-  GetMetricStatisticsResult
+  GetMetricStatisticsResponse
 }
 import org.joda.time.DateTime
 import org.scalatest.freespec.AnyFreeSpec
@@ -17,20 +17,24 @@ class CloudWatchTest extends AnyFreeSpec with Matchers with OptionValues {
     "sets provided count value" in {
       val metricDataRequest =
         cloudwatch.putRequest("test-namespace", "test-metric", 5)
-      val metricDatum = metricDataRequest.getMetricData.asScala.headOption.value
-      metricDatum.getValue shouldEqual 5
+      val metricDatum = metricDataRequest.metricData().asScala.headOption.value
+      metricDatum.value() shouldEqual 5
     }
   }
 
   "extractCountRequestData" - {
     val dateTime = new DateTime(2016, 4, 11, 0, 0)
     val value = 10.0
-    val result = new GetMetricStatisticsResult()
-      .withDatapoints {
-        new Datapoint()
-          .withMaximum(value)
-          .withTimestamp(dateTime.toDate)
-      }
+    val result = GetMetricStatisticsResponse
+      .builder()
+      .datapoints(
+        Datapoint
+          .builder()
+          .maximum(value)
+          .timestamp(dateTime.toDate.toInstant)
+          .build()
+      )
+      .build()
 
     "extracts date from result" in {
       val (dt, _) = cloudwatch.extractDataFromResult(result).headOption.value

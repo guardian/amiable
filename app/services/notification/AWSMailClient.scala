@@ -1,25 +1,36 @@
 package services.notification
 
-import aws.AwsAsyncHandler.awsToScala
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync
-import com.amazonaws.services.simpleemail.model._
+import software.amazon.awssdk.services.ses.SesAsyncClient
+import software.amazon.awssdk.services.ses.model.*
 
 import javax.inject.Inject
-import models._
+import models.*
 import play.api.Logging
+import utils.Aws
 
 import scala.concurrent.ExecutionContext
+import scala.jdk.FutureConverters.*
 
-class AWSMailClient @Inject() (amazonMailClient: AmazonSimpleEmailServiceAsync)(
-    implicit exec: ExecutionContext
+class AWSMailClient @Inject() (amazonMailClient: SesAsyncClient)(implicit
+    exec: ExecutionContext
 ) extends Logging {
 
   def send(toAddress: String, request: SendEmailRequest): Attempt[String] = {
 
-    val messageId =
-      awsToScala(amazonMailClient.sendEmailAsync)(request).map(_.getMessageId)
+    val requestWithDestination = request
+      .toBuilder()
+      .destination(
+        Destination
+          .builder()
+          .toAddresses(toAddress)
+          .build()
+      )
+      .build()
 
-    request.setDestination(new Destination().withToAddresses(toAddress))
+    val messageId = amazonMailClient
+      .sendEmail(requestWithDestination)
+      .asScala
+      .map(_.messageId())
 
     Attempt.future(messageId) { case e =>
       logger.warn("Failed to send email", e)
@@ -35,4 +46,12 @@ class AWSMailClient @Inject() (amazonMailClient: AmazonSimpleEmailServiceAsync)(
     }
 
   }
+}
+object AWSMailClient {
+  def amazonMailClient: SesAsyncClient =
+    SesAsyncClient
+      .builder()
+      .region(Aws.region)
+      .credentialsProvider(Aws.credentialsProvider)
+      .build()
 }

@@ -45,14 +45,14 @@ val jacksonOverrides = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala"
 ).map(_ % jacksonVersion)
 
-val awsSdkVersion = "1.12.788"
+val awsSdkVersion = "2.29.29"
 
 libraryDependencies ++= Seq(
   jdbc,
   ehcache,
   ws,
-  "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsSdkVersion,
-  "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
+  "software.amazon.awssdk" % "cloudwatch" % awsSdkVersion,
+  "software.amazon.awssdk" % "ses" % awsSdkVersion,
   "com.google.code.gson" % "gson" % "2.13.1",
   "com.gu.play-googleauth" %% "play-v30" % "25.2.1",
   "org.quartz-scheduler" % "quartz" % "2.5.0",

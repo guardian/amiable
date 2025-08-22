@@ -1,6 +1,6 @@
 package services.notification
 
-import com.amazonaws.services.simpleemail.model._
+import software.amazon.awssdk.services.ses.model._
 import config.{AMIableConfig, AmiableConfigProvider}
 import javax.inject.Inject
 import models._
@@ -109,19 +109,35 @@ object ScheduledNotificationRunner extends Logging {
     val toAddress =
       config.overrideToAddress.getOrElse(s"${owner.id}@guardian.co.uk")
     val todaysDate = DateUtils.yearMonthDay.print(today)
-    val destination = new Destination().withToAddresses(toAddress)
-    val emailSubject = new Content().withData(
-      s"Instances using out of date AMIs (as of $todaysDate, owned by ${owner.id})"
-    )
-    val htmlBody = new Content().withData(
-      views.html.email(config.amiableUrl, instances, owner).toString()
-    )
-    val body = new Body().withHtml(htmlBody)
-    val emailMessage = new Message().withSubject(emailSubject).withBody(body)
-    val request = new SendEmailRequest()
-      .withSource(config.mailAddress)
-      .withDestination(destination)
-      .withMessage(emailMessage)
+    val destination = Destination
+      .builder()
+      .toAddresses(toAddress)
+      .build()
+    val emailSubject = Content
+      .builder()
+      .data(
+        s"Instances using out of date AMIs (as of $todaysDate, owned by ${owner.id})"
+      )
+      .build()
+    val htmlBody = Content
+      .builder()
+      .data(views.html.email(config.amiableUrl, instances, owner).toString())
+      .build()
+    val body = Body
+      .builder()
+      .html(htmlBody)
+      .build()
+    val emailMessage = Message
+      .builder()
+      .subject(emailSubject)
+      .body(body)
+      .build()
+    val request = SendEmailRequest
+      .builder()
+      .source(config.mailAddress)
+      .destination(destination)
+      .message(emailMessage)
+      .build()
     request
   }
 
