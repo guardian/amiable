@@ -68,6 +68,7 @@ export class Amiable extends GuStack {
         ],
       },
       applicationLogging: { enabled: true },
+      accessLogging: { enabled: true, prefix: `ELBLogs/${stack}/${app}/${stage}` },
       scaling: { minimumInstances: 1 },
       imageRecipe: "arm64-focal-java11-deploy-infrastructure",
       instanceMetricGranularity: "5Minute"
