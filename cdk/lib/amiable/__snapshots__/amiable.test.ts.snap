@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`The Amiable stack matches the snapshot 1`] = `
 {
@@ -624,7 +624,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           },
           {
             "Key": "access_logs.s3.prefix",
-            "Value": "ELBLogs/deploy/amiable/CODE",
+            "Value": "application-load-balancer/CODE/deploy/amiable",
           },
         ],
         "Scheme": "internet-facing",
@@ -1903,7 +1903,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           },
           {
             "Key": "access_logs.s3.prefix",
-            "Value": "ELBLogs/deploy/amiable/PROD",
+            "Value": "application-load-balancer/PROD/deploy/amiable",
           },
         ],
         "Scheme": "internet-facing",
