@@ -33,17 +33,23 @@ scalacOptions := Seq(
 
 // https://github.com/orgs/playframework/discussions/11222
 // Ensure all Jackson versions used by Amiable are identical. Jackson will throw an error if the versions do not match.
-val jacksonVersion = "2.20"
-val jacksonOverrides = Seq(
-  "com.fasterxml.jackson.core" % "jackson-core",
-  "com.fasterxml.jackson.core" % "jackson-annotations",
-  "com.fasterxml.jackson.core" % "jackson-databind",
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310",
-  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor",
-  "com.fasterxml.jackson.module" % "jackson-module-parameter-names",
-  "com.fasterxml.jackson.module" %% "jackson-module-scala"
-).map(_ % jacksonVersion)
+val jacksonOverrides = {
+  val jacksonVersion = "2.20.0"
+  Seq(
+    "com.fasterxml.jackson.core" % "jackson-core",
+    "com.fasterxml.jackson.core" % "jackson-databind",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310",
+    "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor",
+    "com.fasterxml.jackson.module" % "jackson-module-parameter-names",
+    "com.fasterxml.jackson.module" %% "jackson-module-scala"
+  ).map(_ % jacksonVersion) ++
+    Seq(
+      // Version numbering has diverged
+      // See https://github.com/FasterXML/jackson-annotations/issues/307
+      "com.fasterxml.jackson.core" % "jackson-annotations" % "2.20"
+    )
+}
 
 val awsSdkVersion = "2.32.26"
 
