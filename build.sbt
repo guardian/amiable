@@ -32,18 +32,24 @@ scalacOptions := Seq(
 )
 
 // https://github.com/orgs/playframework/discussions/11222
-// Ensure all Jackson versions used by Amiable are identical. Jackson will throw an error if the versions do not match.
-val jacksonVersion = "2.19.2"
-val jacksonOverrides = Seq(
-  "com.fasterxml.jackson.core" % "jackson-core",
-  "com.fasterxml.jackson.core" % "jackson-annotations",
-  "com.fasterxml.jackson.core" % "jackson-databind",
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310",
-  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor",
-  "com.fasterxml.jackson.module" % "jackson-module-parameter-names",
-  "com.fasterxml.jackson.module" %% "jackson-module-scala"
-).map(_ % jacksonVersion)
+// Ensure all Amiable's Jackson dependencies use the same version for compatibility. Jackson will throw an error if the versions do not match.
+val jacksonOverrides = {
+  val jacksonVersion = "2.20.0"
+  Seq(
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % jacksonVersion,
+    "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % jacksonVersion,
+    "com.fasterxml.jackson.module" % "jackson-module-parameter-names" % jacksonVersion,
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
+
+    // The version numbering of jackson-annotations has diverged
+    // See https://github.com/FasterXML/jackson-annotations/issues/307
+    // and https://github.com/FasterXML/jackson-future-ideas/wiki/JSTEP-1#handling-of-jackson-annotations
+    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.20"
+  )
+}
 
 val awsSdkVersion = "2.32.26"
 
@@ -54,7 +60,7 @@ libraryDependencies ++= Seq(
   "software.amazon.awssdk" % "cloudwatch" % awsSdkVersion,
   "software.amazon.awssdk" % "ses" % awsSdkVersion,
   "com.google.code.gson" % "gson" % "2.13.1",
-  "com.gu.play-googleauth" %% "play-v30" % "25.2.1",
+  "com.gu.play-googleauth" %% "play-v30" % "25.2.2",
   "org.quartz-scheduler" % "quartz" % "2.5.0",
   "org.playframework" %% "play-json-joda" % "3.0.5",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
