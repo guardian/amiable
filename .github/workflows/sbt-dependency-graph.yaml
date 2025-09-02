@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Checkout branch
         id: checkout
-        uses: actions/checkout@cbb722410c2e876e24abbe8de2cc27693e501dcb # v4.2.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       # See https://github.com/guardian/setup-java
       - name: Setup Java and sbt
