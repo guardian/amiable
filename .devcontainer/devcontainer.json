@@ -36,10 +36,10 @@
 
   "customizations": {
     "jetbrains": {
-      "plugins": ["org.intellij.scala", "com.github.l34130.mise", "com.anthropic.code.plugin", "com.github.copilot"]
+      "plugins": ["org.intellij.scala", "com.github.l34130.mise", "com.github.copilot"]
     },
     "vscode": {
-      "extensions": ["scala-lang.scala", "hverlin.mise-vscode", "anthropic.claude-code", "GitHub.copilot"]
+      "extensions": ["scala-lang.scala", "hverlin.mise-vscode", "GitHub.copilot"]
     }
   }
 }
