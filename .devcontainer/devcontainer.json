@@ -17,7 +17,7 @@
   "containerEnv": {},
 
   "mounts": [
-    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,readonly,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.gu/amiable,target=/home/vscode/.gu/amiable,readonly,type=bind,consistency=cached"
   ],
 
