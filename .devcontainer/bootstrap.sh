@@ -30,6 +30,15 @@ mise --version
 
 ## ---- make sure mise can use the checked out project's tools definition ----
 mise trust || true
-mise install
+
+# try mise install twice to handle dependencies between installations
+# In particular, sbt requires Java and will fail in the initial install
+# Once Java is installed (after the first installation) the second will succeed
+# See: https://github.com/mise-plugins/mise-sbt/issues/3
+for i in 1 2; do
+  mise install && break
+  echo "mise install failed, retrying in 2 seconds... (attempt $i)"
+  sleep 2
+done
 
 echo -e "\033[1;32m========== setup: complete ==========\033[0m"
