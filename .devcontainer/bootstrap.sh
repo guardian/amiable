@@ -20,8 +20,9 @@ sudo rm -rf /var/lib/apt/lists/*
 
 ## ---- set up mise-en-place ----
 echo -e "\033[1;34m[setup] Setting up mise for this script...\033[0m"
-# activating with and without shims (not the right approach) for now while we get a prototype working
-eval "$(mise activate bash --shims)"
+# Needed because shims mode doesn't update paths on failed installs
+# This blocks sbt installation via mise when Java is also managed by mise
+eval "$(mise activate bash)"
 
 echo -e "\033[1;34m[setup] Persisting mise setup for future bash sessions...\033[0m"
 
