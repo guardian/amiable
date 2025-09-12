@@ -11,7 +11,6 @@ echo "shell: $SHELL"
 
 # ---- system dependencies ----
 echo -e "\033[1;34m[setup] Installing system dependencies...\033[0m"
-
 export DEBIAN_FRONTEND=noninteractive
 sudo bash -lc 'apt-get update || (sleep 2 && apt-get update)'
 sudo bash -lc 'apt-get install -y --no-install-recommends ca-certificates curl git ripgrep'
@@ -20,15 +19,14 @@ sudo rm -rf /var/lib/apt/lists/*
 
 ## ---- set up mise-en-place ----
 echo -e "\033[1;34m[setup] Setting up mise for this script...\033[0m"
-# Needed because shims mode doesn't update paths on failed installs
-# This blocks sbt installation via mise when Java is also managed by mise
+# Shims mode doesn't update paths on failed installs, and the sbt installation will fail
+# See: https://github.com/mise-plugins/mise-sbt/issues/3
+# Activating without shims means the Java path will get set correctly, so repeated installation will work
+# We don't persist this for future sessions because mise's shims are already on the path
 eval "$(mise activate bash)"
 
-echo -e "\033[1;34m[setup] Persisting mise setup for future bash sessions...\033[0m"
-
-echo -e "\033[1;34m[setup] mise activated. Current version:\033[0m"
+echo -e "\033[1;34m[setup] mise activated.\033[0m"
 mise --version
-
 ## ---- make sure mise can use the checked out project's tools definition ----
 mise trust || true
 
