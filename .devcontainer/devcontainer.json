@@ -1,6 +1,6 @@
 {
   "name": "amiable-dev",
-  "image": "mcr.microsoft.com/devcontainers/base:noble",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "features": {
     "ghcr.io/devcontainers-extra/features/mise:1": {}
   },
@@ -17,8 +17,8 @@
   "containerEnv": {},
 
   "mounts": [
-    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.gu/amiable,target=/home/vscode/.gu/amiable,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,readonly,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.gu/amiable,target=/home/vscode/.gu/amiable,readonly,type=bind,consistency=cached"
   ],
 
   "postCreateCommand": "bash -lc '[ -x .devcontainer/bootstrap.sh ] || (echo \".devcontainer/bootstrap.sh missing or not executable\" && exit 1); .devcontainer/bootstrap.sh'",
