@@ -6,8 +6,8 @@ if [[ "$USER" != "vscode" ]]; then
   exit 1
 fi
 
-echo "$USER"
-echo "$SHELL"
+echo "user: $USER"
+echo "shell: $SHELL"
 
 # ---- system dependencies ----
 echo -e "\033[1;34m[setup] Installing system dependencies...\033[0m"
@@ -21,9 +21,11 @@ sudo rm -rf /var/lib/apt/lists/*
 ## ---- set up mise-en-place ----
 echo -e "\033[1;34m[setup] Setting up mise for this script...\033[0m"
 eval "$(mise activate bash --shims)"
+eval "$(mise activate bash)"
 
 echo -e "\033[1;34m[setup] Persisting mise setup for future bash sessions...\033[0m"
 echo 'eval "$(mise activate bash --shims)"' >> ~vscode/.bashrc
+echo 'eval "$(mise activate bash)"' >> ~vscode/.bashrc
 
 echo -e "\033[1;34m[setup] mise activated. Current version:\033[0m"
 mise --version
