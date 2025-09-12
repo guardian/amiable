@@ -42,4 +42,7 @@ for i in 1 2; do
   sleep 2
 done
 
+echo -e "\033[1;34m[setup] Installs Claude Code:\033[0m"
+npm install -g @anthropic-ai/claude-code
+
 echo -e "\033[1;32m========== setup: complete ==========\033[0m"
