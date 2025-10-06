@@ -68,7 +68,7 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-core" % "5.20.0" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3", // scala-steward:off
   // Transient dependency of Play. No newer version of Play with this vulnerability fixed.
-  "ch.qos.logback" % "logback-classic" % "1.5.18"
+  "ch.qos.logback" % "logback-classic" % "1.5.19"
 ) ++ jacksonOverrides
 
 // See https://github.com/guardian/amiable/security/dependabot/35
