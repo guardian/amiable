@@ -6,7 +6,7 @@ version := "1.0-SNAPSHOT"
 
 enablePlugins(PlayScala, JDebPackaging, SystemdPlugin)
 
-ThisBuild / scalaVersion := "3.3.6"
+ThisBuild / scalaVersion := "3.3.7"
 
 Universal / javaOptions ++= Seq(
   "-Dpidfile.path=/dev/null",
