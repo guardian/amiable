@@ -61,7 +61,7 @@ libraryDependencies ++= Seq(
   "software.amazon.awssdk" % "ses" % awsSdkVersion,
   "com.google.code.gson" % "gson" % "2.13.2",
   "com.gu.play-googleauth" %% "play-v30" % "28.0.0",
-  "org.quartz-scheduler" % "quartz" % "2.5.0",
+  "org.quartz-scheduler" % "quartz" % "2.5.1",
   "org.playframework" %% "play-json-joda" % "3.0.6",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % Test,
