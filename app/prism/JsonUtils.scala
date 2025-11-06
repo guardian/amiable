@@ -15,7 +15,7 @@ object JsonUtils extends Logging {
       errMessage: String
   )(jsResult: JsResult[List[JsValue]]): Attempt[List[JsValue]] = {
     jsResult match {
-      case JsSuccess(ami, _) => Attempt.Right(ami)
+      case JsSuccess(ami, _)   => Attempt.Right(ami)
       case JsError(pathErrors) =>
         Attempt.Left {
           AMIableErrors(pathErrors.flatMap { case (path, errors) =>
@@ -35,7 +35,7 @@ object JsonUtils extends Logging {
   )(jsResult: JsResult[T]): Attempt[T] = {
     jsResult match {
       case JsSuccess(instance, _) => Attempt.Right(instance)
-      case JsError(pathErrors) =>
+      case JsError(pathErrors)    =>
         Attempt.Left {
           AMIableErrors(pathErrors.flatMap { case (path, errors) =>
             errors.map { error =>
