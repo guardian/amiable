@@ -6,7 +6,7 @@ case class Percentiles(values: Seq[Int]) {
   private def percentile(s: Seq[Int], p: Int): Option[Int] = {
     if (p < percentilesRange.min || p > percentilesRange.max) None
     s.sortWith(_ < _) match {
-      case Nil => None
+      case Nil         => None
       case nonEmptySeq =>
         Some(
           nonEmptySeq(
