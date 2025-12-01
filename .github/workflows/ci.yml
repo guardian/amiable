@@ -21,7 +21,7 @@ jobs:
       id-token: write # ...to exchange an OIDC JWT ID token for AWS credentials
       pull-requests: write #...to comment on PRs
     steps:
-      - uses: actions/checkout@v6.0.0
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
 
       # Setup Node, checking common Node config files to determine the version of Node to use.
       # Configuring caching is also recommended.
