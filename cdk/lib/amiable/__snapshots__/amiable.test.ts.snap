@@ -228,6 +228,11 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           "PauseTime": "PT3M",
           "SuspendProcesses": [
             "AlarmNotification",
+            "AZRebalance",
+            "HealthCheck",
+            "InstanceRefresh",
+            "ReplaceUnhealthy",
+            "ScheduledActions",
           ],
           "WaitOnResourceSignals": true,
         },
@@ -1396,6 +1401,11 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           "PauseTime": "PT3M",
           "SuspendProcesses": [
             "AlarmNotification",
+            "AZRebalance",
+            "HealthCheck",
+            "InstanceRefresh",
+            "ReplaceUnhealthy",
+            "ScheduledActions",
           ],
           "WaitOnResourceSignals": true,
         },
