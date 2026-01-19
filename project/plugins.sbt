@@ -1,7 +1,7 @@
 // The Play plugin
 addSbtPlugin("org.playframework" % "sbt-plugin" % "3.0.10")
 
-addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.4")
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.7")
 libraryDependencies += "org.vafer" % "jdeb" % "1.14" artifacts Artifact(
   "jdeb",
   "jar",
