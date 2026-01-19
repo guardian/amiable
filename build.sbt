@@ -47,7 +47,7 @@ val jacksonOverrides = {
     // The version numbering of jackson-annotations has diverged
     // See https://github.com/FasterXML/jackson-annotations/issues/307
     // and https://github.com/FasterXML/jackson-future-ideas/wiki/JSTEP-1#handling-of-jackson-annotations
-    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.20"
+    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.21"
   )
 }
 
