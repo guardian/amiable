@@ -34,7 +34,7 @@ scalacOptions := Seq(
 // https://github.com/orgs/playframework/discussions/11222
 // Ensure all Amiable's Jackson dependencies use the same version for compatibility. Jackson will throw an error if the versions do not match.
 val jacksonOverrides = {
-  val jacksonVersion = "2.20.1"
+  val jacksonVersion = "2.21.0"
   Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
@@ -60,7 +60,7 @@ libraryDependencies ++= Seq(
   "software.amazon.awssdk" % "cloudwatch" % awsSdkVersion,
   "software.amazon.awssdk" % "ses" % awsSdkVersion,
   "com.google.code.gson" % "gson" % "2.13.2",
-  "com.gu.play-googleauth" %% "play-v30" % "32.0.0",
+  "com.gu.play-googleauth" %% "play-v30" % "32.0.1",
   "org.quartz-scheduler" % "quartz" % "2.5.2",
   "org.playframework" %% "play-json-joda" % "3.0.6",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
@@ -68,7 +68,7 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-core" % "5.21.0" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3", // scala-steward:off
   // Transient dependency of Play. No newer version of Play with this vulnerability fixed.
-  "ch.qos.logback" % "logback-classic" % "1.5.24"
+  "ch.qos.logback" % "logback-classic" % "1.5.25"
 ) ++ jacksonOverrides
 
 // See https://github.com/guardian/amiable/security/dependabot/35
