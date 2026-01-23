@@ -14,8 +14,7 @@ Universal / javaOptions ++= Seq(
   "-J-XX:MaxRAMFraction=2",
   "-J-XX:InitialRAMFraction=2",
   "-J-XX:MaxMetaspaceSize=300m",
-  "-J-Xlog:gc*",
-  s"-J-Xloggc:/var/log/${packageName.value}/gc.log"
+  s"-J-Xlog:gc*:file=/var/log/${packageName.value}/gc.log::filecount=5,filesize=10M"
 )
 
 Test / javaOptions += "-Dconfig.file=conf/application.test.conf"
