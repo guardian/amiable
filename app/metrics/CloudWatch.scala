@@ -15,7 +15,7 @@ import play.api.mvc.Handler.Stage
 import services.OldInstanceAccountHistory
 import utils.Aws
 
-import scala.collection.JavaConverters.*
+import scala.jdk.CollectionConverters.*
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.FutureConverters.*
 
