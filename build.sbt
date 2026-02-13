@@ -11,11 +11,10 @@ ThisBuild / scalaVersion := "3.3.7"
 Universal / javaOptions ++= Seq(
   "-Dpidfile.path=/dev/null",
   s"-Dconfig.file=/etc/${name.value}.conf",
-  "-J-XX:MaxRAMFraction=2",
-  "-J-XX:InitialRAMFraction=2",
+  "-J-XX:MaxRAMPercentage=50.0",
+  "-J-XX:InitialRAMPercentage=50.0",
   "-J-XX:MaxMetaspaceSize=300m",
-  "-J-Xlog:gc*",
-  s"-J-Xloggc:/var/log/${packageName.value}/gc.log"
+  s"-J-Xlog:gc*:file=/var/log/${packageName.value}/gc.log:time,level,tags"
 )
 
 Test / javaOptions += "-Dconfig.file=conf/application.test.conf"
@@ -83,4 +82,4 @@ Universal / packageName := name.value
 maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
 packageDescription := "Web app for monitoring the use of AMIs"
-debianPackageDependencies := Seq("java-11-amazon-corretto-jdk:arm64")
+debianPackageDependencies := Seq("java-21-amazon-corretto-jdk:arm64")
