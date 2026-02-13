@@ -69,7 +69,7 @@ export class Amiable extends GuStack {
       },
       applicationLogging: { enabled: true },
       scaling: { minimumInstances: 1 },
-      imageRecipe: "arm64-focal-java11-deploy-infrastructure",
+      imageRecipe: "arm64-noble-java21-deploy-infrastructure",
       instanceMetricGranularity: "5Minute"
     });
 
