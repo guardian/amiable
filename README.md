@@ -14,7 +14,7 @@ This can be achieved by running:
 
  - Setup Amiable configuration.
  A conf file is expected from Amiable.
- The location of that file (as shown in `./sbt`) is: `$HOME/.gu/amiable.local.conf`
+ The location of that file is: `$HOME/.gu/amiable.local.conf`
  That file must contain all the configuration values that exist in `application.conf`
 
  For example the following values must be set:
@@ -27,7 +27,10 @@ This can be achieved by running:
  In order to setup the auth parameters (eg. `serviceAccountCertPath`),
  please consult someone from the Dev Tools team.
 
- - `./sbt run` open your browser at `https://amiable.local.dev-gutools.co.uk`!
+ - `sbt run` open your browser at `https://amiable.local.dev-gutools.co.uk`!
+
+### Debugging
+ To attach a debugger, use sbt's built-in flag: `sbt -jvm-debug 1056 run`. Then connect your IDE's remote debugger to port 1056.
 
 ### Common problems
  - If when running main you can an error "Could not find a suitable constructor..." it's something wrong with your
