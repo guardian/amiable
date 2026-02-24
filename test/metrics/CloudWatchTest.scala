@@ -9,7 +9,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.OptionValues
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class CloudWatchTest extends AnyFreeSpec with Matchers with OptionValues {
   val cloudwatch = new CloudWatch()
