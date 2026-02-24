@@ -19,6 +19,10 @@ Universal / javaOptions ++= Seq(
 
 Test / javaOptions += "-Dconfig.file=conf/application.test.conf"
 
+// For local development: load config from ~/.gu/amiable.local.conf.
+// Uses Runtime scope so Play's dev server picks it up (same pattern as guardian/frontend).
+Runtime / javaOptions += s"-Dconfig.file=${System.getProperty("user.home")}/.gu/amiable.local.conf"
+
 routesGenerator := InjectedRoutesGenerator
 
 scalacOptions := Seq(
