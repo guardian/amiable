@@ -17,11 +17,11 @@
     "synth": "cdk synth --path-metadata false --version-reporting false"
   },
   "devDependencies": {
-    "@guardian/cdk": "62.3.1",
-    "@guardian/eslint-config": "^13.0.3",
+    "@guardian/cdk": "62.3.4",
+    "@guardian/eslint-config": "^13.0.5",
     "@types/jest": "^30.0.0",
-    "@types/node": "25.1.0",
-    "eslint": "^9.39.2",
+    "@types/node": "25.3.0",
+    "eslint": "^10.0.1",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "jest": "^30.2.0",
