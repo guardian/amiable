@@ -17,6 +17,7 @@
     }
   },
   "forwardPorts" : [
+    9101
   ],
   "mounts" : [
     {
