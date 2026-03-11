@@ -34,7 +34,8 @@
       "source" : "devenv-ivy-data-volume",
       "target" : "/home/vscode/.ivy2/cache",
       "type" : "volume"
-    }
+    },
+    "source=${localEnv:HOME}/.gu/amiable,target=/home/vscode/.gu/amiable,readonly,type=bind,consistency=cached"
   ],
   "containerEnv" : {
     "MISE_DATA_DIR" : "/mnt/mise-data",
