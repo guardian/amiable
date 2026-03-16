@@ -14,7 +14,7 @@ This can be achieved by running:
 
  - Setup Amiable configuration.
  A conf file is expected from Amiable.
- The location of that file (as shown in `./sbt`) is: `$HOME/.gu/amiable.local.conf`
+ The location of that file (as shown in `./sbt`) is: `$HOME/.gu/amiable/amiable.local.conf`
  That file must contain all the configuration values that exist in `application.conf`
 
  For example the following values must be set:

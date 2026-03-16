@@ -11,7 +11,13 @@ do
     fi
 done
 
+if [[ ! -f $HOME/.gu/amiable/amiable.local.conf ]]; then
+  echo "$HOME/.gu/amiable/amiable.local.conf not found"
+  echo
+  echo "This file was previously expected at $HOME/.gu/amiable.local.conf"
+fi
+
 java $DEBUG_PARAMS \
     -Xms1024M -Xmx2048M -Xss1M \
-    -Dconfig.file=$HOME/.gu/amiable.local.conf \
+    -Dconfig.file=$HOME/.gu/amiable/amiable.local.conf \
     -jar sbt-launch.jar "$@"

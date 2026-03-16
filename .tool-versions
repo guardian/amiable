@@ -1,1 +1,3 @@
 java corretto-21
+aqua:aws/aws-cli latest
+sbt 1
