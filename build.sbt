@@ -19,6 +19,8 @@ Universal / javaOptions ++= Seq(
 
 Test / javaOptions += "-Dconfig.file=conf/application.test.conf"
 
+PlayKeys.devSettings += "config.file" -> s"${System.getProperty("user.home")}/.gu/amiable.local.conf"
+
 routesGenerator := InjectedRoutesGenerator
 
 scalacOptions := Seq(
