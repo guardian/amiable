@@ -60,7 +60,7 @@ libraryDependencies ++= Seq(
   ws,
   "software.amazon.awssdk" % "cloudwatch" % awsSdkVersion,
   "software.amazon.awssdk" % "ses" % awsSdkVersion,
-  "com.google.code.gson" % "gson" % "2.13.2",
+  "com.google.code.gson" % "gson" % "2.14.0",
   "com.gu.play-googleauth" %% "play-v30" % "36.1.1",
   "org.quartz-scheduler" % "quartz" % "2.5.2",
   "org.playframework" %% "play-json-joda" % "3.0.6",
