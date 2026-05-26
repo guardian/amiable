@@ -52,7 +52,7 @@ val jacksonOverrides = {
   )
 }
 
-val awsSdkVersion = "2.44.7"
+val awsSdkVersion = "2.44.8"
 
 libraryDependencies ++= Seq(
   jdbc,
