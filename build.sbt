@@ -35,7 +35,7 @@ scalacOptions := Seq(
 // https://github.com/orgs/playframework/discussions/11222
 // Ensure all Amiable's Jackson dependencies use the same version for compatibility. Jackson will throw an error if the versions do not match.
 val jacksonOverrides = {
-  val jacksonVersion = "2.21.3"
+  val jacksonVersion = "2.21.4"
   Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
@@ -48,7 +48,7 @@ val jacksonOverrides = {
     // The version numbering of jackson-annotations has diverged
     // See https://github.com/FasterXML/jackson-annotations/issues/307
     // and https://github.com/FasterXML/jackson-future-ideas/wiki/JSTEP-1#handling-of-jackson-annotations
-    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.21"
+    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.22"
   )
 }
 
