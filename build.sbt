@@ -52,7 +52,7 @@ val jacksonOverrides = {
   )
 }
 
-val awsSdkVersion = "2.44.14"
+val awsSdkVersion = "2.46.18"
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -61,7 +61,7 @@ libraryDependencies ++= Seq(
   "software.amazon.awssdk" % "cloudwatch" % awsSdkVersion,
   "software.amazon.awssdk" % "ses" % awsSdkVersion,
   "com.google.code.gson" % "gson" % "2.14.0",
-  "com.gu.play-googleauth" %% "play-v30" % "40.1.1",
+  "com.gu.play-googleauth" %% "play-v30" % "41.0.0",
   "org.quartz-scheduler" % "quartz" % "2.5.2",
   "org.playframework" %% "play-json-joda" % "3.0.6",
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
@@ -69,7 +69,7 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-core" % "5.23.0" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3", // scala-steward:off
   // Transient dependency of Play. No newer version of Play with this vulnerability fixed.
-  "ch.qos.logback" % "logback-classic" % "1.5.34"
+  "ch.qos.logback" % "logback-classic" % "1.5.35"
 ) ++ jacksonOverrides
 
 // See https://github.com/guardian/amiable/security/dependabot/35
