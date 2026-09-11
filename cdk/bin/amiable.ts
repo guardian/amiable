@@ -5,7 +5,12 @@ import { Amiable } from "../lib/amiable/amiable";
 
 const app = new GuRoot();
 
-const commonProps = { migratedFromCloudFormation: true, stack: "deploy", env: { region: "eu-west-1" } };
+const commonProps = {
+  migratedFromCloudFormation: true,
+  stack: "deploy",
+  app: "amiable",
+  env: { region: "eu-west-1" }
+};
 
 export const codeProps = {
   ...commonProps,
