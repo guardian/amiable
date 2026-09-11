@@ -10,4 +10,4 @@ docker \
   -e STAGE=CODE \
   -e APP=amiable \
   -v "$HOME/.aws:/root/.aws:ro" \
-  amiable:local
+  amiable:1.0-SNAPSHOT

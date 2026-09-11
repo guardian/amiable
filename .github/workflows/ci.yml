@@ -45,9 +45,6 @@ jobs:
       - name: Run script/ci
         run: ./script/ci
 
-      - name: Build image
-        run: docker buildx build --platform linux/arm64 -f Production.dockerfile -t ${{ github.repository }}:latest .
-
       - name: Upload to riff-raff
         uses: guardian/actions-riff-raff@v4.3.3
         with:
