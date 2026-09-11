@@ -8,7 +8,7 @@ set -e
 )
 
 
-sbt clean scalafmtCheckAll compile test debian:packageBin
+sbt clean scalafmtCheckAll compile test stage debian:packageBin
 
 mkdir -p dist
 mv target/*.deb "dist/amiable-${BUILD_NUMBER}.deb"

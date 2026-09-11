@@ -4,12 +4,12 @@ import { GuDistributionBucketParameter, GuStack, GuStringParameter } from "@guar
 import { GuCname } from "@guardian/cdk/lib/constructs/dns";
 import { GuHttpsEgressSecurityGroup } from "@guardian/cdk/lib/constructs/ec2";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
-import { GuEc2AppExperimental } from "@guardian/cdk/lib/experimental/patterns/ec2-app";
 import type { App } from "aws-cdk-lib";
 import { Duration, SecretValue } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, UserData } from "aws-cdk-lib/aws-ec2";
 import { ListenerAction, UnauthenticatedAction } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
+import {GuLoadBalancedAppExperimental} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
 
 interface AmiableProps extends GuStackProps {
   domainName: string;
@@ -38,12 +38,9 @@ export class Amiable extends GuStack {
 
           dpkg -i /amiable/amiable.deb`);
 
-    const ec2App = new GuEc2AppExperimental(this, {
+    const ec2App = new GuLoadBalancedAppExperimental(this, {
       applicationPort: 9000,
-      buildIdentifier: buildNumber,
       app,
-      instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.SMALL),
-      userData,
       certificateProps: {
         domainName,
       },
@@ -58,19 +55,43 @@ export class Amiable extends GuStack {
           }
         : { noMonitoring: true },
       access: { scope: AccessScope.PUBLIC },
-      roleConfiguration: {
-        additionalPolicies: [
-          new GuSESSenderPolicy(this, { sendingAddress: "dig.dev.tooling@theguardian.com" }),
-          new GuAllowPolicy(this, "CloudwatchPolicy", {
-            actions: ["cloudwatch:*"],
-            resources: ["*"],
-          }),
+      ec2Props: {
+        applicationLogging: { enabled: true },
+        imageRecipe: "arm64-jammy-java21-deploy-infrastructure",
+        versionedDeployments: {
+          enabled: true,
+          buildIdentifier: buildNumber
+        },
+        userData,
+        instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.SMALL),
+        scaling: { minimumInstances: 1 },
+        instanceMetricGranularity: "5Minute"
+      },
+      ecsProps: {
+        imageIdentifier: "",
+        cpu: 1,
+        memoryLimitMiB: 1024,
+        scaling: {
+          minimumTasks: 1,
+          maximumTasks: 1
+        },
+        s3FilesMounts: [
+          {
+            containerPath: "/amiable",
+            fileSystemArn: `arn:aws:s3:::${distBucket}`,
+            rootDirectory: `/${stack}/${stage}/${app}/conf/`,
+          },
+          {
+            containerPath: "/etc",
+            fileSystemArn: `arn:aws:s3:::${distBucket}`,
+            rootDirectory: `/${stack}/${stage}/${app}/conf/`,
+          },
         ],
       },
-      applicationLogging: { enabled: true },
-      scaling: { minimumInstances: 1 },
-      imageRecipe: "arm64-jammy-java21-deploy-infrastructure",
-      instanceMetricGranularity: "5Minute"
+      targetGroupWeights: {
+        ecs: 1,
+        ec2: 1
+      }
     });
 
     // Need to give the ALB outbound access on 443 for the IdP endpoints (to support Google Auth).
@@ -91,24 +112,24 @@ export class Amiable extends GuStack {
       dataType: ParameterDataType.TEXT,
     });
 
-    const clientId = new GuStringParameter(this, "ClientId", {
-      description: "Google OAuth client ID",
-    });
+    // const clientId = new GuStringParameter(this, "ClientId", {
+    //   description: "Google OAuth client ID",
+    // });
 
-    ec2App.listener.addAction("DefaultAction", {
-      action: ListenerAction.authenticateOidc({
-        authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
-        issuer: "https://accounts.google.com",
-        scope: "openid",
-        authenticationRequestExtraParams: { hd: "guardian.co.uk" },
-        onUnauthenticatedRequest: UnauthenticatedAction.AUTHENTICATE,
-        tokenEndpoint: "https://oauth2.googleapis.com/token",
-        userInfoEndpoint: "https://openidconnect.googleapis.com/v1/userinfo",
-        clientId: clientId.valueAsString,
-        clientSecret: SecretValue.secretsManager(`/${this.stage}/deploy/amiable/client-secret`),
-        next: ListenerAction.forward([ec2App.targetGroup]),
-      }),
-    });
+    // ec2App.listener.addAction("DefaultAction", {
+    //   action: ListenerAction.authenticateOidc({
+    //     authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
+    //     issuer: "https://accounts.google.com",
+    //     scope: "openid",
+    //     authenticationRequestExtraParams: { hd: "guardian.co.uk" },
+    //     onUnauthenticatedRequest: UnauthenticatedAction.AUTHENTICATE,
+    //     tokenEndpoint: "https://oauth2.googleapis.com/token",
+    //     userInfoEndpoint: "https://openidconnect.googleapis.com/v1/userinfo",
+    //     clientId: clientId.valueAsString,
+    //     clientSecret: SecretValue.secretsManager(`/${this.stage}/deploy/amiable/client-secret`),
+    //     next: ListenerAction.forward([ec2App.targetGroup]),
+    //   }),
+    // });
 
     new GuCname(this, "DnsRecord", {
       app,
