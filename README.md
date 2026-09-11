@@ -9,7 +9,7 @@ Amiable uses Google Auth. For this reason, we need to run Amiable through an ngi
 This can be achieved by running:
 
 ```shell script
-./script/setup
+./script/setup-host
 ```
 
  - Setup Amiable configuration.
