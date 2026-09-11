@@ -38,7 +38,7 @@ This can be achieved by running:
 
 
 ## CI/CD
-CI is configured in TeamCity. It will execute [`./script/ci`](./script/ci).
+CI is configured in [a GitHub workflow](.github/workflows/ci.yml). It will execute [`./script/ci`](./script/ci).
 
 CD is configured in RiffRaff. The project name is [`tools::amiable`](https://riffraff.gutools.co.uk/deployment/history?projectName=tools%3A%3Aamiable&page=1).
 
