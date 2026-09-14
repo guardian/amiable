@@ -3,11 +3,8 @@ import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
 import { GuDistributionBucketParameter, GuStack, GuStringParameter } from "@guardian/cdk/lib/constructs/core";
 import { GuCname } from "@guardian/cdk/lib/constructs/dns";
 import { GuHttpsEgressSecurityGroup } from "@guardian/cdk/lib/constructs/ec2";
-import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
-import type { App } from "aws-cdk-lib";
-import { Duration, SecretValue } from "aws-cdk-lib";
+import {App, Duration, SecretValue} from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, UserData } from "aws-cdk-lib/aws-ec2";
-import { ListenerAction, UnauthenticatedAction } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
 import {GuLoadBalancedAppExperimental} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
 
@@ -69,7 +66,7 @@ export class Amiable extends GuStack {
       },
       ecsProps: {
         imageIdentifier: "",
-        cpu: 1,
+        cpu: 256,
         memoryLimitMiB: 1024,
         scaling: {
           minimumTasks: 1,
@@ -77,19 +74,13 @@ export class Amiable extends GuStack {
         },
         s3FilesMounts: [
           {
-            containerPath: "/amiable",
-            fileSystemArn: `arn:aws:s3:::${distBucket}`,
-            rootDirectory: `/${stack}/${stage}/${app}/conf/`,
-          },
-          {
-            containerPath: "/etc",
-            fileSystemArn: `arn:aws:s3:::${distBucket}`,
-            rootDirectory: `/${stack}/${stage}/${app}/conf/`,
-          },
+            containerPath: "/opt/amiable",
+            subPath: `/conf/`,
+          }
         ],
       },
       targetGroupWeights: {
-        ecs: 1,
+        ecs: 0,
         ec2: 1
       }
     });

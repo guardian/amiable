@@ -57,6 +57,18 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Default": "/organisation/accounts/artifacts",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
+    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125ArtifactHash4C4494A5": {
+      "Description": "Artifact hash for asset "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
+      "Type": "String",
+    },
+    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2": {
+      "Description": "S3 bucket for asset "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
+      "Type": "String",
+    },
+    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166": {
+      "Description": "S3 key for asset version "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
+      "Type": "String",
+    },
     "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
       "Description": "SSM parameter containing the S3 bucket name holding distribution artifacts",
@@ -88,6 +100,128 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     },
   },
   "Resources": {
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2",
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166",
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs24.x",
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+        "Timeout": 120,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "AlbSsmParam485C1D52": {
       "Properties": {
         "DataType": "text",
@@ -567,14 +701,9 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             },
             "MountPoints": [
               {
-                "ContainerPath": "/amiable",
+                "ContainerPath": "/opt/amiable",
                 "ReadOnly": true,
                 "SourceVolume": "s3files-volume-0",
-              },
-              {
-                "ContainerPath": "/etc",
-                "ReadOnly": true,
-                "SourceVolume": "s3files-volume-1",
               },
             ],
             "Name": "amiable",
@@ -637,7 +766,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             "VersionConsistency": "disabled",
           },
         ],
-        "Cpu": "1",
+        "Cpu": "256",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "EcsTaskDefinitionExecutionRoleBE450C73",
@@ -690,34 +819,12 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             "Name": "s3files-volume-0",
             "S3FilesVolumeConfiguration": {
               "FileSystemArn": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                  ],
+                "Fn::GetAtt": [
+                  "S3FilesFileSystem0",
+                  "FileSystemArn",
                 ],
               },
-              "RootDirectory": "/deploy/CODE/amiable/conf/",
-            },
-          },
-          {
-            "Name": "s3files-volume-1",
-            "S3FilesVolumeConfiguration": {
-              "FileSystemArn": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                  ],
-                ],
-              },
-              "RootDirectory": "/deploy/CODE/amiable/conf/",
+              "RootDirectory": "/conf/",
             },
           },
         ],
@@ -912,14 +1019,9 @@ exports[`The Amiable stack matches the snapshot 1`] = `
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                  ],
+                "Fn::GetAtt": [
+                  "S3FilesFileSystem0",
+                  "FileSystemArn",
                 ],
               },
             },
@@ -1235,7 +1337,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                   "TargetGroupArn": {
                     "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
                   },
-                  "Weight": 1,
+                  "Weight": 0,
                 },
               ],
             },
@@ -1578,6 +1680,79 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           },
           {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "S3FilesFileSystem0": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "DistributionBucketName",
+        },
+        "Prefix": "deploy/CODE/amiable/",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "S3FilesLinkedRoleArn031752A94",
+            "Role.Arn",
+          ],
+        },
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+      },
+      "Type": "AWS::S3Files::FileSystem",
+    },
+    "S3FilesLinkedRoleArn031752A94": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4",
+      ],
+      "Properties": {
+        "Create": "{"service":"IAM","action":"getRole","parameters":{"RoleName":"AWSServiceRoleForAmazonS3Vectors"},"physicalResourceId":{"id":"s3files-linked-role-0"}}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": "{"service":"IAM","action":"getRole","parameters":{"RoleName":"AWSServiceRoleForAmazonS3Vectors"},"physicalResourceId":{"id":"s3files-linked-role-0"}}",
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iam:GetRole",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
           },
         ],
       },
@@ -2065,6 +2240,18 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Default": "/organisation/accounts/artifacts",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
+    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125ArtifactHash4C4494A5": {
+      "Description": "Artifact hash for asset "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
+      "Type": "String",
+    },
+    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2": {
+      "Description": "S3 bucket for asset "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
+      "Type": "String",
+    },
+    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166": {
+      "Description": "S3 key for asset version "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
+      "Type": "String",
+    },
     "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
       "Description": "SSM parameter containing the S3 bucket name holding distribution artifacts",
@@ -2096,6 +2283,128 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     },
   },
   "Resources": {
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2",
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166",
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs24.x",
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+        "Timeout": 120,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "AlbSsmParam485C1D52": {
       "Properties": {
         "DataType": "text",
@@ -2575,14 +2884,9 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             },
             "MountPoints": [
               {
-                "ContainerPath": "/amiable",
+                "ContainerPath": "/opt/amiable",
                 "ReadOnly": true,
                 "SourceVolume": "s3files-volume-0",
-              },
-              {
-                "ContainerPath": "/etc",
-                "ReadOnly": true,
-                "SourceVolume": "s3files-volume-1",
               },
             ],
             "Name": "amiable",
@@ -2645,7 +2949,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             "VersionConsistency": "disabled",
           },
         ],
-        "Cpu": "1",
+        "Cpu": "256",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "EcsTaskDefinitionExecutionRoleBE450C73",
@@ -2698,34 +3002,12 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             "Name": "s3files-volume-0",
             "S3FilesVolumeConfiguration": {
               "FileSystemArn": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                  ],
+                "Fn::GetAtt": [
+                  "S3FilesFileSystem0",
+                  "FileSystemArn",
                 ],
               },
-              "RootDirectory": "/deploy/PROD/amiable/conf/",
-            },
-          },
-          {
-            "Name": "s3files-volume-1",
-            "S3FilesVolumeConfiguration": {
-              "FileSystemArn": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                  ],
-                ],
-              },
-              "RootDirectory": "/deploy/PROD/amiable/conf/",
+              "RootDirectory": "/conf/",
             },
           },
         ],
@@ -2920,14 +3202,9 @@ exports[`The Amiable stack matches the snapshot 2`] = `
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                  ],
+                "Fn::GetAtt": [
+                  "S3FilesFileSystem0",
+                  "FileSystemArn",
                 ],
               },
             },
@@ -3364,7 +3641,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                   "TargetGroupArn": {
                     "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
                   },
-                  "Weight": 1,
+                  "Weight": 0,
                 },
               ],
             },
@@ -3707,6 +3984,79 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           },
           {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "S3FilesFileSystem0": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "DistributionBucketName",
+        },
+        "Prefix": "deploy/PROD/amiable/",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "S3FilesLinkedRoleArn031752A94",
+            "Role.Arn",
+          ],
+        },
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+      },
+      "Type": "AWS::S3Files::FileSystem",
+    },
+    "S3FilesLinkedRoleArn031752A94": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4",
+      ],
+      "Properties": {
+        "Create": "{"service":"IAM","action":"getRole","parameters":{"RoleName":"AWSServiceRoleForAmazonS3Vectors"},"physicalResourceId":{"id":"s3files-linked-role-0"}}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": "{"service":"IAM","action":"getRole","parameters":{"RoleName":"AWSServiceRoleForAmazonS3Vectors"},"physicalResourceId":{"id":"s3files-linked-role-0"}}",
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iam:GetRole",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
           },
         ],
       },
