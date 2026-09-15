@@ -5,16 +5,18 @@ https://amiable.gutools.co.uk
 
 
 ## How to run Amiable locally
+### Local setup
+
 Amiable uses Google Auth. For this reason, we need to run Amiable through an nginx proxy `amiable.local.dev-gutools.co.uk`.
 This can be achieved by running:
 
 ```shell script
-./script/setup
+./script/setup-host
 ```
 
  - Setup Amiable configuration.
  A conf file is expected from Amiable.
- The location of that file is: `$HOME/.gu/amiable.local.conf`
+ The location of that file is: `$HOME/.gu/amiable/amiable.local.conf`
  That file must contain all the configuration values that exist in `application.conf`
 
  For example the following values must be set:
@@ -28,6 +30,17 @@ This can be achieved by running:
  please consult someone from the Dev Tools team.
 
  - `sbt run` open your browser at `https://amiable.local.dev-gutools.co.uk`!
+
+> [!Note]
+> #### Prism network access
+
+Amiable requires access to Prism for its core functionality. It retrieves instance, AMI,
+account, launch configuration and ownership data from Prism. The server can start without
+a working Prism connection but the dashboard and other data-dependent pages will not work.
+
+The environment running `sbt` must be able to reach the configured `PRISM_URL` across the
+network. Ensure any required
+VPN or private-network access is active.
 
 ### Debugging
  To attach a debugger, use sbt's built-in flag: `sbt -jvm-debug 1056 run`. Then connect your IDE's remote debugger to port 1056.
