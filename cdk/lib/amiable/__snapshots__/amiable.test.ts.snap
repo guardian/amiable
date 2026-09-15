@@ -57,18 +57,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Default": "/organisation/accounts/artifacts",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125ArtifactHash4C4494A5": {
-      "Description": "Artifact hash for asset "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
-      "Type": "String",
-    },
-    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2": {
-      "Description": "S3 bucket for asset "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
-      "Type": "String",
-    },
-    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166": {
-      "Description": "S3 key for asset version "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
-      "Type": "String",
-    },
     "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
       "Description": "SSM parameter containing the S3 bucket name holding distribution artifacts",
@@ -100,134 +88,13 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     },
   },
   "Resources": {
-    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
-      "DependsOn": [
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2",
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166",
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166",
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            ],
-          },
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs24.x",
-        "Tags": [
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
-        "Timeout": 120,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-        "Tags": [
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
     "AlbSsmParam485C1D52": {
       "Properties": {
         "DataType": "text",
         "Description": "The arn of the ALB for amiable-CODE. N.B. this parameter is created via cdk",
         "Name": "/infosec/waf/services/CODE/amiable-alb-arn",
         "Tags": {
+          "App": "amiable",
           "Stack": "deploy",
           "Stage": "CODE",
           "gu:cdk:version": "TEST",
@@ -701,7 +568,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             },
             "MountPoints": [
               {
-                "ContainerPath": "/opt/amiable",
+                "ContainerPath": "/etc/gu/amiable",
                 "ReadOnly": true,
                 "SourceVolume": "s3files-volume-0",
               },
@@ -824,7 +691,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                   "FileSystemArn",
                 ],
               },
-              "RootDirectory": "/conf/",
+              "RootDirectory": "/",
             },
           },
         ],
@@ -1688,16 +1555,32 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     "S3FilesFileSystem0": {
       "Properties": {
         "Bucket": {
-          "Ref": "DistributionBucketName",
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":s3:::",
+              {
+                "Ref": "DistributionBucketName",
+              },
+            ],
+          ],
         },
-        "Prefix": "deploy/CODE/amiable/",
+        "Prefix": "deploy/CODE/amiable/conf/",
         "RoleArn": {
           "Fn::GetAtt": [
-            "S3FilesLinkedRoleArn031752A94",
-            "Role.Arn",
+            "S3FilesRole08CBD8D9F",
+            "Arn",
           ],
         },
         "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
           {
             "Key": "gu:cdk:version",
             "Value": "TEST",
@@ -1718,45 +1601,45 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::S3Files::FileSystem",
     },
-    "S3FilesLinkedRoleArn031752A94": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4",
-      ],
+    "S3FilesRole08CBD8D9F": {
       "Properties": {
-        "Create": "{"service":"IAM","action":"getRole","parameters":{"RoleName":"AWSServiceRoleForAmazonS3Vectors"},"physicalResourceId":{"id":"s3files-linked-role-0"}}",
-        "InstallLatestAwsSdk": true,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-            "Arn",
-          ],
-        },
-        "Update": "{"service":"IAM","action":"getRole","parameters":{"RoleName":"AWSServiceRoleForAmazonS3Vectors"},"physicalResourceId":{"id":"s3files-linked-role-0"}}",
-      },
-      "Type": "Custom::AWS",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4": {
-      "Properties": {
-        "PolicyDocument": {
+        "AssumeRolePolicyDocument": {
           "Statement": [
             {
-              "Action": "iam:GetRole",
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": "*",
+              "Principal": {
+                "Service": "s3files.amazonaws.com",
+              },
             },
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4",
-        "Roles": [
+        "Description": "Role used by the S3 Files filesystem for amiable mount 0",
+        "Tags": [
           {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
           },
         ],
       },
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::IAM::Role",
     },
     "SsmSshPolicy4CFC977E": {
       "Properties": {
@@ -2240,18 +2123,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Default": "/organisation/accounts/artifacts",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125ArtifactHash4C4494A5": {
-      "Description": "Artifact hash for asset "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
-      "Type": "String",
-    },
-    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2": {
-      "Description": "S3 bucket for asset "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
-      "Type": "String",
-    },
-    "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166": {
-      "Description": "S3 key for asset version "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125"",
-      "Type": "String",
-    },
     "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
       "Description": "SSM parameter containing the S3 bucket name holding distribution artifacts",
@@ -2283,134 +2154,13 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     },
   },
   "Resources": {
-    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
-      "DependsOn": [
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2",
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166",
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166",
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            ],
-          },
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs24.x",
-        "Tags": [
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-        "Timeout": 120,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-        "Tags": [
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
     "AlbSsmParam485C1D52": {
       "Properties": {
         "DataType": "text",
         "Description": "The arn of the ALB for amiable-PROD. N.B. this parameter is created via cdk",
         "Name": "/infosec/waf/services/PROD/amiable-alb-arn",
         "Tags": {
+          "App": "amiable",
           "Stack": "deploy",
           "Stage": "PROD",
           "gu:cdk:version": "TEST",
@@ -2884,7 +2634,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             },
             "MountPoints": [
               {
-                "ContainerPath": "/opt/amiable",
+                "ContainerPath": "/etc/gu/amiable",
                 "ReadOnly": true,
                 "SourceVolume": "s3files-volume-0",
               },
@@ -3007,7 +2757,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                   "FileSystemArn",
                 ],
               },
-              "RootDirectory": "/conf/",
+              "RootDirectory": "/",
             },
           },
         ],
@@ -3557,6 +3307,10 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         ],
         "Tags": [
           {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
             "Key": "gu:cdk:version",
             "Value": "TEST",
           },
@@ -3992,16 +3746,32 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     "S3FilesFileSystem0": {
       "Properties": {
         "Bucket": {
-          "Ref": "DistributionBucketName",
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":s3:::",
+              {
+                "Ref": "DistributionBucketName",
+              },
+            ],
+          ],
         },
-        "Prefix": "deploy/PROD/amiable/",
+        "Prefix": "deploy/PROD/amiable/conf/",
         "RoleArn": {
           "Fn::GetAtt": [
-            "S3FilesLinkedRoleArn031752A94",
-            "Role.Arn",
+            "S3FilesRole08CBD8D9F",
+            "Arn",
           ],
         },
         "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
           {
             "Key": "gu:cdk:version",
             "Value": "TEST",
@@ -4022,45 +3792,45 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::S3Files::FileSystem",
     },
-    "S3FilesLinkedRoleArn031752A94": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4",
-      ],
+    "S3FilesRole08CBD8D9F": {
       "Properties": {
-        "Create": "{"service":"IAM","action":"getRole","parameters":{"RoleName":"AWSServiceRoleForAmazonS3Vectors"},"physicalResourceId":{"id":"s3files-linked-role-0"}}",
-        "InstallLatestAwsSdk": true,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-            "Arn",
-          ],
-        },
-        "Update": "{"service":"IAM","action":"getRole","parameters":{"RoleName":"AWSServiceRoleForAmazonS3Vectors"},"physicalResourceId":{"id":"s3files-linked-role-0"}}",
-      },
-      "Type": "Custom::AWS",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4": {
-      "Properties": {
-        "PolicyDocument": {
+        "AssumeRolePolicyDocument": {
           "Statement": [
             {
-              "Action": "iam:GetRole",
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": "*",
+              "Principal": {
+                "Service": "s3files.amazonaws.com",
+              },
             },
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "S3FilesLinkedRoleArn0CustomResourcePolicyE39647E4",
-        "Roles": [
+        "Description": "Role used by the S3 Files filesystem for amiable mount 0",
+        "Tags": [
           {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
           },
         ],
       },
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::IAM::Role",
     },
     "SsmSshPolicy4CFC977E": {
       "Properties": {
@@ -4240,6 +4010,10 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "Period": 60,
         "Statistic": "Maximum",
         "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
           {
             "Key": "gu:cdk:version",
             "Value": "TEST",

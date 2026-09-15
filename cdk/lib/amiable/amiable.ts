@@ -6,24 +6,25 @@ import { GuHttpsEgressSecurityGroup } from "@guardian/cdk/lib/constructs/ec2";
 import {App, Duration, SecretValue} from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, UserData } from "aws-cdk-lib/aws-ec2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
-import {GuLoadBalancedAppExperimental} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
+import {
+  getDefaultS3ConfigMount,
+  GuLoadBalancedAppExperimental
+} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
+import {getDefaultSettings} from "node:http2";
 
 interface AmiableProps extends GuStackProps {
   domainName: string;
+  app: string;
 }
 
 export class Amiable extends GuStack {
   constructor(scope: App, id: string, props: AmiableProps) {
     super(scope, id, props);
 
-    const app = "amiable";
     const { stack, stage } = this;
+    const { app, domainName } = props;
     const isProd = stage === "PROD";
-
-    const { domainName } = props;
-
     const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
-
     const buildNumber = process.env.BUILD_NUMBER ?? "DEV";
 
     const userData = UserData.forLinux();
@@ -72,12 +73,7 @@ export class Amiable extends GuStack {
           minimumTasks: 1,
           maximumTasks: 1
         },
-        s3FilesMounts: [
-          {
-            containerPath: "/opt/amiable",
-            subPath: `/conf/`,
-          }
-        ],
+        s3Config: getDefaultS3ConfigMount(this),
       },
       targetGroupWeights: {
         ecs: 0,
