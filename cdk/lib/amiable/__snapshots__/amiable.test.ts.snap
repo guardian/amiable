@@ -568,7 +568,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             },
             "MountPoints": [
               {
-                "ContainerPath": "/etc/gu/amiable",
+                "ContainerPath": "/etc/amiable",
                 "ReadOnly": true,
                 "SourceVolume": "s3files-volume-0",
               },
@@ -2634,7 +2634,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             },
             "MountPoints": [
               {
-                "ContainerPath": "/etc/gu/amiable",
+                "ContainerPath": "/etc/amiable",
                 "ReadOnly": true,
                 "SourceVolume": "s3files-volume-0",
               },
