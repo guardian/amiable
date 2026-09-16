@@ -58,15 +58,13 @@ export class Amiable extends GuStack {
           }
         : { noMonitoring: true },
       access: { scope: AccessScope.PUBLIC },
-      roleConfiguration: {
-        additionalPolicies: [
-          new GuSESSenderPolicy(this, { sendingAddress: "dig.dev.tooling@theguardian.com" }),
-          new GuAllowPolicy(this, "CloudwatchPolicy", {
-            actions: ["cloudwatch:*"],
-            resources: ["*"],
-          }),
-        ],
-      },
+      additionalPolicies: [
+        new GuSESSenderPolicy(this, { sendingAddress: "dig.dev.tooling@theguardian.com" }),
+        new GuAllowPolicy(this, "CloudwatchPolicy", {
+          actions: ["cloudwatch:*"],
+          resources: ["*"],
+        }),
+      ],
       applicationLogging: { enabled: true },
       scaling: { minimumInstances: 1 },
       imageRecipe: "arm64-jammy-java21-deploy-infrastructure",
