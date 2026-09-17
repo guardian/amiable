@@ -63,7 +63,6 @@ export class Amiable extends GuStack {
       googleAuth: {
         enabled: true,
         domain: domainName,
-        credentialsSecretsManagerPath: `/${this.stage}/deploy/amiable/client-secret`,
       },
       ec2Props: {
         versionedDeployments: {
