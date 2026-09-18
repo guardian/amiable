@@ -4,10 +4,11 @@ import { GuDistributionBucketParameter, GuStack, GuStringParameter } from "@guar
 import { GuCname } from "@guardian/cdk/lib/constructs/dns";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
 import type { App } from "aws-cdk-lib";
-import { Duration } from "aws-cdk-lib";
+import { Duration, SecretValue } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, UserData } from "aws-cdk-lib/aws-ec2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
 import {GuLoadBalancedAppExperimental} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
+import {ListenerAction, UnauthenticatedAction } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 
 interface AmiableProps extends GuStackProps {
   domainName: string;
@@ -60,10 +61,6 @@ export class Amiable extends GuStack {
           resources: ["*"],
         }),
       ],
-      googleAuth: {
-        enabled: true,
-        domain: domainName,
-      },
       ec2Props: {
         versionedDeployments: {
           enabled: true,
@@ -86,6 +83,25 @@ export class Amiable extends GuStack {
       stringValue: loadBalancedApp.loadBalancer.loadBalancerArn,
       tier: ParameterTier.STANDARD,
       dataType: ParameterDataType.TEXT,
+    });
+
+    const clientId = new GuStringParameter(this, "ClientId", {
+      description: "Google OAuth client ID",
+    });
+
+    loadBalancedApp.listener.addAction("DefaultAction", {
+      action: ListenerAction.authenticateOidc({
+        authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
+        issuer: "https://accounts.google.com",
+        scope: "openid",
+        authenticationRequestExtraParams: { hd: "guardian.co.uk" },
+        onUnauthenticatedRequest: UnauthenticatedAction.AUTHENTICATE,
+        tokenEndpoint: "https://oauth2.googleapis.com/token",
+        userInfoEndpoint: "https://openidconnect.googleapis.com/v1/userinfo",
+        clientId: clientId.valueAsString,
+        clientSecret: SecretValue.secretsManager(`/${this.stage}/deploy/amiable/client-secret`),
+        next: ListenerAction.forward([loadBalancedApp.targetGroups.ec2!]),
+      }),
     });
 
     new GuCname(this, "DnsRecord", {
