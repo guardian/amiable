@@ -27,7 +27,8 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuApplicationLoadBalancer",
       "GuAccessLoggingBucketParameter",
       "GuHttpsApplicationListener",
-      "GuStringParameter",
+      "GuLambdaFunction",
+      "GuHttpsEgressSecurityGroup",
       "GuCname",
     ],
     "gu:cdk:version": "TEST",
@@ -52,10 +53,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Default": "/account/services/access-logging/bucket",
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
-    },
-    "ClientId": {
-      "Description": "Google OAuth client ID",
-      "Type": "String",
     },
     "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
@@ -85,6 +82,14 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Default": "/account/vpc/primary/subnets/public",
       "Description": "A list of public subnets",
       "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
+    },
+    "bucketoverrideParameter": {
+      "Default": "/organisation/services/artifact.bucket",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "deploytoolsaccountidparameterParameter": {
+      "Default": "/organisation/accounts/deployTools",
+      "Type": "AWS::SSM::Parameter::Value<String>",
     },
   },
   "Resources": {
@@ -429,6 +434,27 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
+    "GuHttpsEgressSecurityGroupAmiablefromamiableldpaccessAmiable1EDD8FAB9000558E233C": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "GuHttpsEgressSecurityGroupAmiable42C3598C",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
     "GuLogShippingPolicy981BFE5A": {
       "Properties": {
         "PolicyDocument": {
@@ -550,23 +576,23 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         ],
         "DefaultActions": [
           {
-            "AuthenticateOidcConfig": {
-              "AuthenticationRequestExtraParams": {
-                "hd": "guardian.co.uk",
+            "AuthenticateCognitoConfig": {
+              "SessionTimeout": "900",
+              "UserPoolArn": {
+                "Fn::GetAtt": [
+                  "amiableuserpoolEBF4996D",
+                  "Arn",
+                ],
               },
-              "AuthorizationEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
-              "ClientId": {
-                "Ref": "ClientId",
+              "UserPoolClientId": {
+                "Ref": "amiableuserpoolalbclientF2213BB9",
               },
-              "ClientSecret": "{{resolve:secretsmanager:/CODE/deploy/amiable/client-secret:SecretString:::}}",
-              "Issuer": "https://accounts.google.com",
-              "OnUnauthenticatedRequest": "authenticate",
-              "Scope": "openid",
-              "TokenEndpoint": "https://oauth2.googleapis.com/token",
-              "UserInfoEndpoint": "https://openidconnect.googleapis.com/v1/userinfo",
+              "UserPoolDomain": {
+                "Ref": "amiableuserpooldomain35444865",
+              },
             },
             "Order": 1,
-            "Type": "authenticate-oidc",
+            "Type": "authenticate-cognito",
           },
           {
             "Order": 2,
@@ -642,6 +668,12 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           {
             "Fn::GetAtt": [
               "LoadBalancerAmiableSecurityGroupAE4F7AF8",
+              "GroupId",
+            ],
+          },
+          {
+            "Fn::GetAtt": [
+              "ldpaccessAmiable1869C179",
               "GroupId",
             ],
           },
@@ -881,6 +913,384 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
     },
+    "amiableuserpoolEBF4996D": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1,
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2,
+            },
+          ],
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true,
+        },
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
+        "LambdaConfig": {
+          "PreAuthentication": {
+            "Fn::GetAtt": [
+              "authlambda5AE8A89F",
+              "Arn",
+            ],
+          },
+          "PreSignUp": {
+            "Fn::GetAtt": [
+              "authlambda5AE8A89F",
+              "Arn",
+            ],
+          },
+        },
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UserPoolTags": {
+          "Stack": "deploy",
+          "Stage": "CODE",
+          "gu:cdk:version": "TEST",
+          "gu:repo": "guardian/amiable",
+        },
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}",
+        },
+      },
+      "Type": "AWS::Cognito::UserPool",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "amiableuserpoolPreAuthenticationCognito84D78CDD": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "authlambda5AE8A89F",
+            "Arn",
+          ],
+        },
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "amiableuserpoolEBF4996D",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "amiableuserpoolPreSignUpCognito50307A57": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "authlambda5AE8A89F",
+            "Arn",
+          ],
+        },
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "amiableuserpoolEBF4996D",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "amiableuserpoolalbclientF2213BB9": {
+      "DependsOn": [
+        "googleidp5A744057",
+      ],
+      "Properties": {
+        "AccessTokenValidity": 60,
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin",
+        ],
+        "CallbackURLs": [
+          "https://amiable.code.dev-gutools.co.uk/oauth2/idpresponse",
+        ],
+        "GenerateSecret": true,
+        "IdTokenValidity": 60,
+        "RefreshTokenValidity": 10080,
+        "SupportedIdentityProviders": [
+          "Google",
+        ],
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "minutes",
+        },
+        "UserPoolId": {
+          "Ref": "amiableuserpoolEBF4996D",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolClient",
+    },
+    "amiableuserpooldomain35444865": {
+      "Properties": {
+        "Domain": "com-gu-amiable-code-ae9870748543b42f5f6294e3aebe89d9",
+        "UserPoolId": {
+          "Ref": "amiableuserpoolEBF4996D",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
+    },
+    "authlambda5AE8A89F": {
+      "DependsOn": [
+        "authlambdaServiceRoleDefaultPolicy4F870132",
+        "authlambdaServiceRole39F49DB1",
+      ],
+      "Properties": {
+        "Architectures": [
+          "x86_64",
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Ref": "bucketoverrideParameter",
+          },
+          "S3Key": "deploy/PROD/cognito-lambda/devx-cognito-lambda-amd64-v2.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "ALLOWED_GROUPS": "engineering@guardian.co.uk",
+            "APP": "amiable",
+            "GATEKEEPER_FUNCTION_ARN": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:lambda:eu-west-1:",
+                  {
+                    "Ref": "deploytoolsaccountidparameterParameter",
+                  },
+                  ":function:deploy-PROD-gatekeeper-lambda",
+                ],
+              ],
+            },
+            "STACK": "deploy",
+            "STAGE": "CODE",
+          },
+        },
+        "Handler": "bootstrap",
+        "LoggingConfig": {
+          "LogFormat": "JSON",
+        },
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "authlambdaServiceRole39F49DB1",
+            "Arn",
+          ],
+        },
+        "Runtime": "provided.al2023",
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Owner",
+            "Value": "DevX",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "authlambdaServiceRole39F49DB1": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Owner",
+            "Value": "DevX",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "authlambdaServiceRoleDefaultPolicy4F870132": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "bucketoverrideParameter",
+                      },
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "bucketoverrideParameter",
+                      },
+                      "/deploy/PROD/cognito-lambda/devx-cognito-lambda-amd64-v2.zip",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "ssm:GetParametersByPath",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:eu-west-1:",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/CODE/deploy/amiable",
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:eu-west-1:",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/CODE/deploy/amiable/*",
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:lambda:eu-west-1:",
+                    {
+                      "Ref": "deploytoolsaccountidparameterParameter",
+                    },
+                    ":function:deploy-PROD-gatekeeper-lambda",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "authlambdaServiceRoleDefaultPolicy4F870132",
+        "Roles": [
+          {
+            "Ref": "authlambdaServiceRole39F49DB1",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "deployCODEamiableCD81551B": {
       "DependsOn": [
         "InstanceRoleAmiable56110022",
@@ -1100,6 +1510,89 @@ echo "Launch template last updated by Riff-Raff deployment ID: ",
       },
       "Type": "AWS::IAM::InstanceProfile",
     },
+    "googleidp5A744057": {
+      "Properties": {
+        "AttributeMapping": {
+          "email": "email",
+          "family_name": "family_name",
+          "given_name": "given_name",
+          "name": "name",
+          "picture": "picture",
+        },
+        "ProviderDetails": {
+          "authorize_scopes": "openid email profile",
+          "client_id": "{{resolve:secretsmanager:/CODE/deploy/amiable/google-auth-credentials:SecretString:clientId::}}",
+          "client_secret": "{{resolve:secretsmanager:/CODE/deploy/amiable/google-auth-credentials:SecretString:clientSecret::}}",
+        },
+        "ProviderName": "Google",
+        "ProviderType": "Google",
+        "UserPoolId": {
+          "Ref": "amiableuserpoolEBF4996D",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolIdentityProvider",
+    },
+    "ldpaccessAmiable1869C179": {
+      "Properties": {
+        "GroupDescription": "Allow all outbound HTTPS traffic",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound HTTPS traffic",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "ldpaccessAmiabletoamiableGuHttpsEgressSecurityGroupAmiable7C2576F69000DD06C6C9": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "GuHttpsEgressSecurityGroupAmiable42C3598C",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
   },
 }
 `;
@@ -1131,9 +1624,10 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuApplicationLoadBalancer",
       "GuAccessLoggingBucketParameter",
       "GuHttpsApplicationListener",
+      "GuLambdaFunction",
+      "GuHttpsEgressSecurityGroup",
       "GuAlb5xxPercentageAlarm",
       "GuUnhealthyInstancesAlarm",
-      "GuStringParameter",
       "GuCname",
     ],
     "gu:cdk:version": "TEST",
@@ -1158,10 +1652,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Default": "/account/services/access-logging/bucket",
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
-    },
-    "ClientId": {
-      "Description": "Google OAuth client ID",
-      "Type": "String",
     },
     "DistributionBucketName": {
       "Default": "/account/services/artifact.bucket",
@@ -1191,6 +1681,14 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Default": "/account/vpc/primary/subnets/public",
       "Description": "A list of public subnets",
       "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
+    },
+    "bucketoverrideParameter": {
+      "Default": "/organisation/services/artifact.bucket",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "deploytoolsaccountidparameterParameter": {
+      "Default": "/organisation/accounts/deployTools",
+      "Type": "AWS::SSM::Parameter::Value<String>",
     },
   },
   "Resources": {
@@ -1535,6 +2033,27 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
+    "GuHttpsEgressSecurityGroupAmiablefromAmiablePRODldpaccessAmiable77AFE83C90002BD662C0": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "GuHttpsEgressSecurityGroupAmiable42C3598C",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
     "GuLogShippingPolicy981BFE5A": {
       "Properties": {
         "PolicyDocument": {
@@ -1777,23 +2296,23 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         ],
         "DefaultActions": [
           {
-            "AuthenticateOidcConfig": {
-              "AuthenticationRequestExtraParams": {
-                "hd": "guardian.co.uk",
+            "AuthenticateCognitoConfig": {
+              "SessionTimeout": "900",
+              "UserPoolArn": {
+                "Fn::GetAtt": [
+                  "amiableuserpoolEBF4996D",
+                  "Arn",
+                ],
               },
-              "AuthorizationEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
-              "ClientId": {
-                "Ref": "ClientId",
+              "UserPoolClientId": {
+                "Ref": "amiableuserpoolalbclientF2213BB9",
               },
-              "ClientSecret": "{{resolve:secretsmanager:/PROD/deploy/amiable/client-secret:SecretString:::}}",
-              "Issuer": "https://accounts.google.com",
-              "OnUnauthenticatedRequest": "authenticate",
-              "Scope": "openid",
-              "TokenEndpoint": "https://oauth2.googleapis.com/token",
-              "UserInfoEndpoint": "https://openidconnect.googleapis.com/v1/userinfo",
+              "UserPoolDomain": {
+                "Ref": "amiableuserpooldomain35444865",
+              },
             },
             "Order": 1,
-            "Type": "authenticate-oidc",
+            "Type": "authenticate-cognito",
           },
           {
             "Order": 2,
@@ -1869,6 +2388,12 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           {
             "Fn::GetAtt": [
               "LoadBalancerAmiableSecurityGroupAE4F7AF8",
+              "GroupId",
+            ],
+          },
+          {
+            "Fn::GetAtt": [
+              "ldpaccessAmiable1869C179",
               "GroupId",
             ],
           },
@@ -2223,6 +2748,384 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::CloudWatch::Alarm",
     },
+    "amiableuserpoolEBF4996D": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1,
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2,
+            },
+          ],
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true,
+        },
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
+        "LambdaConfig": {
+          "PreAuthentication": {
+            "Fn::GetAtt": [
+              "authlambda5AE8A89F",
+              "Arn",
+            ],
+          },
+          "PreSignUp": {
+            "Fn::GetAtt": [
+              "authlambda5AE8A89F",
+              "Arn",
+            ],
+          },
+        },
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UserPoolTags": {
+          "Stack": "deploy",
+          "Stage": "PROD",
+          "gu:cdk:version": "TEST",
+          "gu:repo": "guardian/amiable",
+        },
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}",
+        },
+      },
+      "Type": "AWS::Cognito::UserPool",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "amiableuserpoolPreAuthenticationCognito84D78CDD": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "authlambda5AE8A89F",
+            "Arn",
+          ],
+        },
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "amiableuserpoolEBF4996D",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "amiableuserpoolPreSignUpCognito50307A57": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "authlambda5AE8A89F",
+            "Arn",
+          ],
+        },
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "amiableuserpoolEBF4996D",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "amiableuserpoolalbclientF2213BB9": {
+      "DependsOn": [
+        "googleidp5A744057",
+      ],
+      "Properties": {
+        "AccessTokenValidity": 60,
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin",
+        ],
+        "CallbackURLs": [
+          "https://amiable.gutools.co.uk/oauth2/idpresponse",
+        ],
+        "GenerateSecret": true,
+        "IdTokenValidity": 60,
+        "RefreshTokenValidity": 10080,
+        "SupportedIdentityProviders": [
+          "Google",
+        ],
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "minutes",
+        },
+        "UserPoolId": {
+          "Ref": "amiableuserpoolEBF4996D",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolClient",
+    },
+    "amiableuserpooldomain35444865": {
+      "Properties": {
+        "Domain": "com-gu-amiable-prod-a8d597946116b7bb32647449e1af2327",
+        "UserPoolId": {
+          "Ref": "amiableuserpoolEBF4996D",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
+    },
+    "authlambda5AE8A89F": {
+      "DependsOn": [
+        "authlambdaServiceRoleDefaultPolicy4F870132",
+        "authlambdaServiceRole39F49DB1",
+      ],
+      "Properties": {
+        "Architectures": [
+          "x86_64",
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Ref": "bucketoverrideParameter",
+          },
+          "S3Key": "deploy/PROD/cognito-lambda/devx-cognito-lambda-amd64-v2.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "ALLOWED_GROUPS": "engineering@guardian.co.uk",
+            "APP": "amiable",
+            "GATEKEEPER_FUNCTION_ARN": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:lambda:eu-west-1:",
+                  {
+                    "Ref": "deploytoolsaccountidparameterParameter",
+                  },
+                  ":function:deploy-PROD-gatekeeper-lambda",
+                ],
+              ],
+            },
+            "STACK": "deploy",
+            "STAGE": "PROD",
+          },
+        },
+        "Handler": "bootstrap",
+        "LoggingConfig": {
+          "LogFormat": "JSON",
+        },
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "authlambdaServiceRole39F49DB1",
+            "Arn",
+          ],
+        },
+        "Runtime": "provided.al2023",
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Owner",
+            "Value": "DevX",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "authlambdaServiceRole39F49DB1": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Owner",
+            "Value": "DevX",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "authlambdaServiceRoleDefaultPolicy4F870132": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "bucketoverrideParameter",
+                      },
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "bucketoverrideParameter",
+                      },
+                      "/deploy/PROD/cognito-lambda/devx-cognito-lambda-amd64-v2.zip",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "ssm:GetParametersByPath",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:eu-west-1:",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/PROD/deploy/amiable",
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:eu-west-1:",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/PROD/deploy/amiable/*",
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:lambda:eu-west-1:",
+                    {
+                      "Ref": "deploytoolsaccountidparameterParameter",
+                    },
+                    ":function:deploy-PROD-gatekeeper-lambda",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "authlambdaServiceRoleDefaultPolicy4F870132",
+        "Roles": [
+          {
+            "Ref": "authlambdaServiceRole39F49DB1",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "deployPRODamiableED398871": {
       "DependsOn": [
         "InstanceRoleAmiable56110022",
@@ -2441,6 +3344,89 @@ echo "Launch template last updated by Riff-Raff deployment ID: ",
         ],
       },
       "Type": "AWS::IAM::InstanceProfile",
+    },
+    "googleidp5A744057": {
+      "Properties": {
+        "AttributeMapping": {
+          "email": "email",
+          "family_name": "family_name",
+          "given_name": "given_name",
+          "name": "name",
+          "picture": "picture",
+        },
+        "ProviderDetails": {
+          "authorize_scopes": "openid email profile",
+          "client_id": "{{resolve:secretsmanager:/PROD/deploy/amiable/google-auth-credentials:SecretString:clientId::}}",
+          "client_secret": "{{resolve:secretsmanager:/PROD/deploy/amiable/google-auth-credentials:SecretString:clientSecret::}}",
+        },
+        "ProviderName": "Google",
+        "ProviderType": "Google",
+        "UserPoolId": {
+          "Ref": "amiableuserpoolEBF4996D",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolIdentityProvider",
+    },
+    "ldpaccessAmiable1869C179": {
+      "Properties": {
+        "GroupDescription": "Allow all outbound HTTPS traffic",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound HTTPS traffic",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "ldpaccessAmiabletoAmiablePRODGuHttpsEgressSecurityGroupAmiableB48C77C890002166BC9B": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "GuHttpsEgressSecurityGroupAmiable42C3598C",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
     },
   },
 }
