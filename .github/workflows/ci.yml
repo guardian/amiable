@@ -10,6 +10,17 @@ on:
     branches:
       - "main"
 jobs:
+  facts:
+    runs-on: ubuntu-slim
+    permissions: {} # This job doesn't need any permissions. Explicitly set it to an empty object to avoid inheriting any default permissions of the workflow.
+    outputs:
+      branchName: ${{ steps.get-build-facts.outputs.branchName }}
+      buildNumber: ${{ steps.get-build-facts.outputs.buildNumber }}
+      commitSha: ${{ steps.get-build-facts.outputs.commitSha }}
+    steps:
+      - uses: guardian/actions-build-facts@v0.0.1
+        id: get-build-facts
+
   CI:
     runs-on: ubuntu-latest
 
@@ -45,6 +56,9 @@ jobs:
       - name: Run script/ci
         run: ./script/ci
 
+      - name: Build image
+        run: docker buildx build --platform linux/arm64 -f Production.dockerfile -t ${{ github.repository }}:latest .
+
       - name: Upload to riff-raff
         uses: guardian/actions-riff-raff@v4.3.3
         with:
@@ -58,3 +72,13 @@ jobs:
               - cdk/cdk.out
             amiable:
               - dist
+
+      - name: Publish Image
+        uses: guardian/actions-publish-image@v0.0.3
+        id: publish-image
+        with:
+          roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
+          branchName: ${{ github.ref_name }}
+          buildNumber: ${{ needs.facts.outputs.buildNumber }}
+          commitSha: ${{ needs.facts.outputs.commitSha }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
