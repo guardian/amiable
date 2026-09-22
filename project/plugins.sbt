@@ -20,3 +20,6 @@ addSbtPlugin("com.github.sbt" % "sbt-jshint" % "2.0.1")
 addSbtPlugin("com.github.sbt" % "sbt-rjs" % "2.0.0")
 
 addSbtPlugin("com.github.sbt" % "sbt-digest" % "2.1.0")
+
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.7")
+

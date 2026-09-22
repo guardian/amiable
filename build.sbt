@@ -1,10 +1,11 @@
 import com.typesafe.sbt.packager.debian.DebianPlugin.autoImport.Debian
+import com.typesafe.sbt.packager.docker._
 
 name := "amiable"
 
 version := "1.0-SNAPSHOT"
 
-enablePlugins(PlayScala, JDebPackaging, SystemdPlugin)
+enablePlugins(PlayScala, JDebPackaging, SystemdPlugin, JavaAppPackaging, DockerPlugin)
 
 ThisBuild / scalaVersion := "3.3.8"
 
@@ -14,7 +15,7 @@ Universal / javaOptions ++= Seq(
   "-J-XX:MaxRAMPercentage=50.0",
   "-J-XX:InitialRAMPercentage=50.0",
   "-J-XX:MaxMetaspaceSize=300m",
-  s"-J-Xlog:gc*:file=/var/log/${packageName.value}/gc.log::filecount=5,filesize=10M"
+  "-J-Xlog:gc*:stdout"
 )
 
 Test / javaOptions += "-Dconfig.file=conf/application.test.conf"
@@ -85,3 +86,29 @@ maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
 packageDescription := "Web app for monitoring the use of AMIs"
 debianPackageDependencies := Seq("java-21-amazon-corretto-jdk:arm64")
+
+Docker / dockerBaseImage := "amazoncorretto:21-alpine"
+Docker / dockerEntrypoint := Seq("/opt/docker/entrypoint.sh")
+Docker / dockerAdditionalPermissions := Seq()
+Docker / dockerPackageMappings ++= Seq(
+  (baseDirectory.value / "docker" / "entrypoint.sh") -> "/opt/docker/entrypoint.sh"
+)
+Docker / dockerCommands := (Docker / dockerCommands).value.map {
+  case Cmd("FROM", args @ _*) if args.contains("stage0") =>
+    Cmd("FROM", "amazoncorretto:21-alpine", "AS", "stage0")
+  case Cmd("FROM", args @ _*) if args.contains("mainstage") =>
+    Cmd("FROM", "amazoncorretto:21-alpine", "AS", "mainstage")
+  case ExecCmd("ENTRYPOINT", args @ _*) => ExecCmd("ENTRYPOINT", "/opt/docker/entrypoint.sh")
+  case other => other
+}.filterNot {
+  case Cmd("USER", args @ _*) if args.contains("1001:0") || args.contains("demiourgos728") => true
+  case ExecCmd("RUN", args @ _*) if args.contains("id") && args.contains("-u") => true
+  case ExecCmd("ENTRYPOINT", args @ _*) => true
+  case _ => false
+} ++ Seq(
+  Cmd("USER", "root"),
+  ExecCmd("RUN", "apk", "update"),
+  ExecCmd("RUN", "apk", "add", "--no-cache", "aws-cli", "bash"),
+  ExecCmd("RUN", "chmod", "+x", "/opt/docker/entrypoint.sh"),
+  ExecCmd("ENTRYPOINT", "/opt/docker/entrypoint.sh")
+)
