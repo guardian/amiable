@@ -8,7 +8,7 @@ import { Duration } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, UserData } from "aws-cdk-lib/aws-ec2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
 import {
-  // getDefaultS3ConfigMount,
+  getDefaultS3ConfigMount,
   GuLoadBalancedAppExperimental
 } from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
 
@@ -86,7 +86,7 @@ export class Amiable extends GuStack {
           minimumTasks: 1,
           maximumTasks: 1
         },
-        // s3Config: getDefaultS3ConfigMount(this),
+        s3Config: getDefaultS3ConfigMount(this),
       },
       targetGroupWeights: {
         ecs: 0,
