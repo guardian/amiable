@@ -10,6 +10,16 @@ on:
     branches:
       - "main"
 jobs:
+  facts:
+    runs-on: ubuntu-slim
+    permissions: {} # This job doesn't need any permissions. Explicitly set it to an empty object to avoid inheriting any default permissions of the workflow.
+    outputs:
+      branchName: ${{ steps.get-build-facts.outputs.branchName }}
+      buildNumber: ${{ steps.get-build-facts.outputs.buildNumber }}
+      commitSha: ${{ steps.get-build-facts.outputs.commitSha }}
+    steps:
+      - uses: guardian/actions-build-facts@v0.0.1
+        id: get-build-facts
   CI:
     runs-on: ubuntu-latest
 
@@ -58,3 +68,13 @@ jobs:
               - cdk/cdk.out
             amiable:
               - dist
+
+      - name: Publish Image
+        uses: guardian/actions-publish-image@v0.0.3
+        id: publish-image
+        with:
+          roleArn: ${{ secrets.GU_ARTIFACTS_ROLE_ARN }}
+          branchName: ${{ needs.facts.outputs.branchName }}
+          buildNumber: ${{ needs.facts.outputs.buildNumber }}
+          commitSha: ${{ needs.facts.outputs.commitSha }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
