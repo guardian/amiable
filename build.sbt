@@ -94,3 +94,4 @@ debianPackageDependencies := Seq("java-21-amazon-corretto-jdk:arm64")
 dockerBaseImage := "amazoncorretto:21-alpine"
 dockerExposedPorts := Seq(9000)
 dockerUpdateLatest := true
+dockerRepository := Some("guardian")
