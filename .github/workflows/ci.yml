@@ -22,6 +22,8 @@ jobs:
         id: get-build-facts
   CI:
     runs-on: ubuntu-latest
+    needs:
+      - facts
 
     # See https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
     permissions:
