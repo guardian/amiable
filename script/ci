@@ -8,7 +8,7 @@ set -e
 )
 
 
-sbt "set version := \"$BUILD_NUMBER\"" clean scalafmtCheckAll compile test debian:packageBin Docker/publishLocal
+sbt clean scalafmtCheckAll compile test debian:packageBin Docker/publishLocal
 
 mkdir -p dist
 mv target/*.deb "dist/amiable-${BUILD_NUMBER}.deb"

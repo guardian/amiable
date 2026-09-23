@@ -95,3 +95,4 @@ dockerBaseImage := "amazoncorretto:21-alpine"
 dockerExposedPorts := Seq(9000)
 dockerUpdateLatest := true
 dockerRepository := Some("guardian")
+version := sys.env.getOrElse("BUILD_NUMBER", "DEV")
