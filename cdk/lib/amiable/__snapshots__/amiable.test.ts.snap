@@ -17,6 +17,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuLoggingStreamNameParameter",
       "GuLogShippingPolicy",
       "GuGetDistributablePolicy",
+      "GuListBucketPolicy",
       "GuParameterStoreReadPolicy",
       "GuAmiParameter",
       "GuHttpsEgressSecurityGroup",
@@ -454,6 +455,37 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         "ToPort": 9000,
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "GuListBucketPolicyAmiable19C77599": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:ListBucket",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "DistributionBucketName",
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "GuListBucketPolicyAmiable19C77599",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleAmiable56110022",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "GuLogShippingPolicy981BFE5A": {
       "Properties": {
@@ -1410,23 +1442,22 @@ exitCode=$?
 }
 trap exitTrap EXIT
 
+          mkdir -p /etc/gu/s3-sync/
+          aws --region eu-west-1 s3 sync s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/CODE/amiable/conf/ /etc/gu/s3-sync/
+
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/CODE/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/CODE/amiable/conf/amiable.conf /etc/
+          ln -sf /etc/gu/s3-sync/amiable-service-account-cert.json /amiable/amiable-service-account-cert.json
+          ln -sf /etc/gu/s3-sync/amiable.conf /etc/amiable.conf
+
           aws --region eu-west-1 s3 cp s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
                   "/deploy/CODE/amiable/amiable-TEST.deb /amiable/amiable.deb
-
           dpkg -i /amiable/amiable.deb
 echo "Launch template last updated by Riff-Raff deployment ID: ",
                   {
@@ -1614,6 +1645,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuLoggingStreamNameParameter",
       "GuLogShippingPolicy",
       "GuGetDistributablePolicy",
+      "GuListBucketPolicy",
       "GuParameterStoreReadPolicy",
       "GuAmiParameter",
       "GuHttpsEgressSecurityGroup",
@@ -2053,6 +2085,37 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "ToPort": 9000,
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "GuListBucketPolicyAmiable19C77599": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:ListBucket",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "DistributionBucketName",
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "GuListBucketPolicyAmiable19C77599",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleAmiable56110022",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "GuLogShippingPolicy981BFE5A": {
       "Properties": {
@@ -3245,23 +3308,22 @@ exitCode=$?
 }
 trap exitTrap EXIT
 
+          mkdir -p /etc/gu/s3-sync/
+          aws --region eu-west-1 s3 sync s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/PROD/amiable/conf/ /etc/gu/s3-sync/
+
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/PROD/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/PROD/amiable/conf/amiable.conf /etc/
+          ln -sf /etc/gu/s3-sync/amiable-service-account-cert.json /amiable/amiable-service-account-cert.json
+          ln -sf /etc/gu/s3-sync/amiable.conf /etc/amiable.conf
+
           aws --region eu-west-1 s3 cp s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
                   "/deploy/PROD/amiable/amiable-TEST.deb /amiable/amiable.deb
-
           dpkg -i /amiable/amiable.deb
 echo "Launch template last updated by Riff-Raff deployment ID: ",
                   {
