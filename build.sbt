@@ -10,7 +10,7 @@ ThisBuild / scalaVersion := "3.3.8"
 
 Universal / javaOptions ++= Seq(
   "-Dpidfile.path=/dev/null",
-  s"-Dconfig.file=/etc/${name.value}/${name.value}.conf",
+  s"-Dconfig.file=/etc/${name.value}.conf",
   "-J-XX:MaxRAMPercentage=50.0",
   "-J-XX:InitialRAMPercentage=50.0",
   "-J-XX:MaxMetaspaceSize=300m",

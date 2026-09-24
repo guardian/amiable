@@ -1413,12 +1413,12 @@ exitCode=$?
 }
 trap exitTrap EXIT
 
-          mkdir -p /etc/amiable
+          mkdir -p /etc/gu/s3-sync/
           aws --region eu-west-1 s3 sync s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
-                  "/deploy/CODE/amiable/conf/ /etc/amiable/
+                  "/deploy/CODE/amiable/conf/ /etc/gu/s3-sync/
 
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
@@ -3259,12 +3259,12 @@ exitCode=$?
 }
 trap exitTrap EXIT
 
-          mkdir -p /etc/amiable
+          mkdir -p /etc/gu/s3-sync/
           aws --region eu-west-1 s3 sync s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
-                  "/deploy/PROD/amiable/conf/ /etc/amiable/
+                  "/deploy/PROD/amiable/conf/ /etc/gu/s3-sync/
 
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
