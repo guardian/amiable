@@ -17,7 +17,7 @@
     "synth": "cdk synth --path-metadata false --version-reporting false"
   },
   "devDependencies": {
-    "@guardian/cdk": "0.0.0-canary-20260924095517",
+    "@guardian/cdk": "0.0.0-canary-20260924153043",
     "@guardian/eslint-config": "^16.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "26.0.0",
