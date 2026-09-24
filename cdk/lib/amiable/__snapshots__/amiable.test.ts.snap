@@ -1450,23 +1450,14 @@ trap exitTrap EXIT
                   "/deploy/CODE/amiable/conf/ /etc/gu/s3-sync/
 
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/CODE/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/CODE/amiable/conf/amiable.conf /etc/
+          ln -sf /etc/gu/s3-sync/amiable-service-account-cert.json /amiable/amiable-service-account-cert.json
+          ln -sf /etc/gu/s3-sync/amiable.conf /etc/amiable.conf
 
           aws --region eu-west-1 s3 cp s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
                   "/deploy/CODE/amiable/amiable-TEST.deb /amiable/amiable.deb
-
           dpkg -i /amiable/amiable.deb
 echo "Launch template last updated by Riff-Raff deployment ID: ",
                   {
@@ -3325,23 +3316,14 @@ trap exitTrap EXIT
                   "/deploy/PROD/amiable/conf/ /etc/gu/s3-sync/
 
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/PROD/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/PROD/amiable/conf/amiable.conf /etc/
+          ln -sf /etc/gu/s3-sync/amiable-service-account-cert.json /amiable/amiable-service-account-cert.json
+          ln -sf /etc/gu/s3-sync/amiable.conf /etc/amiable.conf
 
           aws --region eu-west-1 s3 cp s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
                   "/deploy/PROD/amiable/amiable-TEST.deb /amiable/amiable.deb
-
           dpkg -i /amiable/amiable.deb
 echo "Launch template last updated by Riff-Raff deployment ID: ",
                   {

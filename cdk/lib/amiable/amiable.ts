@@ -7,7 +7,7 @@ import type { App } from "aws-cdk-lib";
 import { Duration } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, UserData } from "aws-cdk-lib/aws-ec2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
-import {GuLoadBalancedAppExperimental} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
+import { GuLoadBalancedAppExperimental } from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
 
 interface AmiableProps extends GuStackProps {
   domainName: string;
@@ -33,11 +33,10 @@ export class Amiable extends GuStack {
           aws --region eu-west-1 s3 sync s3://${distBucket}/${stack}/${stage}/${app}/conf/ /etc/gu/s3-sync/
 
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable.conf /etc/
+          ln -sf /etc/gu/s3-sync/amiable-service-account-cert.json /amiable/amiable-service-account-cert.json
+          ln -sf /etc/gu/s3-sync/amiable.conf /etc/amiable.conf
 
           aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable-${buildNumber}.deb /amiable/amiable.deb
-
           dpkg -i /amiable/amiable.deb`);
 
     const loadBalancedApp = new GuLoadBalancedAppExperimental(this, {
@@ -79,7 +78,7 @@ export class Amiable extends GuStack {
         scaling: { minimumInstances: 1 },
         applicationLogging: { enabled: true },
         imageRecipe: "arm64-jammy-java21-deploy-infrastructure",
-      }
+      },
     });
 
     // This parameter is used by https://github.com/guardian/waf
