@@ -2,11 +2,6 @@
 
 set -e
 
-(
- cd cdk
- ./script/ci
-)
-
 sbt clean scalafmtCheckAll compile test debian:packageBin Docker/publishLocal
 
 mkdir -p dist
