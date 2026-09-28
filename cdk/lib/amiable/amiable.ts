@@ -84,7 +84,7 @@ export class Amiable extends GuStack {
         imageRecipe: "arm64-jammy-java21-deploy-infrastructure",
       },
       ecsProps: {
-        imageIdentifier: "",
+        imageIdentifier: process.env.IMAGE_DIGEST ?? "DEV",
         cpu: 256,
         memoryLimitMiB: 1024,
         scaling: {

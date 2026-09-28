@@ -587,7 +587,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                   {
                     "Ref": "AWS::URLSuffix",
                   },
-                  "/guardian/amiable",
+                  "/guardian/amiable:DEV",
                 ],
               ],
             },
@@ -3371,7 +3371,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                   {
                     "Ref": "AWS::URLSuffix",
                   },
-                  "/guardian/amiable",
+                  "/guardian/amiable:DEV",
                 ],
               ],
             },
