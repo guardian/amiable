@@ -5,7 +5,7 @@ name := "amiable"
 
 version := "1.0-SNAPSHOT"
 
-enablePlugins(PlayScala, JDebPackaging, SystemdPlugin)
+enablePlugins(PlayScala, JDebPackaging, SystemdPlugin, AshScriptPlugin)
 
 ThisBuild / scalaVersion := "3.3.8"
 
