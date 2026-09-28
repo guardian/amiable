@@ -1,4 +1,5 @@
 import com.typesafe.sbt.packager.debian.DebianPlugin.autoImport.Debian
+import com.typesafe.sbt.packager.docker.Cmd
 
 name := "amiable"
 
@@ -91,3 +92,9 @@ dockerExposedPorts := Seq(9000)
 dockerUpdateLatest := true
 dockerRepository := Some("guardian")
 version := sys.env.getOrElse("BUILD_NUMBER", "DEV")
+dockerCommands ++= Seq(
+  Cmd("USER", "root"),
+  Cmd("RUN", "mkdir /amiable"),
+  Cmd("RUN", "ln -sf /etc/gu/s3-sync/amiable-service-account-cert.json /amiable/amiable-service-account-cert.json"),
+  Cmd("RUN", "ln -sf /etc/gu/s3-sync/amiable.conf /etc/amiable.conf")
+)
