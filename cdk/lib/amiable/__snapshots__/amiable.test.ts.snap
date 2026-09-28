@@ -1178,9 +1178,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
               "Action": "s3:ListBucket",
               "Condition": {
                 "StringLike": {
-                  "s3:prefix": {
-                    "path": "deploy/CODE/amiable/conf/",
-                  },
+                  "s3:prefix": "deploy/CODE/amiable/conf/",
                 },
               },
               "Effect": "Allow",
@@ -3963,9 +3961,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
               "Action": "s3:ListBucket",
               "Condition": {
                 "StringLike": {
-                  "s3:prefix": {
-                    "path": "deploy/PROD/amiable/conf/",
-                  },
+                  "s3:prefix": "deploy/PROD/amiable/conf/",
                 },
               },
               "Effect": "Allow",
