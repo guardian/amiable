@@ -76,9 +76,11 @@ jobs:
       - name: Publish Image
         uses: guardian/actions-publish-image@v0.0.3
         id: publish-image
+        needs:
+          - facts
         with:
           roleArn: ${{ secrets.GU_ARTIFACTS_ROLE_ARN }}
-          branchName: ${{ github.ref_name }}
-          buildNumber: ${{ env.BUILD_NUMBER }}
+          branchName: ${{ needs.facts.outputs.branchName }}
+          buildNumber: ${{ needs.facts.outputs.buildNumber }}
           commitSha: ${{ needs.facts.outputs.commitSha }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
