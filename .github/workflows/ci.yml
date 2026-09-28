@@ -71,6 +71,8 @@ jobs:
       # Must come after image is published to pick up env var
       - name: Run cdk/script/ci
         working-directory: cdk
+        env:
+          IMAGE_DIGEST: ${{ steps.publish-image.outputs.imageDigest }}
         run: ./script/ci
 
       - name: Upload to riff-raff

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest --runInBand --detectOpenHandles",
+    "test": "IMAGE_DIGEST=DEV jest --runInBand --detectOpenHandles",
     "test:dev": "jest --runInBand --detectOpenHandles --watch",
     "lint": "eslint lib/** bin/** --ext .ts",
     "format": "prettier --write \"{lib,bin}/**/*.ts\"",
