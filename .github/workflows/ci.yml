@@ -22,7 +22,8 @@ jobs:
         id: get-build-facts
 
   CI:
-    runs-on: ubuntu-latest
+    # We want an arm image
+    runs-on: ubuntu-24.04-arm
     needs:
       - facts
 
