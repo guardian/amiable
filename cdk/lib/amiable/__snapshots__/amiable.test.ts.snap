@@ -1410,24 +1410,23 @@ exitCode=$?
 }
 trap exitTrap EXIT
 
+          # Loading configuration files from S3 bucket
+          mkdir -p /etc/gu/s3-sync/
+          aws --region eu-west-1 s3 sync s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/CODE/amiable/conf/ /etc/gu/s3-sync/
+
+          # Downloading the amiable deb package from S3 and installing it
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
-                  "/deploy/CODE/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/CODE/amiable/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
                   "/deploy/CODE/amiable/amiable-TEST.deb /amiable/amiable.deb
-
           dpkg -i /amiable/amiable.deb
+    
 echo "Launch template last updated by Riff-Raff deployment ID: ",
                   {
                     "Ref": "RiffRaffDeploymentId",
@@ -3245,24 +3244,23 @@ exitCode=$?
 }
 trap exitTrap EXIT
 
+          # Loading configuration files from S3 bucket
+          mkdir -p /etc/gu/s3-sync/
+          aws --region eu-west-1 s3 sync s3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/deploy/PROD/amiable/conf/ /etc/gu/s3-sync/
+
+          # Downloading the amiable deb package from S3 and installing it
           mkdir /amiable
           aws --region eu-west-1 s3 cp s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
-                  "/deploy/PROD/amiable/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/PROD/amiable/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
                   "/deploy/PROD/amiable/amiable-TEST.deb /amiable/amiable.deb
-
           dpkg -i /amiable/amiable.deb
+    
 echo "Launch template last updated by Riff-Raff deployment ID: ",
                   {
                     "Ref": "RiffRaffDeploymentId",
