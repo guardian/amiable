@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# Downloads amiable's config from S3 and runs the locally built Docker image with it mounted.
+
+set -euo pipefail
+
+APP="amiable"
+DIST_BUCKET="deploy-tools-dist"
+STACK="deploy"
+STAGE="CODE"
+AWS_PROFILE="deployTools"
+IMAGE="amiable:1.0-SNAPSHOT"
+PORT="9000"
+
+usage() {
+  cat <<EOF
+Usage: $0 [options]
+
+Options:
+  -b, --bucket <name>   Artifact bucket        (default: ${DIST_BUCKET})
+      --stack <name>    Stack name             (default: ${STACK})
+  -s, --stage <name>    Stage, e.g. CODE/PROD  (default: ${STAGE})
+  -p, --profile <name>  AWS profile            (default: ${AWS_PROFILE})
+  -i, --image <name>    Docker image to run    (default: ${IMAGE})
+      --port <number>   Local port to expose   (default: ${PORT})
+  -h, --help            Show this help
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -b|--bucket)  DIST_BUCKET="${2:?$1 requires a value}"; shift 2 ;;
+    --stack)      STACK="${2:?$1 requires a value}"; shift 2 ;;
+    -s|--stage)   STAGE="${2:?$1 requires a value}"; shift 2 ;;
+    -p|--profile) AWS_PROFILE="${2:?$1 requires a value}"; shift 2 ;;
+    -i|--image)   IMAGE="${2:?$1 requires a value}"; shift 2 ;;
+    --port)       PORT="${2:?$1 requires a value}"; shift 2 ;;
+    -h|--help)    usage; exit 0 ;;
+    *)            echo "Unknown option: $1" >&2; usage >&2; exit 1 ;;
+  esac
+done
+
+if [[ -z "$DIST_BUCKET" ]]; then
+  echo "Missing required option: --bucket" >&2
+  usage >&2
+  exit 1
+fi
+
+export AWS_PROFILE
+
+# Use a folder inside the repo, because Docker on macOS can't mount the system temp dir. It's git-ignored.
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CONF_DIR="${ROOT_DIR}/.amiable-local-docker-conf"
+rm -rf "$CONF_DIR"
+mkdir -p "$CONF_DIR"
+trap 'rm -rf "$CONF_DIR"' EXIT
+chmod 755 "$CONF_DIR"
+
+echo "Downloading config from s3://${DIST_BUCKET}/${STACK}/${STAGE}/${APP}/conf/"
+aws --region eu-west-1 s3 sync "s3://${DIST_BUCKET}/${STACK}/${STAGE}/${APP}/conf/" "$CONF_DIR/"
+
+if [[ ! -f "$CONF_DIR/${APP}.conf" ]]; then
+  echo "${APP}.conf not found in S3 config location" >&2
+  exit 1
+fi
+
+# The container runs as a non-root user, so the mounted files must be world-readable.
+chmod 644 "$CONF_DIR"/*
+
+echo "Starting ${IMAGE} on http://localhost:${PORT}"
+docker run --rm -it \
+  --mount "type=bind,source=${CONF_DIR},target=/etc/gu/s3-sync,readonly" \
+  -p "${PORT}:9000" \
+  "$IMAGE"

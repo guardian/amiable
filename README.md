@@ -5,7 +5,7 @@ https://amiable.gutools.co.uk
 
 
 ## How to run Amiable locally
-### Local setup
+### Local setup (without docker)
 
 Amiable uses Google Auth. For this reason, we need to run Amiable through an nginx proxy `amiable.local.dev-gutools.co.uk`.
 This can be achieved by running:
@@ -41,6 +41,37 @@ a working Prism connection but the dashboard and other data-dependent pages will
 The environment running `sbt` must be able to reach the configured `PRISM_URL` across the
 network. Ensure any required
 VPN or private-network access is active.
+
+### Local setup (with docker)
+Amiable can also be run in a docker container. This is useful if you don't want to install all the dependencies on your machine.
+When run locally, the docker image is built, stored locally and run.
+All the configuration is passed to the docker container by means of mounting the configuration file(s) from an S3 location.
+
+To build and run the docker container locally, run the following command:
+
+```shell script
+ # Set up your AWS credentials for the deploy-tools account
+ export AWS_ACCESS_KEY_ID=???
+ export AWS_SECRET_ACCESS_KEY=???
+ export AWS_SESSION_TOKEN=???
+
+ # Run the CI script to build the docker image. Note that a local image registry is required for the image to be stored and made available.
+ /script/ci
+
+ # Run the docker container locally & mount the configuration file(s) from S3 as you need them
+ /script/run-docker-local
+ --bucket deploy-tools-dist \
+ --stack deploy \
+ --stage CODE \
+ --profile deployTools \
+ --image amiable:1.0-SNAPSHOT \
+ --port 9000
+
+ ```
+
+*These are the default values for the parameters, you can change them if you want to run the docker container with different values.*
+
+
 
 ### Debugging
  To attach a debugger, use sbt's built-in flag: `sbt -jvm-debug 1056 run`. Then connect your IDE's remote debugger to port 1056.

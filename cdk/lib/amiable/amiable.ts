@@ -30,7 +30,6 @@ export class Amiable extends GuStack {
     const userData = UserData.forLinux();
     userData.addCommands(`
           aws --region eu-west-1 s3 sync s3://${distBucket}/${stack}/${stage}/${app}/conf/ /etc/gu/s3-sync/
-
           aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable-${buildNumber}.deb /amiable/amiable.deb
           dpkg -i /amiable/amiable.deb`);
 
