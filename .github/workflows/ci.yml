@@ -13,8 +13,6 @@ jobs:
   CI:
     # We want an arm image
     runs-on: ubuntu-24.04-arm
-    needs:
-      - facts
 
     # See https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
     permissions:
