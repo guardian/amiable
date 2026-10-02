@@ -29,12 +29,15 @@ export class Amiable extends GuStack {
 
     const userData = UserData.forLinux();
     userData.addCommands(`
-          mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable-${buildNumber}.deb /amiable/amiable.deb
+          # Loading configuration files from S3 bucket
+          mkdir -p /etc/gu/s3-sync/
+          aws --region eu-west-1 s3 sync s3://${distBucket}/${stack}/${stage}/${app}/conf/ /etc/gu/s3-sync/
 
-          dpkg -i /amiable/amiable.deb`);
+          # Downloading the amiable deb package from S3 and installing it
+          mkdir /amiable
+          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable-${buildNumber}.deb /amiable/amiable.deb
+          dpkg -i /amiable/amiable.deb
+    `);
 
     const loadBalancedApp = new GuLoadBalancedAppExperimental(this, {
       applicationPort: 9000,
