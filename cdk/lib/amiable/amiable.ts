@@ -7,21 +7,23 @@ import type { App } from "aws-cdk-lib";
 import { Duration } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, UserData } from "aws-cdk-lib/aws-ec2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
-import {GuLoadBalancedAppExperimental} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
+import {
+  getDefaultS3ConfigMount,
+  GuLoadBalancedAppExperimental
+} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
 
 interface AmiableProps extends GuStackProps {
   domainName: string;
+  app: string;
 }
 
 export class Amiable extends GuStack {
   constructor(scope: App, id: string, props: AmiableProps) {
     super(scope, id, props);
 
-    const app = "amiable";
     const { stack, stage } = this;
     const isProd = stage === "PROD";
-
-    const { domainName } = props;
+    const { app, domainName } = props;
 
     const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
 
@@ -29,9 +31,14 @@ export class Amiable extends GuStack {
 
     const userData = UserData.forLinux();
     userData.addCommands(`
+
+          mkdir -p /etc/gu/s3-sync/
+          aws --region eu-west-1 s3 sync s3://${distBucket}/${stack}/${stage}/${app}/conf/ /etc/gu/s3-sync/
+
           mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable.conf /etc/
+          ln -sf /etc/gu/s3-sync/amiable-service-account-cert.json /amiable/amiable-service-account-cert.json
+          ln -sf /etc/gu/s3-sync/amiable.conf /etc/amiable.conf
+
           aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable-${buildNumber}.deb /amiable/amiable.deb
 
           dpkg -i /amiable/amiable.deb`);
@@ -75,7 +82,21 @@ export class Amiable extends GuStack {
         scaling: { minimumInstances: 1 },
         applicationLogging: { enabled: true },
         imageRecipe: "arm64-jammy-java21-deploy-infrastructure",
-      }
+      },
+      ecsProps: {
+        imageIdentifier: process.env.IMAGE_DIGEST ?? "DEV",
+        cpu: 256,
+        memoryLimitMiB: 1024,
+        scaling: {
+          minimumTasks: 1,
+          maximumTasks: 1
+        },
+        s3Config: getDefaultS3ConfigMount(this),
+      },
+      targetGroupWeights: {
+        ecs: 0,
+        ec2: 1
+      },
     });
 
     // This parameter is used by https://github.com/guardian/waf
