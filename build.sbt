@@ -6,7 +6,7 @@ version := "1.0-SNAPSHOT"
 
 enablePlugins(PlayScala, JDebPackaging, SystemdPlugin)
 
-ThisBuild / scalaVersion := "3.3.8"
+ThisBuild / scalaVersion := "3.9.0"
 
 Universal / javaOptions ++= Seq(
   "-Dpidfile.path=/dev/null",
@@ -66,7 +66,7 @@ libraryDependencies ++= Seq(
   "org.playframework" %% "play-json-joda" % "3.0.6",
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % Test,
-  "org.mockito" % "mockito-core" % "5.23.0" % Test,
+  "org.mockito" % "mockito-core" % "5.24.0" % Test,
   "net.logstash.logback" % "logstash-logback-encoder" % "7.3", // scala-steward:off
   // Transient dependency of Play. No newer version of Play with this vulnerability fixed.
   "ch.qos.logback" % "logback-classic" % "1.6.3"
