@@ -1,0 +1,33 @@
+services:
+  app-config:
+    image: public.ecr.aws/aws-cli/aws-cli:latest
+    entrypoint: ["/bin/sh", "-c"]
+    environment:
+      AWS_DEFAULT_REGION: eu-west-1
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?Export AWS_ACCESS_KEY_ID before starting Compose}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?Export AWS_SECRET_ACCESS_KEY before starting Compose}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+    command:
+      - |
+        set -eu
+        aws s3 sync "s3://deploy-tools-dist/deploy/CODE/amiable/conf/" /config/ --delete
+        if [ ! -s "/config/amiable.conf" ]; then
+          echo "Missing or empty configuration file: amiable.conf" >&2
+          exit 1
+        fi
+    volumes:
+      - config:/config
+
+  amiable:
+    image: ${IMAGE:-amiable:1.0-SNAPSHOT}
+    pull_policy: never
+    depends_on:
+      app-config:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${PORT:-9000}:9000"
+    volumes:
+      - config:/etc/gu/s3-sync:ro
+
+volumes:
+  config:
