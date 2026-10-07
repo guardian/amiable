@@ -11,7 +11,8 @@ on:
       - "main"
 jobs:
   CI:
-    runs-on: ubuntu-latest
+    # We want an arm image
+    runs-on: ubuntu-24.04-arm
 
     # See https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
     permissions:
@@ -43,6 +44,20 @@ jobs:
 
       # See https://github.com/github/scripts-to-rule-them-all
       - name: Run script/ci
+        run: ./script/ci
+
+      - name: Publish Image
+        uses: guardian/actions-publish-image@v0.0.13
+        id: publish-image
+        with:
+          roleArn: ${{ secrets.GU_ARTIFACTS_ROLE_ARN }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      # Must come after image is published to pick up env var
+      - name: Run cdk/script/ci
+        working-directory: cdk
+        env:
+          IMAGE_DIGEST: ${{ steps.publish-image.outputs.imageDigest }}
         run: ./script/ci
 
       - name: Upload to riff-raff

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest --runInBand --detectOpenHandles",
+    "test": "IMAGE_DIGEST=DEV jest --runInBand --detectOpenHandles",
     "test:dev": "jest --runInBand --detectOpenHandles --watch",
     "lint": "eslint lib/** bin/** --ext .ts",
     "format": "prettier --write \"{lib,bin}/**/*.ts\"",
@@ -17,7 +17,7 @@
     "synth": "cdk synth --path-metadata false --version-reporting false"
   },
   "devDependencies": {
-    "@guardian/cdk": "64.7.0",
+    "@guardian/cdk": "0.0.0-canary-20261005105414",
     "@guardian/eslint-config": "^16.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "26.0.0",
