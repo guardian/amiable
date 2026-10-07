@@ -96,6 +96,8 @@ class Agents @Inject() (
       cloudwatchDataSubscription.cancel()
       Future.successful(())
     }
+  } else {
+    logger.warn("Agents are not started in test mode")
   }
 
   def refreshAmis(): Unit = {
