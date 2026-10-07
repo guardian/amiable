@@ -1,11 +1,9 @@
 package services
 
-import org.apache.pekko.actor.ActorSystem
 import config.{AMIableConfig, AmiableConfigProvider}
-
-import javax.inject.Inject
 import metrics.{CloudWatch, CloudWatchMetrics}
 import models.*
+import org.apache.pekko.actor.ActorSystem
 import org.joda.time.DateTime
 import play.api.inject.ApplicationLifecycle
 import play.api.{Environment, Logging, Mode}
@@ -13,6 +11,7 @@ import prism.{Prism, PrismLogic}
 import utils.Percentiles
 
 import java.util.concurrent.atomic.AtomicReference
+import javax.inject.Inject
 import scala.concurrent.duration.*
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -216,16 +215,18 @@ class Agents @Inject() (
       .fold(
         { err =>
           logger.warn(
-            s"Failed to update historical data for metric '$metricName': ${err.logString}"
+            s"Failed to update historical data for metric '$metricName' and namespace '${amiableConfigProvider.cloudwatchReadNamespace}': ${err.logString}"
           )
         },
         { dataOpt =>
           dataOpt.fold {
             logger
-              .warn(s"Failed to fetch historical data for metric '$metricName'")
+              .warn(
+                s"Failed to fetch historical data for metric '$metricName' and namespace '${amiableConfigProvider.cloudwatchReadNamespace}'"
+              )
           } { data =>
             logger.debug(
-              s"Found ${data.size} historical datapoints for metric '$metricName'"
+              s"Found ${data.size} historical datapoints for metric '$metricName' and namespace '${amiableConfigProvider.cloudwatchReadNamespace}'"
             )
             agent.set(data)
           }

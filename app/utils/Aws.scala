@@ -2,6 +2,7 @@ package utils
 
 import software.amazon.awssdk.auth.credentials.{
   AwsCredentialsProvider,
+  ContainerCredentialsProvider,
   InstanceProfileCredentialsProvider,
   ProfileCredentialsProvider
 }
@@ -22,10 +23,15 @@ object Aws {
       .builder()
       .build()
 
+    val containerProvider = ContainerCredentialsProvider
+      .builder()
+      .build()
+
     AwsCredentialsProviderChain
       .builder()
       .addCredentialsProvider(profileProvider)
       .addCredentialsProvider(instanceProvider)
+      .addCredentialsProvider(containerProvider)
       .build()
   }
 }
