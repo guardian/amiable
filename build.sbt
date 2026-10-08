@@ -95,10 +95,3 @@ debianPackageDependencies := Seq("java-21-amazon-corretto-jdk:arm64")
 
 dockerBaseImage := "amazoncorretto:21-alpine"
 dockerExposedPorts := Seq(9000)
-dockerCommands ++= Seq(
-  Cmd(
-    "RUN",
-    "ln -sf /etc/gu/s3-sync/amiable-service-account-cert.json /amiable/amiable-service-account-cert.json"
-  ),
-  Cmd("RUN", "ln -sf /etc/gu/s3-sync/amiable.conf /etc/amiable.conf")
-)
