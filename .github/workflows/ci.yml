@@ -46,12 +46,12 @@ jobs:
         run: ./script/ci
 
       - name: Publish Image
-        uses: guardian/actions-publish-image@v0.0.13
+        uses: guardian/actions-ecr/push@v1.0.1
         id: publish-image
         with:
           roleArn: ${{ secrets.GU_ARTIFACTS_ROLE_ARN }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          appName: amiable
+          app: amiable
 
       - name: Upload to riff-raff
         uses: guardian/actions-riff-raff@v4.3.6
