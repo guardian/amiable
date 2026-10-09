@@ -29,11 +29,9 @@ export class Amiable extends GuStack {
 
     const userData = UserData.forLinux();
     userData.addCommands(`
-          mkdir /amiable
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable-service-account-cert.json /amiable/
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/conf/amiable.conf /etc/
-          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable-${buildNumber}.deb /amiable/amiable.deb
+          aws --region eu-west-1 s3 sync s3://${distBucket}/${stack}/${stage}/${app}/conf/ /etc/gu/s3-sync/
 
+          aws --region eu-west-1 s3 cp s3://${distBucket}/${stack}/${stage}/${app}/amiable-${buildNumber}.deb /amiable/amiable.deb
           dpkg -i /amiable/amiable.deb`);
 
     const loadBalancedApp = new GuLoadBalancedAppExperimental(this, {
@@ -75,6 +73,7 @@ export class Amiable extends GuStack {
         scaling: { minimumInstances: 1 },
         applicationLogging: { enabled: true },
         imageRecipe: "arm64-jammy-java21-deploy-infrastructure",
+        allowS3Sync: true
       }
     });
 

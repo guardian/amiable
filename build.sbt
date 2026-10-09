@@ -10,11 +10,11 @@ ThisBuild / scalaVersion := "3.9.0"
 
 Universal / javaOptions ++= Seq(
   "-Dpidfile.path=/dev/null",
-  s"-Dconfig.file=/etc/${name.value}.conf",
+  s"-Dconfig.file=/etc/gu/s3-sync/${name.value}.conf",
   "-J-XX:MaxRAMPercentage=50.0",
   "-J-XX:InitialRAMPercentage=50.0",
   "-J-XX:MaxMetaspaceSize=300m",
-  s"-J-Xlog:gc*:file=/var/log/${packageName.value}/gc.log::filecount=5,filesize=10M"
+  "-J-Xlog:gc*:stdout"
 )
 
 Test / javaOptions += "-Dconfig.file=conf/application.test.conf"
