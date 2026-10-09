@@ -20,13 +20,13 @@
     "@guardian/cdk": "65.1.1",
     "@guardian/eslint-config": "^16.0.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "26.0.0",
-    "eslint": "9.39.2",
-    "jest": "^30.4.2",
-    "prettier": "3.8.4",
-    "ts-jest": "29.4.11",
+    "@types/node": "26.6.4",
+    "eslint": "10.11.0",
+    "jest": "^30.5.2",
+    "prettier": "3.9.9",
+    "ts-jest": "29.4.14",
     "ts-node": "^10.9.2",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   },
   "dependencies": {
     "source-map-support": "^0.5.16"
