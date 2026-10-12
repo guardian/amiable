@@ -140,6 +140,3 @@ project/metals.sbt
 
 .bsp/
 project/project/
-
-# Config downloaded from S3 by script/run-locally-with-mount
-.amiable-local-docker-conf/

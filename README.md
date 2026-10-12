@@ -43,34 +43,49 @@ network. Ensure any required
 VPN or private-network access is active.
 
 ### Local setup (with docker)
-Amiable can also be run in a docker container. This is useful if you don't want to install all the dependencies on your machine.
-When run locally, the docker image is built, stored locally and run.
-All the configuration is passed to the docker container by means of mounting the configuration file(s) from an S3 location.
+Amiable can also run using Docker Compose. Install Docker Compose and export
+`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` before starting. For temporary
+credentials, also export `AWS_SESSION_TOKEN`. These credentials are passed only
+to the app-config container. AWS profiles and SSO configuration are not mounted
+or used; setting `AWS_PROFILE` alone does not provide credentials.
 
-To build and run the docker container locally, run the following command:
+Build the application image locally, then start the services:
 
-```shell script
- # Set up your AWS credentials for the deploy-tools account
- export AWS_ACCESS_KEY_ID=???
- export AWS_SECRET_ACCESS_KEY=???
- export AWS_SESSION_TOKEN=???
+```shell
+sbt Docker/publishLocal
+docker compose up
+```
 
- # Run the CI script to build the docker image. Note that a local image registry is required for the image to be stored and made available.
- /script/ci
+The `app-config` service downloads the files from
+`s3://deploy-tools-dist/deploy/CODE/amiable/conf/` into a Docker-managed volume.
+Amiable starts only after the download succeeds and both `amiable.conf` and
+`amiable-service-account-cert.json` are present. It mounts that volume read-only
+at `/etc/gu/s3-sync` and listens at `http://localhost:9000`.
+The S3 configuration still needs appropriate local Google Auth settings; downloading
+CODE configuration does not automatically configure local authentication.
+The container also needs network access to Prism as described above.
 
- # Run the docker container locally & mount the configuration file(s) from S3 as you need them
- /script/run-docker-local
- --bucket deploy-tools-dist \
- --stack deploy \
- --stage CODE \
- --profile deployTools \
- --image amiable:1.0-SNAPSHOT \
- --port 9000
+Override defaults using Compose environment variables:
 
- ```
+```shell
+DIST_BUCKET=another-bucket \
+STAGE=MY_STAGE \
+IMAGE=amiable:x.y.z-SNAPSHOT \
+PORT=9101 \
+docker compose up
+```
 
-*These are the default values for the parameters, you can change them if you want to run the docker container with different values.*
+`STACK` defaults to `deploy` and `STAGE` to `CODE`. No downloaded configuration is written to the repository.
+The volume survives container shutdown; to remove the containers and downloaded
+configuration, run:
 
+```shell
+docker compose down --volumes
+```
+
+Use this cleanup command before starting again when switching configuration sources,
+refreshing configuration, or switching application images. Avoid sharing the same
+Compose project between concurrent runs with different settings.
 
 
 ### Debugging
