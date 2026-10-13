@@ -7,20 +7,14 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?Export AWS_ACCESS_KEY_ID before starting Compose}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?Export AWS_SECRET_ACCESS_KEY before starting Compose}
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
-      DIST_BUCKET: ${DIST_BUCKET:-deploy-tools-dist}
-      STACK: ${STACK:-deploy}
-      STAGE: ${STAGE:-CODE}
     command:
       - |
         set -eu
-        aws s3 sync "s3://$${DIST_BUCKET}/$${STACK}/$${STAGE}/amiable/conf/" /config/ --delete
-        for file in amiable.conf; do
-          if [ ! -s "/config/$$file" ]; then
-            echo "Missing or empty configuration file: $$file" >&2
-            exit 1
-          fi
-        done
-        chmod -R a+rX /config
+        aws s3 sync "s3://deploy-tools-dist/deploy/CODE/amiable/conf/" /config/ --delete
+        if [ ! -s "/config/amiable.conf" ]; then
+          echo "Missing or empty configuration file: amiable.conf" >&2
+          exit 1
+        fi
     volumes:
       - config:/config
 

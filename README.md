@@ -65,17 +65,16 @@ The S3 configuration still needs appropriate local Google Auth settings; downloa
 CODE configuration does not automatically configure local authentication.
 The container also needs network access to Prism as described above.
 
-Override defaults using Compose environment variables:
+Override the image or local port using Compose environment variables:
 
 ```shell
-DIST_BUCKET=another-bucket \
-STAGE=MY_STAGE \
 IMAGE=amiable:x.y.z-SNAPSHOT \
 PORT=9101 \
 docker compose up
 ```
 
-`STACK` defaults to `deploy` and `STAGE` to `CODE`. No downloaded configuration is written to the repository.
+The configuration source is fixed at `s3://deploy-tools-dist/deploy/CODE/amiable/conf/`.
+No downloaded configuration is written to the repository.
 The volume survives container shutdown; to remove the containers and downloaded
 configuration, run:
 
