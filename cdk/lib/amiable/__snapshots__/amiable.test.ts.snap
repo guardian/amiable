@@ -1447,6 +1447,7 @@ exitCode=$?
 }
 trap exitTrap EXIT
 
+          mkdir /amiable
           aws --region eu-west-1 s3 sync s3://",
                   {
                     "Ref": "DistributionBucketName",
@@ -3312,6 +3313,7 @@ exitCode=$?
 }
 trap exitTrap EXIT
 
+          mkdir /amiable
           aws --region eu-west-1 s3 sync s3://",
                   {
                     "Ref": "DistributionBucketName",
