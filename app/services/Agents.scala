@@ -67,10 +67,6 @@ class Agents @Inject() (
     oldInstanceCountByAccountAgent.get
 
   if (environment.mode != Mode.Test) {
-    refreshAmis()
-    refreshSSAs()
-    refreshInstancesInfo()
-    refreshHistory()
 
     val prismDataSubscription = system.scheduler.scheduleAtFixedRate(
       initialDelay = 0.seconds,
