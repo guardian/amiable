@@ -5,7 +5,7 @@ https://amiable.gutools.co.uk
 
 
 ## How to run Amiable locally
-### Local setup
+### Local setup (without docker)
 
 Amiable uses Google Auth. For this reason, we need to run Amiable through an nginx proxy `amiable.local.dev-gutools.co.uk`.
 This can be achieved by running:
@@ -41,6 +41,51 @@ a working Prism connection but the dashboard and other data-dependent pages will
 The environment running `sbt` must be able to reach the configured `PRISM_URL` across the
 network. Ensure any required
 VPN or private-network access is active.
+
+### Local setup (with docker)
+Amiable can also run using Docker Compose. Install Docker Compose and export
+`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` before starting. For temporary
+credentials, also export `AWS_SESSION_TOKEN`. These credentials are passed only
+to the app-config container. AWS profiles and SSO configuration are not mounted
+or used; setting `AWS_PROFILE` alone does not provide credentials.
+
+Build the application image locally, then start the services:
+
+```shell
+sbt Docker/publishLocal
+docker compose up
+```
+
+The `app-config` service downloads the files from
+`s3://deploy-tools-dist/deploy/CODE/amiable/conf/` into a Docker-managed volume.
+Amiable starts only after the download succeeds and both `amiable.conf` and
+`amiable-service-account-cert.json` are present. It mounts that volume read-only
+at `/etc/gu/s3-sync` and listens at `http://localhost:9000`.
+The S3 configuration still needs appropriate local Google Auth settings; downloading
+CODE configuration does not automatically configure local authentication.
+The container also needs network access to Prism as described above.
+
+Override the image or local port using Compose environment variables:
+
+```shell
+IMAGE=amiable:x.y.z-SNAPSHOT \
+PORT=9101 \
+docker compose up
+```
+
+The configuration source is fixed at `s3://deploy-tools-dist/deploy/CODE/amiable/conf/`.
+No downloaded configuration is written to the repository.
+The volume survives container shutdown; to remove the containers and downloaded
+configuration, run:
+
+```shell
+docker compose down --volumes
+```
+
+Use this cleanup command before starting again when switching configuration sources,
+refreshing configuration, or switching application images. Avoid sharing the same
+Compose project between concurrent runs with different settings.
+
 
 ### Debugging
  To attach a debugger, use sbt's built-in flag: `sbt -jvm-debug 1056 run`. Then connect your IDE's remote debugger to port 1056.

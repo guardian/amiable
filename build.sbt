@@ -1,10 +1,14 @@
-import com.typesafe.sbt.packager.debian.DebianPlugin.autoImport.Debian
-
 name := "amiable"
 
 version := "1.0-SNAPSHOT"
 
-enablePlugins(PlayScala, JDebPackaging, SystemdPlugin)
+enablePlugins(
+  PlayScala,
+  JDebPackaging,
+  SystemdPlugin,
+  // Use the Almquist shell (ash) instead of BASH for Alpine-based container images.
+  AshScriptPlugin
+)
 
 ThisBuild / scalaVersion := "3.9.0"
 
@@ -85,3 +89,8 @@ maintainer := "Guardian Developers <dig.dev.software@theguardian.com>"
 packageSummary := "AMIable"
 packageDescription := "Web app for monitoring the use of AMIs"
 debianPackageDependencies := Seq("java-21-amazon-corretto-jdk:arm64")
+
+dockerBaseImage := "amazoncorretto:21-alpine"
+dockerExposedPorts := Seq(9000)
+dockerRepository := Some("guardian")
+version := sys.env.getOrElse("BUILD_NUMBER", "DEV")
