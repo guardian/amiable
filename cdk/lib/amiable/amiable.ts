@@ -7,21 +7,23 @@ import type { App } from "aws-cdk-lib";
 import { Duration } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, UserData } from "aws-cdk-lib/aws-ec2";
 import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
-import {GuLoadBalancedAppExperimental} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
+import {
+  getDefaultS3ConfigMount,
+  GuLoadBalancedAppExperimental
+} from "@guardian/cdk/lib/experimental/patterns/gu-load-balanced-app";
 
 interface AmiableProps extends GuStackProps {
   domainName: string;
+  app: string;
 }
 
 export class Amiable extends GuStack {
   constructor(scope: App, id: string, props: AmiableProps) {
     super(scope, id, props);
 
-    const app = "amiable";
     const { stack, stage } = this;
     const isProd = stage === "PROD";
-
-    const { domainName } = props;
+    const { app, domainName } = props;
 
     const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
 
@@ -73,8 +75,22 @@ export class Amiable extends GuStack {
         scaling: { minimumInstances: 1 },
         applicationLogging: { enabled: true },
         imageRecipe: "arm64-jammy-java21-deploy-infrastructure",
-        allowS3Sync: true
-      }
+        allowS3Sync: true,
+      },
+      ecsProps: {
+        imageIdentifier: process.env.IMAGE_DIGEST ?? "DEV",
+        cpu: 256,
+        memoryLimitMiB: 1024,
+        scaling: {
+          minimumTasks: 1,
+          maximumTasks: 1
+        },
+        s3Config: getDefaultS3ConfigMount(this, { app }),
+      },
+      targetGroupWeights: {
+        ecs: 0,
+        ec2: 1
+      },
     });
 
     // This parameter is used by https://github.com/guardian/waf
