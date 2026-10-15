@@ -88,8 +88,8 @@ export class Amiable extends GuStack {
         s3Config: getDefaultS3ConfigMount(this, { app }),
       },
       targetGroupWeights: {
-        ecs: 0,
-        ec2: 1
+        ecs: 1,
+        ec2: 0
       },
     });
 
