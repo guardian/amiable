@@ -9,7 +9,7 @@ const commonProps = {
   migratedFromCloudFormation: true,
   stack: "deploy",
   app: "amiable",
-  env: { region: "eu-west-1" }
+  env: { region: "eu-west-1" },
 };
 
 export const codeProps = {
