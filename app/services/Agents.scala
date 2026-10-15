@@ -73,7 +73,6 @@ class Agents @Inject() (
       interval = refreshInterval
     ) { () =>
       {
-        logger.debug(s"Refreshing agents")
         refreshAmis()
         refreshSSAs()
         refreshInstancesInfo()
@@ -95,6 +94,7 @@ class Agents @Inject() (
   }
 
   def refreshAmis(): Unit = {
+    logger.info("Refreshing AMIs from Prism")
     Prism
       .getAMIs()
       .fold(
@@ -102,13 +102,14 @@ class Agents @Inject() (
           logger.warn(s"Failed to update AMIs ${err.logString}")
         },
         { amis =>
-          logger.debug(s"Loaded ${amis.size} AMIs")
+          logger.info(s"Loaded ${amis.size} AMIs")
           amisAgent.set(amis.toSet)
         }
       )
   }
 
   def refreshSSAs(): Unit = {
+    logger.info("Refreshing SSAs from Prism")
     Prism
       .getInstances(SSAA())
       .map(PrismLogic.instanceSSAAs)
@@ -117,7 +118,7 @@ class Agents @Inject() (
           logger.warn(s"Failed to update SSAs ${err.logString}")
         },
         { ssaas =>
-          logger.debug(s"Loaded ${ssaas.size} SSAA combinations")
+          logger.info(s"Loaded ${ssaas.size} SSAA combinations")
           ssasAgent.set(ssaas.toSet)
         }
       )
@@ -169,6 +170,7 @@ class Agents @Inject() (
   }
 
   def refreshInstancesInfo(): Unit = {
+    logger.info("Refreshing instances info from Prism")
     Prism
       .instancesWithAmis(SSAA())
       .fold(
@@ -178,6 +180,9 @@ class Agents @Inject() (
         { instancesWithAmis =>
           refreshProdInstancesInfo(instancesWithAmis)
           refreshOldInstanceCountInfo(instancesWithAmis)
+          logger.info(
+            s"Found ${instancesWithAmis.length} instances with AMIs"
+          )
         }
       )
   }
@@ -205,6 +210,9 @@ class Agents @Inject() (
       agent: AtomicReference[List[(DateTime, Double)]],
       metricName: String
   ): Unit = {
+    logger.info(
+      s"Refreshing historical data for metric '$metricName' from CloudWatch"
+    )
     cloudWatch
       .get(amiableConfigProvider.cloudwatchReadNamespace, metricName)
       .fold(
@@ -218,7 +226,7 @@ class Agents @Inject() (
             logger
               .warn(s"Failed to fetch historical data for metric '$metricName'")
           } { data =>
-            logger.debug(
+            logger.info(
               s"Found ${data.size} historical datapoints for metric '$metricName'"
             )
             agent.set(data)
