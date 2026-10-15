@@ -2,6 +2,7 @@ import software.amazon.awssdk.services.ses.SesAsyncClient
 import com.gu.googleauth.AuthAction
 import config.AmiableConfigProvider
 import controllers.{AMIable, Healthcheck, Login, routes}
+import filters.TargetFilter
 import metrics.CloudWatch
 import play.api.ApplicationLoader.Context
 import play.api.Logging
@@ -55,6 +56,12 @@ class AppComponents(context: Context)
     with HttpFiltersComponents
     with AhcWSComponents
     with controllers.AssetsComponents {
+
+  override lazy val httpFilters =
+    new TargetFilter(sys.env)(
+      materializer,
+      executionContext
+    ) +: super.httpFilters
 
   lazy val amiableConfigProvider =
     new AmiableConfigProvider(wsClient, configuration, httpConfiguration)
