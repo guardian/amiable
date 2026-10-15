@@ -90,7 +90,7 @@ packageSummary := "AMIable"
 packageDescription := "Web app for monitoring the use of AMIs"
 debianPackageDependencies := Seq("java-21-amazon-corretto-jdk:arm64")
 
-dockerBaseImage := "amazoncorretto:21-alpine"
+dockerBaseImage := "eclipse-temurin:21-jre-alpine"
 dockerExposedPorts := Seq(9000)
 dockerRepository := Some("guardian")
 version := sys.env.getOrElse("BUILD_NUMBER", "DEV")
