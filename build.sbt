@@ -94,6 +94,10 @@ dockerExposedPorts := Seq(9000)
 dockerRepository := Some("guardian")
 version := sys.env.getOrElse("BUILD_NUMBER", "DEV")
 
+/*
+Patch vulnerabilities in the amazoncorretto image.
+Please see https://github.com/corretto/corretto-docker#security for more information.
+ */
 dockerCommands := {
   import com.typesafe.sbt.packager.docker.Cmd
 
