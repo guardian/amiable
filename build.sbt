@@ -61,7 +61,6 @@ val awsSdkVersion = "2.55.5"
 libraryDependencies ++= Seq(
   jdbc,
   ws,
-  "at.yawk.lz4" % "lz4-java" % "1.11.4",
   "software.amazon.awssdk" % "cloudwatch" % awsSdkVersion,
   "software.amazon.awssdk" % "ses" % awsSdkVersion,
   "com.google.code.gson" % "gson" % "2.14.0",
