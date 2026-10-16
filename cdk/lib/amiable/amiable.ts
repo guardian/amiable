@@ -79,8 +79,8 @@ export class Amiable extends GuStack {
       },
       ecsProps: {
         imageIdentifier: process.env.IMAGE_DIGEST ?? "DEV",
-        cpu: 256,
-        memoryLimitMiB: 1024,
+        cpu: 1024,
+        memoryLimitMiB: 2048,
         scaling: {
           minimumTasks: 1,
           maximumTasks: 1
