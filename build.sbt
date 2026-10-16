@@ -60,7 +60,6 @@ val awsSdkVersion = "2.55.5"
 
 libraryDependencies ++= Seq(
   jdbc,
-  ehcache,
   ws,
   "software.amazon.awssdk" % "cloudwatch" % awsSdkVersion,
   "software.amazon.awssdk" % "ses" % awsSdkVersion,
@@ -94,3 +93,14 @@ dockerBaseImage := "amazoncorretto:21-alpine"
 dockerExposedPorts := Seq(9000)
 dockerRepository := Some("guardian")
 version := sys.env.getOrElse("BUILD_NUMBER", "DEV")
+
+dockerCommands := {
+  import com.typesafe.sbt.packager.docker.Cmd
+
+  dockerCommands.value.flatMap {
+    case from @ Cmd("FROM", _*) =>
+      Seq(from, Cmd("RUN", "apk -U upgrade --no-cache"))
+    case command =>
+      Seq(command)
+  }
+}
