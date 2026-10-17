@@ -4,26 +4,17 @@ exports[`The Amiable stack matches the snapshot 1`] = `
 {
   "Metadata": {
     "gu:cdk:constructs": [
-      "GuDistributionBucketParameter",
       "GuSESSenderPolicy",
       "GuAllowPolicy",
+      "GuDistributionBucketParameter",
       "GuVpcParameter",
       "GuSubnetListParameter",
       "GuSubnetListParameter",
       "GuLoadBalancedAppExperimental",
-      "GuListBucketPolicy",
-      "GuInstanceRole",
-      "GuSsmSshPolicy",
-      "GuDescribeEC2Policy",
       "GuLoggingStreamNameParameter",
-      "GuLogShippingPolicy",
-      "GuGetDistributablePolicy",
-      "GuParameterStoreReadPolicy",
-      "GuAmiParameter",
-      "GuHttpsEgressSecurityGroup",
-      "GuAutoScalingGroup",
-      "GuApplicationTargetGroup",
       "GuRiffRaffDeploymentIdParameterExperimental",
+      "GuLogShippingPolicy",
+      "GuParameterStoreReadPolicy",
       "GuHttpsEgressSecurityGroup",
       "GuSecurityGroup",
       "GuApplicationTargetGroup",
@@ -49,10 +40,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     },
   },
   "Parameters": {
-    "AMIAmiable": {
-      "Description": "Amazon Machine Image ID for the app amiable. Use this in conjunction with AMIgo to keep AMIs up to date.",
-      "Type": "AWS::EC2::Image::Id",
-    },
     "AccessLoggingBucket": {
       "Default": "/account/services/access-logging/bucket",
       "Description": "S3 bucket to store your access logs",
@@ -170,159 +157,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
     },
-    "AsgRollingUpdatePolicy2A1DDC6F": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "cloudformation:SignalResource",
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "AWS::StackId",
-              },
-            },
-            {
-              "Action": "elasticloadbalancing:DescribeTargetHealth",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "AsgRollingUpdatePolicy2A1DDC6F",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "AutoScalingGroupAmiableASGFCD99427": {
-      "CreationPolicy": {
-        "AutoScalingCreationPolicy": {
-          "MinSuccessfulInstancesPercent": 100,
-        },
-        "ResourceSignal": {
-          "Count": 1,
-          "Timeout": "PT3M",
-        },
-      },
-      "DependsOn": [
-        "AsgRollingUpdatePolicy2A1DDC6F",
-      ],
-      "Properties": {
-        "DesiredCapacity": "1",
-        "HealthCheckGracePeriod": 120,
-        "HealthCheckType": "ELB",
-        "LaunchTemplate": {
-          "LaunchTemplateId": {
-            "Ref": "deployCODEamiableCD81551B",
-          },
-          "Version": {
-            "Fn::GetAtt": [
-              "deployCODEamiableCD81551B",
-              "LatestVersionNumber",
-            ],
-          },
-        },
-        "MaxSize": "2",
-        "MetricsCollection": [
-          {
-            "Granularity": "1Minute",
-          },
-        ],
-        "MinSize": "1",
-        "Tags": [
-          {
-            "Key": "App",
-            "PropagateAtLaunch": true,
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "PropagateAtLaunch": true,
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "PropagateAtLaunch": true,
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "LogKinesisStreamName",
-            "PropagateAtLaunch": true,
-            "Value": {
-              "Ref": "LoggingStreamName",
-            },
-          },
-          {
-            "Key": "Stack",
-            "PropagateAtLaunch": true,
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "PropagateAtLaunch": true,
-            "Value": "CODE",
-          },
-          {
-            "Key": "SystemdUnit",
-            "PropagateAtLaunch": true,
-            "Value": "amiable.service",
-          },
-        ],
-        "TargetGroupARNs": [
-          {
-            "Ref": "TargetGroupAmiable6987B5AC",
-          },
-        ],
-        "VPCZoneIdentifier": [
-          {
-            "Fn::Select": [
-              0,
-              {
-                "Ref": "amiablePrivateSubnets",
-              },
-            ],
-          },
-          {
-            "Fn::Select": [
-              1,
-              {
-                "Ref": "amiablePrivateSubnets",
-              },
-            ],
-          },
-          {
-            "Fn::Select": [
-              2,
-              {
-                "Ref": "amiablePrivateSubnets",
-              },
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::AutoScaling::AutoScalingGroup",
-      "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "MaxBatchSize": 2,
-          "MinInstancesInService": 1,
-          "MinSuccessfulInstancesPercent": 100,
-          "PauseTime": "PT3M",
-          "SuspendProcesses": [
-            "AlarmNotification",
-            "AZRebalance",
-            "HealthCheck",
-            "InstanceRefresh",
-            "ReplaceUnhealthy",
-            "ScheduledActions",
-          ],
-          "WaitOnResourceSignals": true,
-        },
-      },
-    },
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -373,36 +207,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         "PolicyName": "CloudwatchPolicyFEF3FFD1",
         "Roles": [
           {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-          {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DescribeEC2PolicyFF5F9295": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "autoscaling:DescribeAutoScalingInstances",
-                "autoscaling:DescribeAutoScalingGroups",
-                "ec2:DescribeTags",
-                "ec2:DescribeInstances",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "describe-ec2-policy",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
@@ -429,8 +234,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "DependsOn": [
         "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
         "EcsTaskDefinitionTaskRoleB7B6D8DD",
-        "ListenerAmiableDeterministicRouteToEc2RuleCC543DB7",
-        "ListenerAmiableDeterministicRouteToEcsRuleA9134EC3",
         "ListenerAmiable4B1060D6",
         "S3FilesMountTarget0",
         "S3FilesMountTarget1",
@@ -1030,78 +833,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
-    "GetDistributablePolicyAmiableE65882EA": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:GetObject",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                    "/deploy/CODE/amiable/*",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "GetDistributablePolicyAmiableE65882EA",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "GuHttpsEgressSecurityGroupAmiable42C3598C": {
-      "Properties": {
-        "GroupDescription": "Allow all outbound HTTPS traffic",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound HTTPS traffic",
-            "FromPort": 443,
-            "IpProtocol": "tcp",
-            "ToPort": 443,
-          },
-        ],
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
-        "VpcId": {
-          "Ref": "VpcId",
-        },
-      },
-      "Type": "AWS::EC2::SecurityGroup",
-    },
     "GuHttpsEgressSecurityGroupAmiableecs814D532A": {
       "Properties": {
         "GroupDescription": "Allow all outbound HTTPS traffic",
@@ -1184,88 +915,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
-    "GuHttpsEgressSecurityGroupAmiablefromamiableLoadBalancerAmiableSecurityGroup8E8C9583900089C3896F": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
-    "GuHttpsEgressSecurityGroupAmiablefromamiableldpaccessAmiable1EDD8FAB9000558E233C": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
-    "GuListBucketPolicyAmiable19C77599": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:ListBucket",
-              "Condition": {
-                "StringLike": {
-                  "s3:prefix": "deploy/CODE/amiable/conf/",
-                },
-              },
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "GuListBucketPolicyAmiable19C77599",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "GuLogShippingPolicy981BFE5A": {
       "Properties": {
         "PolicyDocument": {
@@ -1297,9 +946,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         },
         "PolicyName": "GuLogShippingPolicy981BFE5A",
         "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
           {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
           },
@@ -1333,54 +979,11 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         "PolicyName": "GuSESSenderPolicy2E2A75A2",
         "Roles": [
           {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-          {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "InstanceRoleAmiable56110022": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ec2.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Path": "/",
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
     },
     "ListenerAmiable4B1060D6": {
       "Properties": {
@@ -1412,23 +1015,10 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             "Type": "authenticate-cognito",
           },
           {
-            "ForwardConfig": {
-              "TargetGroups": [
-                {
-                  "TargetGroupArn": {
-                    "Ref": "TargetGroupAmiable6987B5AC",
-                  },
-                  "Weight": 1,
-                },
-                {
-                  "TargetGroupArn": {
-                    "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
-                  },
-                  "Weight": 0,
-                },
-              ],
-            },
             "Order": 2,
+            "TargetGroupArn": {
+              "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
+            },
             "Type": "forward",
           },
         ],
@@ -1462,106 +1052,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         ],
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
-    },
-    "ListenerAmiableDeterministicRouteToEc2RuleCC543DB7": {
-      "Properties": {
-        "Actions": [
-          {
-            "TargetGroupArn": {
-              "Ref": "TargetGroupAmiable6987B5AC",
-            },
-            "Type": "forward",
-          },
-        ],
-        "Conditions": [
-          {
-            "Field": "http-header",
-            "HttpHeaderConfig": {
-              "HttpHeaderName": "X-Gu-Target-Group",
-              "Values": [
-                "ec2",
-              ],
-            },
-          },
-        ],
-        "ListenerArn": {
-          "Ref": "ListenerAmiable4B1060D6",
-        },
-        "Priority": 10,
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
-      },
-      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
-    },
-    "ListenerAmiableDeterministicRouteToEcsRuleA9134EC3": {
-      "Properties": {
-        "Actions": [
-          {
-            "TargetGroupArn": {
-              "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
-            },
-            "Type": "forward",
-          },
-        ],
-        "Conditions": [
-          {
-            "Field": "http-header",
-            "HttpHeaderConfig": {
-              "HttpHeaderName": "X-Gu-Target-Group",
-              "Values": [
-                "ecs",
-              ],
-            },
-          },
-        ],
-        "ListenerArn": {
-          "Ref": "ListenerAmiable4B1060D6",
-        },
-        "Priority": 11,
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
-      },
-      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
     },
     "LoadBalancerAmiable9C4DD4AF": {
       "Properties": {
@@ -1686,27 +1176,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "LoadBalancerAmiableSecurityGrouptoamiableGuHttpsEgressSecurityGroupAmiable7C2576F69000B827F6DB": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
-    },
     "LoadBalancerAmiableSecurityGrouptoamiableGuHttpsEgressSecurityGroupAmiableecs721FD80F9000271996DB": {
       "Properties": {
         "Description": "Load balancer to target",
@@ -1772,9 +1241,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         },
         "PolicyName": "parameter-store-read-policy",
         "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
           {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
           },
@@ -2251,91 +1717,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
-    "SsmSshPolicy4CFC977E": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ec2messages:AcknowledgeMessage",
-                "ec2messages:DeleteMessage",
-                "ec2messages:FailMessage",
-                "ec2messages:GetEndpoint",
-                "ec2messages:GetMessages",
-                "ec2messages:SendReply",
-                "ssm:UpdateInstanceInformation",
-                "ssm:ListInstanceAssociations",
-                "ssm:DescribeInstanceProperties",
-                "ssm:DescribeDocumentParameters",
-                "ssmmessages:CreateControlChannel",
-                "ssmmessages:CreateDataChannel",
-                "ssmmessages:OpenControlChannel",
-                "ssmmessages:OpenDataChannel",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ssm-ssh-policy",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "TargetGroupAmiable6987B5AC": {
-      "Properties": {
-        "HealthCheckIntervalSeconds": 10,
-        "HealthCheckPath": "/healthcheck",
-        "HealthCheckProtocol": "HTTP",
-        "HealthCheckTimeoutSeconds": 5,
-        "HealthyThresholdCount": 5,
-        "Port": 9000,
-        "Protocol": "HTTP",
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
-        "TargetGroupAttributes": [
-          {
-            "Key": "deregistration_delay.timeout_seconds",
-            "Value": "30",
-          },
-          {
-            "Key": "stickiness.enabled",
-            "Value": "false",
-          },
-        ],
-        "TargetType": "instance",
-        "UnhealthyThresholdCount": 2,
-        "VpcId": {
-          "Ref": "VpcId",
-        },
-      },
-      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-    },
     "amiableEcsClusterD69CED02": {
       "Properties": {
         "ClusterSettings": [
@@ -2748,219 +2129,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
-    "deployCODEamiableCD81551B": {
-      "DependsOn": [
-        "InstanceRoleAmiable56110022",
-      ],
-      "Properties": {
-        "LaunchTemplateData": {
-          "IamInstanceProfile": {
-            "Arn": {
-              "Fn::GetAtt": [
-                "deployCODEamiableProfile73DE6E5D",
-                "Arn",
-              ],
-            },
-          },
-          "ImageId": {
-            "Ref": "AMIAmiable",
-          },
-          "InstanceType": "t4g.small",
-          "MetadataOptions": {
-            "HttpTokens": "required",
-            "InstanceMetadataTags": "enabled",
-          },
-          "Monitoring": {
-            "Enabled": false,
-          },
-          "SecurityGroupIds": [
-            {
-              "Fn::GetAtt": [
-                "GuHttpsEgressSecurityGroupAmiable42C3598C",
-                "GroupId",
-              ],
-            },
-          ],
-          "TagSpecifications": [
-            {
-              "ResourceType": "instance",
-              "Tags": [
-                {
-                  "Key": "App",
-                  "Value": "amiable",
-                },
-                {
-                  "Key": "gu:build-identifier",
-                  "Value": "TEST",
-                },
-                {
-                  "Key": "gu:cdk:version",
-                  "Value": "TEST",
-                },
-                {
-                  "Key": "gu:repo",
-                  "Value": "guardian/amiable",
-                },
-                {
-                  "Key": "Name",
-                  "Value": "amiable/deploy-CODE-amiable",
-                },
-                {
-                  "Key": "Stack",
-                  "Value": "deploy",
-                },
-                {
-                  "Key": "Stage",
-                  "Value": "CODE",
-                },
-              ],
-            },
-            {
-              "ResourceType": "volume",
-              "Tags": [
-                {
-                  "Key": "App",
-                  "Value": "amiable",
-                },
-                {
-                  "Key": "gu:build-identifier",
-                  "Value": "TEST",
-                },
-                {
-                  "Key": "gu:cdk:version",
-                  "Value": "TEST",
-                },
-                {
-                  "Key": "gu:repo",
-                  "Value": "guardian/amiable",
-                },
-                {
-                  "Key": "Name",
-                  "Value": "amiable/deploy-CODE-amiable",
-                },
-                {
-                  "Key": "Stack",
-                  "Value": "deploy",
-                },
-                {
-                  "Key": "Stage",
-                  "Value": "CODE",
-                },
-              ],
-            },
-          ],
-          "UserData": {
-            "Fn::Base64": {
-              "Fn::Join": [
-                "",
-                [
-                  "#!/bin/bash
-function exitTrap(){
-exitCode=$?
-
-        cfn-signal --stack ",
-                  {
-                    "Ref": "AWS::StackId",
-                  },
-                  "           --resource AutoScalingGroupAmiableASGFCD99427           --region eu-west-1           --exit-code $exitCode || echo 'Failed to send Cloudformation Signal'
-        
-}
-trap exitTrap EXIT
-
-          aws --region eu-west-1 s3 sync s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/CODE/amiable/conf/ /etc/gu/s3-sync/
-
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/CODE/amiable/amiable-TEST.deb /amiable/amiable.deb
-          dpkg -i /amiable/amiable.deb
-echo "Launch template last updated by Riff-Raff deployment ID: ",
-                  {
-                    "Ref": "RiffRaffDeploymentId",
-                  },
-                  ""
-# GuEc2AppExperimental Instance Health Check Start
-
-      TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-      INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/instance-id")
-
-      STATE=$(aws elbv2 describe-target-health         --target-group-arn ",
-                  {
-                    "Ref": "TargetGroupAmiable6987B5AC",
-                  },
-                  "         --region eu-west-1         --targets Id=$INSTANCE_ID,Port=9000         --query "TargetHealthDescriptions[0].TargetHealth.State")
-
-      until [ "$STATE" == "\\"healthy\\"" ]; do
-        echo "Instance running build TEST not yet healthy within target group. Current state $STATE. Sleeping..."
-        sleep 5
-        STATE=$(aws elbv2 describe-target-health           --target-group-arn ",
-                  {
-                    "Ref": "TargetGroupAmiable6987B5AC",
-                  },
-                  "           --region eu-west-1           --targets Id=$INSTANCE_ID,Port=9000           --query "TargetHealthDescriptions[0].TargetHealth.State")
-      done
-
-      echo "Instance running build TEST is healthy in target group."
-      
-# GuEc2AppExperimental Instance Health Check End",
-                ],
-              ],
-            },
-          },
-        },
-        "TagSpecifications": [
-          {
-            "ResourceType": "launch-template",
-            "Tags": [
-              {
-                "Key": "App",
-                "Value": "amiable",
-              },
-              {
-                "Key": "gu:build-identifier",
-                "Value": "TEST",
-              },
-              {
-                "Key": "gu:cdk:version",
-                "Value": "TEST",
-              },
-              {
-                "Key": "gu:repo",
-                "Value": "guardian/amiable",
-              },
-              {
-                "Key": "Name",
-                "Value": "amiable/deploy-CODE-amiable",
-              },
-              {
-                "Key": "Stack",
-                "Value": "deploy",
-              },
-              {
-                "Key": "Stage",
-                "Value": "CODE",
-              },
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::EC2::LaunchTemplate",
-    },
-    "deployCODEamiableProfile73DE6E5D": {
-      "Properties": {
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::InstanceProfile",
-    },
     "googleidp5A744057": {
       "Properties": {
         "AttributeMapping": {
@@ -3023,27 +2191,6 @@ echo "Launch template last updated by Riff-Raff deployment ID: ",
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "ldpaccessAmiabletoamiableGuHttpsEgressSecurityGroupAmiable7C2576F69000DD06C6C9": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
-    },
     "ldpaccessAmiabletoamiableGuHttpsEgressSecurityGroupAmiableecs721FD80F900002D97D83": {
       "Properties": {
         "Description": "Load balancer to target",
@@ -3073,26 +2220,17 @@ exports[`The Amiable stack matches the snapshot 2`] = `
 {
   "Metadata": {
     "gu:cdk:constructs": [
-      "GuDistributionBucketParameter",
       "GuSESSenderPolicy",
       "GuAllowPolicy",
+      "GuDistributionBucketParameter",
       "GuVpcParameter",
       "GuSubnetListParameter",
       "GuSubnetListParameter",
       "GuLoadBalancedAppExperimental",
-      "GuListBucketPolicy",
-      "GuInstanceRole",
-      "GuSsmSshPolicy",
-      "GuDescribeEC2Policy",
       "GuLoggingStreamNameParameter",
-      "GuLogShippingPolicy",
-      "GuGetDistributablePolicy",
-      "GuParameterStoreReadPolicy",
-      "GuAmiParameter",
-      "GuHttpsEgressSecurityGroup",
-      "GuAutoScalingGroup",
-      "GuApplicationTargetGroup",
       "GuRiffRaffDeploymentIdParameterExperimental",
+      "GuLogShippingPolicy",
+      "GuParameterStoreReadPolicy",
       "GuHttpsEgressSecurityGroup",
       "GuSecurityGroup",
       "GuApplicationTargetGroup",
@@ -3103,7 +2241,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuLambdaFunction",
       "GuHttpsEgressSecurityGroup",
       "GuAlb5xxPercentageAlarm",
-      "GuUnhealthyInstancesAlarm",
       "GuCname",
     ],
     "gu:cdk:version": "TEST",
@@ -3120,10 +2257,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     },
   },
   "Parameters": {
-    "AMIAmiable": {
-      "Description": "Amazon Machine Image ID for the app amiable. Use this in conjunction with AMIgo to keep AMIs up to date.",
-      "Type": "AWS::EC2::Image::Id",
-    },
     "AccessLoggingBucket": {
       "Default": "/account/services/access-logging/bucket",
       "Description": "S3 bucket to store your access logs",
@@ -3241,159 +2374,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
     },
-    "AsgRollingUpdatePolicy2A1DDC6F": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "cloudformation:SignalResource",
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "AWS::StackId",
-              },
-            },
-            {
-              "Action": "elasticloadbalancing:DescribeTargetHealth",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "AsgRollingUpdatePolicy2A1DDC6F",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "AutoScalingGroupAmiableASGFCD99427": {
-      "CreationPolicy": {
-        "AutoScalingCreationPolicy": {
-          "MinSuccessfulInstancesPercent": 100,
-        },
-        "ResourceSignal": {
-          "Count": 1,
-          "Timeout": "PT3M",
-        },
-      },
-      "DependsOn": [
-        "AsgRollingUpdatePolicy2A1DDC6F",
-      ],
-      "Properties": {
-        "DesiredCapacity": "1",
-        "HealthCheckGracePeriod": 120,
-        "HealthCheckType": "ELB",
-        "LaunchTemplate": {
-          "LaunchTemplateId": {
-            "Ref": "deployPRODamiableED398871",
-          },
-          "Version": {
-            "Fn::GetAtt": [
-              "deployPRODamiableED398871",
-              "LatestVersionNumber",
-            ],
-          },
-        },
-        "MaxSize": "2",
-        "MetricsCollection": [
-          {
-            "Granularity": "1Minute",
-          },
-        ],
-        "MinSize": "1",
-        "Tags": [
-          {
-            "Key": "App",
-            "PropagateAtLaunch": true,
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "PropagateAtLaunch": true,
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "PropagateAtLaunch": true,
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "LogKinesisStreamName",
-            "PropagateAtLaunch": true,
-            "Value": {
-              "Ref": "LoggingStreamName",
-            },
-          },
-          {
-            "Key": "Stack",
-            "PropagateAtLaunch": true,
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "PropagateAtLaunch": true,
-            "Value": "PROD",
-          },
-          {
-            "Key": "SystemdUnit",
-            "PropagateAtLaunch": true,
-            "Value": "amiable.service",
-          },
-        ],
-        "TargetGroupARNs": [
-          {
-            "Ref": "TargetGroupAmiable6987B5AC",
-          },
-        ],
-        "VPCZoneIdentifier": [
-          {
-            "Fn::Select": [
-              0,
-              {
-                "Ref": "amiablePrivateSubnets",
-              },
-            ],
-          },
-          {
-            "Fn::Select": [
-              1,
-              {
-                "Ref": "amiablePrivateSubnets",
-              },
-            ],
-          },
-          {
-            "Fn::Select": [
-              2,
-              {
-                "Ref": "amiablePrivateSubnets",
-              },
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::AutoScaling::AutoScalingGroup",
-      "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "MaxBatchSize": 2,
-          "MinInstancesInService": 1,
-          "MinSuccessfulInstancesPercent": 100,
-          "PauseTime": "PT3M",
-          "SuspendProcesses": [
-            "AlarmNotification",
-            "AZRebalance",
-            "HealthCheck",
-            "InstanceRefresh",
-            "ReplaceUnhealthy",
-            "ScheduledActions",
-          ],
-          "WaitOnResourceSignals": true,
-        },
-      },
-    },
     "CertificateAmiable3AC0F81D": {
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -3444,36 +2424,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "PolicyName": "CloudwatchPolicyFEF3FFD1",
         "Roles": [
           {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-          {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DescribeEC2PolicyFF5F9295": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "autoscaling:DescribeAutoScalingInstances",
-                "autoscaling:DescribeAutoScalingGroups",
-                "ec2:DescribeTags",
-                "ec2:DescribeInstances",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "describe-ec2-policy",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
           },
         ],
       },
@@ -3500,8 +2451,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "DependsOn": [
         "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
         "EcsTaskDefinitionTaskRoleB7B6D8DD",
-        "ListenerAmiableDeterministicRouteToEc2RuleCC543DB7",
-        "ListenerAmiableDeterministicRouteToEcsRuleA9134EC3",
         "ListenerAmiable4B1060D6",
         "S3FilesMountTarget0",
         "S3FilesMountTarget1",
@@ -4101,78 +3050,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
-    "GetDistributablePolicyAmiableE65882EA": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:GetObject",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                    "/deploy/PROD/amiable/*",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "GetDistributablePolicyAmiableE65882EA",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "GuHttpsEgressSecurityGroupAmiable42C3598C": {
-      "Properties": {
-        "GroupDescription": "Allow all outbound HTTPS traffic",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound HTTPS traffic",
-            "FromPort": 443,
-            "IpProtocol": "tcp",
-            "ToPort": 443,
-          },
-        ],
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-        "VpcId": {
-          "Ref": "VpcId",
-        },
-      },
-      "Type": "AWS::EC2::SecurityGroup",
-    },
     "GuHttpsEgressSecurityGroupAmiableecs814D532A": {
       "Properties": {
         "GroupDescription": "Allow all outbound HTTPS traffic",
@@ -4255,88 +3132,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
-    "GuHttpsEgressSecurityGroupAmiablefromAmiablePRODLoadBalancerAmiableSecurityGroup7EE4175D900019DB4DAD": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
-    "GuHttpsEgressSecurityGroupAmiablefromAmiablePRODldpaccessAmiable77AFE83C90002BD662C0": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
-    "GuListBucketPolicyAmiable19C77599": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:ListBucket",
-              "Condition": {
-                "StringLike": {
-                  "s3:prefix": "deploy/PROD/amiable/conf/",
-                },
-              },
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":s3:::",
-                    {
-                      "Ref": "DistributionBucketName",
-                    },
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "GuListBucketPolicyAmiable19C77599",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "GuLogShippingPolicy981BFE5A": {
       "Properties": {
         "PolicyDocument": {
@@ -4369,9 +3164,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "PolicyName": "GuLogShippingPolicy981BFE5A",
         "Roles": [
           {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-          {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
           },
         ],
@@ -4403,9 +3195,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         },
         "PolicyName": "GuSESSenderPolicy2E2A75A2",
         "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
           {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
           },
@@ -4538,46 +3327,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::CloudWatch::Alarm",
     },
-    "InstanceRoleAmiable56110022": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ec2.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Path": "/",
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
     "ListenerAmiable4B1060D6": {
       "Properties": {
         "Certificates": [
@@ -4608,23 +3357,10 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             "Type": "authenticate-cognito",
           },
           {
-            "ForwardConfig": {
-              "TargetGroups": [
-                {
-                  "TargetGroupArn": {
-                    "Ref": "TargetGroupAmiable6987B5AC",
-                  },
-                  "Weight": 1,
-                },
-                {
-                  "TargetGroupArn": {
-                    "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
-                  },
-                  "Weight": 0,
-                },
-              ],
-            },
             "Order": 2,
+            "TargetGroupArn": {
+              "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
+            },
             "Type": "forward",
           },
         ],
@@ -4658,106 +3394,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         ],
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
-    },
-    "ListenerAmiableDeterministicRouteToEc2RuleCC543DB7": {
-      "Properties": {
-        "Actions": [
-          {
-            "TargetGroupArn": {
-              "Ref": "TargetGroupAmiable6987B5AC",
-            },
-            "Type": "forward",
-          },
-        ],
-        "Conditions": [
-          {
-            "Field": "http-header",
-            "HttpHeaderConfig": {
-              "HttpHeaderName": "X-Gu-Target-Group",
-              "Values": [
-                "ec2",
-              ],
-            },
-          },
-        ],
-        "ListenerArn": {
-          "Ref": "ListenerAmiable4B1060D6",
-        },
-        "Priority": 10,
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-      },
-      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
-    },
-    "ListenerAmiableDeterministicRouteToEcsRuleA9134EC3": {
-      "Properties": {
-        "Actions": [
-          {
-            "TargetGroupArn": {
-              "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
-            },
-            "Type": "forward",
-          },
-        ],
-        "Conditions": [
-          {
-            "Field": "http-header",
-            "HttpHeaderConfig": {
-              "HttpHeaderName": "X-Gu-Target-Group",
-              "Values": [
-                "ecs",
-              ],
-            },
-          },
-        ],
-        "ListenerArn": {
-          "Ref": "ListenerAmiable4B1060D6",
-        },
-        "Priority": 11,
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-      },
-      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
     },
     "LoadBalancerAmiable9C4DD4AF": {
       "Properties": {
@@ -4882,27 +3518,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "LoadBalancerAmiableSecurityGrouptoAmiablePRODGuHttpsEgressSecurityGroupAmiableB48C77C8900068773BC0": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
-    },
     "LoadBalancerAmiableSecurityGrouptoAmiablePRODGuHttpsEgressSecurityGroupAmiableecs5CE6EAF1900098C1EE15": {
       "Properties": {
         "Description": "Load balancer to target",
@@ -4968,9 +3583,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         },
         "PolicyName": "parameter-store-read-policy",
         "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
           {
             "Ref": "EcsTaskDefinitionTaskRoleB7B6D8DD",
           },
@@ -5447,210 +4059,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
-    "SsmSshPolicy4CFC977E": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ec2messages:AcknowledgeMessage",
-                "ec2messages:DeleteMessage",
-                "ec2messages:FailMessage",
-                "ec2messages:GetEndpoint",
-                "ec2messages:GetMessages",
-                "ec2messages:SendReply",
-                "ssm:UpdateInstanceInformation",
-                "ssm:ListInstanceAssociations",
-                "ssm:DescribeInstanceProperties",
-                "ssm:DescribeDocumentParameters",
-                "ssmmessages:CreateControlChannel",
-                "ssmmessages:CreateDataChannel",
-                "ssmmessages:OpenControlChannel",
-                "ssmmessages:OpenDataChannel",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ssm-ssh-policy",
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "TargetGroupAmiable6987B5AC": {
-      "Properties": {
-        "HealthCheckIntervalSeconds": 10,
-        "HealthCheckPath": "/healthcheck",
-        "HealthCheckProtocol": "HTTP",
-        "HealthCheckTimeoutSeconds": 5,
-        "HealthyThresholdCount": 5,
-        "Port": 9000,
-        "Protocol": "HTTP",
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-        "TargetGroupAttributes": [
-          {
-            "Key": "deregistration_delay.timeout_seconds",
-            "Value": "30",
-          },
-          {
-            "Key": "stickiness.enabled",
-            "Value": "false",
-          },
-        ],
-        "TargetType": "instance",
-        "UnhealthyThresholdCount": 2,
-        "VpcId": {
-          "Ref": "VpcId",
-        },
-      },
-      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-    },
-    "UnhealthyInstancesAlarmAmiable2EC845C9": {
-      "Properties": {
-        "ActionsEnabled": true,
-        "AlarmActions": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:aws:sns:eu-west-1:",
-                {
-                  "Ref": "AWS::AccountId",
-                },
-                ":devx-alerts",
-              ],
-            ],
-          },
-        ],
-        "AlarmDescription": "amiable's instances have failed healthchecks several times over the last 1 hour.
-      This typically results in the AutoScaling Group cycling instances and can lead to problems with deployment,
-      scaling or handling traffic spikes.
-
-      Check amiable's application logs or ssh onto an unhealthy instance in order to debug these problems.",
-        "AlarmName": "Unhealthy instances for amiable in PROD",
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "DatapointsToAlarm": 30,
-        "Dimensions": [
-          {
-            "Name": "LoadBalancer",
-            "Value": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Fn::Select": [
-                      1,
-                      {
-                        "Fn::Split": [
-                          "/",
-                          {
-                            "Ref": "ListenerAmiable4B1060D6",
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  "/",
-                  {
-                    "Fn::Select": [
-                      2,
-                      {
-                        "Fn::Split": [
-                          "/",
-                          {
-                            "Ref": "ListenerAmiable4B1060D6",
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  "/",
-                  {
-                    "Fn::Select": [
-                      3,
-                      {
-                        "Fn::Split": [
-                          "/",
-                          {
-                            "Ref": "ListenerAmiable4B1060D6",
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              ],
-            },
-          },
-          {
-            "Name": "TargetGroup",
-            "Value": {
-              "Fn::GetAtt": [
-                "TargetGroupAmiable6987B5AC",
-                "TargetGroupFullName",
-              ],
-            },
-          },
-        ],
-        "EvaluationPeriods": 60,
-        "MetricName": "UnHealthyHostCount",
-        "Namespace": "AWS/ApplicationELB",
-        "Period": 60,
-        "Statistic": "Maximum",
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
-        "Threshold": 1,
-        "TreatMissingData": "notBreaching",
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
     "amiableEcsClusterD69CED02": {
       "Properties": {
         "ClusterSettings": [
@@ -6063,219 +4471,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
-    "deployPRODamiableED398871": {
-      "DependsOn": [
-        "InstanceRoleAmiable56110022",
-      ],
-      "Properties": {
-        "LaunchTemplateData": {
-          "IamInstanceProfile": {
-            "Arn": {
-              "Fn::GetAtt": [
-                "deployPRODamiableProfileF15CA793",
-                "Arn",
-              ],
-            },
-          },
-          "ImageId": {
-            "Ref": "AMIAmiable",
-          },
-          "InstanceType": "t4g.small",
-          "MetadataOptions": {
-            "HttpTokens": "required",
-            "InstanceMetadataTags": "enabled",
-          },
-          "Monitoring": {
-            "Enabled": false,
-          },
-          "SecurityGroupIds": [
-            {
-              "Fn::GetAtt": [
-                "GuHttpsEgressSecurityGroupAmiable42C3598C",
-                "GroupId",
-              ],
-            },
-          ],
-          "TagSpecifications": [
-            {
-              "ResourceType": "instance",
-              "Tags": [
-                {
-                  "Key": "App",
-                  "Value": "amiable",
-                },
-                {
-                  "Key": "gu:build-identifier",
-                  "Value": "TEST",
-                },
-                {
-                  "Key": "gu:cdk:version",
-                  "Value": "TEST",
-                },
-                {
-                  "Key": "gu:repo",
-                  "Value": "guardian/amiable",
-                },
-                {
-                  "Key": "Name",
-                  "Value": "Amiable-PROD/deploy-PROD-amiable",
-                },
-                {
-                  "Key": "Stack",
-                  "Value": "deploy",
-                },
-                {
-                  "Key": "Stage",
-                  "Value": "PROD",
-                },
-              ],
-            },
-            {
-              "ResourceType": "volume",
-              "Tags": [
-                {
-                  "Key": "App",
-                  "Value": "amiable",
-                },
-                {
-                  "Key": "gu:build-identifier",
-                  "Value": "TEST",
-                },
-                {
-                  "Key": "gu:cdk:version",
-                  "Value": "TEST",
-                },
-                {
-                  "Key": "gu:repo",
-                  "Value": "guardian/amiable",
-                },
-                {
-                  "Key": "Name",
-                  "Value": "Amiable-PROD/deploy-PROD-amiable",
-                },
-                {
-                  "Key": "Stack",
-                  "Value": "deploy",
-                },
-                {
-                  "Key": "Stage",
-                  "Value": "PROD",
-                },
-              ],
-            },
-          ],
-          "UserData": {
-            "Fn::Base64": {
-              "Fn::Join": [
-                "",
-                [
-                  "#!/bin/bash
-function exitTrap(){
-exitCode=$?
-
-        cfn-signal --stack ",
-                  {
-                    "Ref": "AWS::StackId",
-                  },
-                  "           --resource AutoScalingGroupAmiableASGFCD99427           --region eu-west-1           --exit-code $exitCode || echo 'Failed to send Cloudformation Signal'
-        
-}
-trap exitTrap EXIT
-
-          aws --region eu-west-1 s3 sync s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/PROD/amiable/conf/ /etc/gu/s3-sync/
-
-          aws --region eu-west-1 s3 cp s3://",
-                  {
-                    "Ref": "DistributionBucketName",
-                  },
-                  "/deploy/PROD/amiable/amiable-TEST.deb /amiable/amiable.deb
-          dpkg -i /amiable/amiable.deb
-echo "Launch template last updated by Riff-Raff deployment ID: ",
-                  {
-                    "Ref": "RiffRaffDeploymentId",
-                  },
-                  ""
-# GuEc2AppExperimental Instance Health Check Start
-
-      TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-      INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/instance-id")
-
-      STATE=$(aws elbv2 describe-target-health         --target-group-arn ",
-                  {
-                    "Ref": "TargetGroupAmiable6987B5AC",
-                  },
-                  "         --region eu-west-1         --targets Id=$INSTANCE_ID,Port=9000         --query "TargetHealthDescriptions[0].TargetHealth.State")
-
-      until [ "$STATE" == "\\"healthy\\"" ]; do
-        echo "Instance running build TEST not yet healthy within target group. Current state $STATE. Sleeping..."
-        sleep 5
-        STATE=$(aws elbv2 describe-target-health           --target-group-arn ",
-                  {
-                    "Ref": "TargetGroupAmiable6987B5AC",
-                  },
-                  "           --region eu-west-1           --targets Id=$INSTANCE_ID,Port=9000           --query "TargetHealthDescriptions[0].TargetHealth.State")
-      done
-
-      echo "Instance running build TEST is healthy in target group."
-      
-# GuEc2AppExperimental Instance Health Check End",
-                ],
-              ],
-            },
-          },
-        },
-        "TagSpecifications": [
-          {
-            "ResourceType": "launch-template",
-            "Tags": [
-              {
-                "Key": "App",
-                "Value": "amiable",
-              },
-              {
-                "Key": "gu:build-identifier",
-                "Value": "TEST",
-              },
-              {
-                "Key": "gu:cdk:version",
-                "Value": "TEST",
-              },
-              {
-                "Key": "gu:repo",
-                "Value": "guardian/amiable",
-              },
-              {
-                "Key": "Name",
-                "Value": "Amiable-PROD/deploy-PROD-amiable",
-              },
-              {
-                "Key": "Stack",
-                "Value": "deploy",
-              },
-              {
-                "Key": "Stage",
-                "Value": "PROD",
-              },
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::EC2::LaunchTemplate",
-    },
-    "deployPRODamiableProfileF15CA793": {
-      "Properties": {
-        "Roles": [
-          {
-            "Ref": "InstanceRoleAmiable56110022",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::InstanceProfile",
-    },
     "googleidp5A744057": {
       "Properties": {
         "AttributeMapping": {
@@ -6337,27 +4532,6 @@ echo "Launch template last updated by Riff-Raff deployment ID: ",
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
-    },
-    "ldpaccessAmiabletoAmiablePRODGuHttpsEgressSecurityGroupAmiableB48C77C890002166BC9B": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiable42C3598C",
-            "GroupId",
-          ],
-        },
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupEgress",
     },
     "ldpaccessAmiabletoAmiablePRODGuHttpsEgressSecurityGroupAmiableecs5CE6EAF190001CBAC1B4": {
       "Properties": {
