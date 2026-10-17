@@ -1418,13 +1418,13 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                   "TargetGroupArn": {
                     "Ref": "TargetGroupAmiable6987B5AC",
                   },
-                  "Weight": 1,
+                  "Weight": 0,
                 },
                 {
                   "TargetGroupArn": {
                     "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
                   },
-                  "Weight": 0,
+                  "Weight": 1,
                 },
               ],
             },
@@ -4614,13 +4614,13 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                   "TargetGroupArn": {
                     "Ref": "TargetGroupAmiable6987B5AC",
                   },
-                  "Weight": 1,
+                  "Weight": 0,
                 },
                 {
                   "TargetGroupArn": {
                     "Ref": "AmiableEcsTargetGroupAmiableF57D0550",
                   },
-                  "Weight": 0,
+                  "Weight": 1,
                 },
               ],
             },
