@@ -32,7 +32,8 @@ class Agents @Inject() (
     extends Logging {
 
   lazy implicit val conf: AMIableConfig = amiableConfigProvider.conf
-  val refreshInterval = 5.minutes
+  private val cloudWatchRefreshInterval = 1.hour
+  private val everythingElseRefreshInterval = 5.minutes
 
   private val amisAgent: AtomicReference[Set[AMI]] = AtomicReference(Set.empty)
   private val ssasAgent: AtomicReference[Set[SSAA]] = AtomicReference(Set.empty)
@@ -68,26 +69,47 @@ class Agents @Inject() (
 
   if (environment.mode != Mode.Test) {
 
-    val prismDataSubscription = system.scheduler.scheduleAtFixedRate(
-      initialDelay = 0.seconds,
-      interval = refreshInterval
+    val initialDelaySeconds = 60.seconds
+
+    val prismDataSubscriptionAmis = system.scheduler.scheduleAtFixedRate(
+      initialDelay = initialDelaySeconds,
+      interval = everythingElseRefreshInterval
     ) { () =>
       {
         refreshAmis()
+      }
+    }(exec)
+
+    val prismDataSubscriptionSSAs = system.scheduler.scheduleAtFixedRate(
+      initialDelay = initialDelaySeconds,
+      interval = everythingElseRefreshInterval
+    ) { () =>
+      {
         refreshSSAs()
         refreshInstancesInfo()
       }
     }(exec)
 
+    val prismDataSubscriptionInstances = system.scheduler.scheduleAtFixedRate(
+      initialDelay = initialDelaySeconds,
+      interval = everythingElseRefreshInterval
+    ) { () =>
+      {
+        refreshInstancesInfo()
+      }
+    }(exec)
+
     val cloudwatchDataSubscription = system.scheduler.scheduleAtFixedRate(
-      initialDelay = 0.seconds,
-      interval = 1.hour
+      initialDelay = initialDelaySeconds,
+      interval = cloudWatchRefreshInterval
     ) { () =>
       refreshHistory()
     }(exec)
 
     lifecycle.addStopHook { () =>
-      prismDataSubscription.cancel()
+      prismDataSubscriptionAmis.cancel()
+      prismDataSubscriptionSSAs.cancel()
+      prismDataSubscriptionInstances.cancel()
       cloudwatchDataSubscription.cancel()
       Future.successful(())
     }

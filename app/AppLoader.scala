@@ -2,8 +2,10 @@ import software.amazon.awssdk.services.ses.SesAsyncClient
 import com.gu.googleauth.AuthAction
 import config.AmiableConfigProvider
 import controllers.{AMIable, Healthcheck, Login, routes}
+import filters.TargetFilter
 import metrics.CloudWatch
 import play.api.ApplicationLoader.Context
+import play.api.Logging
 import play.api.libs.logback.LogbackLoggerConfigurator
 import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.mvc.AnyContent
@@ -16,13 +18,14 @@ import services.notification.{
   ScheduledNotificationRunner
 }
 
-class AppLoader extends play.api.ApplicationLoader {
+class AppLoader extends play.api.ApplicationLoader with Logging {
 
   override def load(context: Context): play.api.Application = {
 
+    val startupStartTime = System.currentTimeMillis()
     new LogbackLoggerConfigurator().configure(context.environment)
 
-    println("""
+    logger.info("""
 
                                                          .---.
                   __  __   ___   .--.          /|        |   |      __.....__
@@ -39,7 +42,11 @@ class AppLoader extends play.api.ApplicationLoader {
       """)
 
     val components = new AppComponents(context)
-    components.application
+    val app = components.application
+    val startupEndTime = System.currentTimeMillis()
+    val startupDuration = startupEndTime - startupStartTime
+    logger.info(s"Application startup completed in $startupDuration ms")
+    app
   }
 
 }
@@ -49,6 +56,12 @@ class AppComponents(context: Context)
     with HttpFiltersComponents
     with AhcWSComponents
     with controllers.AssetsComponents {
+
+  override lazy val httpFilters =
+    new TargetFilter(sys.env)(
+      materializer,
+      executionContext
+    ) +: super.httpFilters
 
   lazy val amiableConfigProvider =
     new AmiableConfigProvider(wsClient, configuration, httpConfiguration)

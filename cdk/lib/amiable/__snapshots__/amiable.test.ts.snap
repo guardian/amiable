@@ -722,7 +722,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             "VersionConsistency": "disabled",
           },
         ],
-        "Cpu": "256",
+        "Cpu": "1024",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "EcsTaskDefinitionExecutionRoleBE450C73",
@@ -730,7 +730,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
           ],
         },
         "Family": "amiableEcsTaskDefinitionE3ED17CC",
-        "Memory": "1024",
+        "Memory": "2048",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",
@@ -3793,7 +3793,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             "VersionConsistency": "disabled",
           },
         ],
-        "Cpu": "256",
+        "Cpu": "1024",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "EcsTaskDefinitionExecutionRoleBE450C73",
@@ -3801,7 +3801,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
           ],
         },
         "Family": "AmiablePRODEcsTaskDefinition0C5C4CAD",
-        "Memory": "1024",
+        "Memory": "2048",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",
