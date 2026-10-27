@@ -22,6 +22,8 @@ jobs:
       pull-requests: write #...to comment on PRs
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
 
       # Setup Node, checking common Node config files to determine the version of Node to use.
       # Configuring caching is also recommended.
@@ -54,6 +56,8 @@ jobs:
           app: amiable
 
       # Must come after image is published to pick up env var
+      - run: npm ci
+        working-directory: cdk/vendor/guardian-cdk
       - name: Run cdk/script/ci
         working-directory: cdk
         env:

@@ -11,11 +11,13 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuSubnetListParameter",
       "GuSubnetListParameter",
       "GuLoadBalancedAppExperimental",
+      "GuRepository",
+      "GuArtifactsAccountId",
       "GuLoggingStreamNameParameter",
+      "GuHttpsEgressSecurityGroup",
       "GuRiffRaffDeploymentIdParameterExperimental",
       "GuLogShippingPolicy",
       "GuParameterStoreReadPolicy",
-      "GuHttpsEgressSecurityGroup",
       "GuSecurityGroup",
       "GuApplicationTargetGroup",
       "GuCertificate",
@@ -45,8 +47,9 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "ArtifactAccountIdParameter": {
+    "ArtifactsAccountId": {
       "Default": "/organisation/accounts/artifacts",
+      "Description": "Account ID of the Artifacts account. Useful as some shared resources live here.",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
     "DistributionBucketName": {
@@ -288,7 +291,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             "SecurityGroups": [
               {
                 "Fn::GetAtt": [
-                  "GuHttpsEgressSecurityGroupAmiableecs814D532A",
+                  "EcsServiceSecurityGroup8FDFD52F",
                   "GroupId",
                 ],
               },
@@ -349,6 +352,107 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         },
       },
       "Type": "AWS::ECS::Service",
+    },
+    "EcsServiceSecurityGroup8FDFD52F": {
+      "DependsOn": [
+        "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
+        "EcsTaskDefinitionTaskRoleB7B6D8DD",
+        "S3FilesMountTarget0",
+        "S3FilesMountTarget1",
+        "S3FilesMountTarget2",
+      ],
+      "Properties": {
+        "GroupDescription": "amiable/EcsService/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "EcsServiceSecurityGroupfromamiableLoadBalancerAmiableSecurityGroup8E8C958390007221C8B1": {
+      "DependsOn": [
+        "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
+        "EcsTaskDefinitionTaskRoleB7B6D8DD",
+        "S3FilesMountTarget0",
+        "S3FilesMountTarget1",
+        "S3FilesMountTarget2",
+      ],
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "EcsServiceSecurityGroup8FDFD52F",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "EcsServiceSecurityGroupfromamiableldpaccessAmiable1EDD8FAB90005F4A936E": {
+      "DependsOn": [
+        "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
+        "EcsTaskDefinitionTaskRoleB7B6D8DD",
+        "S3FilesMountTarget0",
+        "S3FilesMountTarget1",
+        "S3FilesMountTarget2",
+      ],
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "EcsServiceSecurityGroup8FDFD52F",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
     },
     "EcsServiceTaskCountTarget02FCCE22": {
       "DependsOn": [
@@ -437,7 +541,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                 "",
                 [
                   {
-                    "Ref": "ArtifactAccountIdParameter",
+                    "Ref": "ArtifactsAccountId",
                   },
                   ".dkr.ecr.eu-west-1.",
                   {
@@ -650,7 +754,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                     },
                     ":ecr:eu-west-1:",
                     {
-                      "Ref": "ArtifactAccountIdParameter",
+                      "Ref": "ArtifactsAccountId",
                     },
                     ":repository/guardian/amiable/amiable",
                   ],
@@ -873,48 +977,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "GuHttpsEgressSecurityGroupAmiableecsfromamiableLoadBalancerAmiableSecurityGroup8E8C958390001455D7E1": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiableecs814D532A",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
-    "GuHttpsEgressSecurityGroupAmiableecsfromamiableldpaccessAmiable1EDD8FAB900055FEE05F": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiableecs814D532A",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
     "GuLogShippingPolicy981BFE5A": {
       "Properties": {
         "PolicyDocument": {
@@ -1028,28 +1090,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         "Port": 443,
         "Protocol": "HTTPS",
         "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06",
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "CODE",
-          },
-        ],
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
     },
@@ -1176,12 +1216,12 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "LoadBalancerAmiableSecurityGrouptoamiableGuHttpsEgressSecurityGroupAmiableecs721FD80F9000271996DB": {
+    "LoadBalancerAmiableSecurityGrouptoamiableEcsServiceSecurityGroupB09D56269000EF500D75": {
       "Properties": {
         "Description": "Load balancer to target",
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiableecs814D532A",
+            "EcsServiceSecurityGroup8FDFD52F",
             "GroupId",
           ],
         },
@@ -2191,12 +2231,12 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "ldpaccessAmiabletoamiableGuHttpsEgressSecurityGroupAmiableecs721FD80F900002D97D83": {
+    "ldpaccessAmiabletoamiableEcsServiceSecurityGroupB09D56269000B112B408": {
       "Properties": {
         "Description": "Load balancer to target",
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiableecs814D532A",
+            "EcsServiceSecurityGroup8FDFD52F",
             "GroupId",
           ],
         },
@@ -2227,11 +2267,13 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuSubnetListParameter",
       "GuSubnetListParameter",
       "GuLoadBalancedAppExperimental",
+      "GuRepository",
+      "GuArtifactsAccountId",
       "GuLoggingStreamNameParameter",
+      "GuHttpsEgressSecurityGroup",
       "GuRiffRaffDeploymentIdParameterExperimental",
       "GuLogShippingPolicy",
       "GuParameterStoreReadPolicy",
-      "GuHttpsEgressSecurityGroup",
       "GuSecurityGroup",
       "GuApplicationTargetGroup",
       "GuCertificate",
@@ -2262,8 +2304,9 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "ArtifactAccountIdParameter": {
+    "ArtifactsAccountId": {
       "Default": "/organisation/accounts/artifacts",
+      "Description": "Account ID of the Artifacts account. Useful as some shared resources live here.",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
     "DistributionBucketName": {
@@ -2505,7 +2548,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             "SecurityGroups": [
               {
                 "Fn::GetAtt": [
-                  "GuHttpsEgressSecurityGroupAmiableecs814D532A",
+                  "EcsServiceSecurityGroup8FDFD52F",
                   "GroupId",
                 ],
               },
@@ -2566,6 +2609,107 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         },
       },
       "Type": "AWS::ECS::Service",
+    },
+    "EcsServiceSecurityGroup8FDFD52F": {
+      "DependsOn": [
+        "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
+        "EcsTaskDefinitionTaskRoleB7B6D8DD",
+        "S3FilesMountTarget0",
+        "S3FilesMountTarget1",
+        "S3FilesMountTarget2",
+      ],
+      "Properties": {
+        "GroupDescription": "Amiable-PROD/EcsService/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "EcsServiceSecurityGroupfromAmiablePRODLoadBalancerAmiableSecurityGroup7EE4175D9000DE098305": {
+      "DependsOn": [
+        "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
+        "EcsTaskDefinitionTaskRoleB7B6D8DD",
+        "S3FilesMountTarget0",
+        "S3FilesMountTarget1",
+        "S3FilesMountTarget2",
+      ],
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "EcsServiceSecurityGroup8FDFD52F",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "EcsServiceSecurityGroupfromAmiablePRODldpaccessAmiable77AFE83C90000E26F501": {
+      "DependsOn": [
+        "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
+        "EcsTaskDefinitionTaskRoleB7B6D8DD",
+        "S3FilesMountTarget0",
+        "S3FilesMountTarget1",
+        "S3FilesMountTarget2",
+      ],
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "EcsServiceSecurityGroup8FDFD52F",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ldpaccessAmiable1869C179",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
     },
     "EcsServiceTaskCountTarget02FCCE22": {
       "DependsOn": [
@@ -2654,7 +2798,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                 "",
                 [
                   {
-                    "Ref": "ArtifactAccountIdParameter",
+                    "Ref": "ArtifactsAccountId",
                   },
                   ".dkr.ecr.eu-west-1.",
                   {
@@ -2867,7 +3011,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                     },
                     ":ecr:eu-west-1:",
                     {
-                      "Ref": "ArtifactAccountIdParameter",
+                      "Ref": "ArtifactsAccountId",
                     },
                     ":repository/guardian/amiable/amiable",
                   ],
@@ -3089,48 +3233,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         },
       },
       "Type": "AWS::EC2::SecurityGroup",
-    },
-    "GuHttpsEgressSecurityGroupAmiableecsfromAmiablePRODLoadBalancerAmiableSecurityGroup7EE4175D9000A864A572": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiableecs814D532A",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "LoadBalancerAmiableSecurityGroupAE4F7AF8",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
-    "GuHttpsEgressSecurityGroupAmiableecsfromAmiablePRODldpaccessAmiable77AFE83C900012DF3CA5": {
-      "Properties": {
-        "Description": "Load balancer to target",
-        "FromPort": 9000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiableecs814D532A",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ldpaccessAmiable1869C179",
-            "GroupId",
-          ],
-        },
-        "ToPort": 9000,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
     },
     "GuLogShippingPolicy981BFE5A": {
       "Properties": {
@@ -3370,28 +3472,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "Port": 443,
         "Protocol": "HTTPS",
         "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06",
-        "Tags": [
-          {
-            "Key": "App",
-            "Value": "amiable",
-          },
-          {
-            "Key": "gu:cdk:version",
-            "Value": "TEST",
-          },
-          {
-            "Key": "gu:repo",
-            "Value": "guardian/amiable",
-          },
-          {
-            "Key": "Stack",
-            "Value": "deploy",
-          },
-          {
-            "Key": "Stage",
-            "Value": "PROD",
-          },
-        ],
       },
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
     },
@@ -3518,12 +3598,12 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "LoadBalancerAmiableSecurityGrouptoAmiablePRODGuHttpsEgressSecurityGroupAmiableecs5CE6EAF1900098C1EE15": {
+    "LoadBalancerAmiableSecurityGrouptoAmiablePRODEcsServiceSecurityGroupFAEDF24F900089CB526D": {
       "Properties": {
         "Description": "Load balancer to target",
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiableecs814D532A",
+            "EcsServiceSecurityGroup8FDFD52F",
             "GroupId",
           ],
         },
@@ -4533,12 +4613,12 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
-    "ldpaccessAmiabletoAmiablePRODGuHttpsEgressSecurityGroupAmiableecs5CE6EAF190001CBAC1B4": {
+    "ldpaccessAmiabletoAmiablePRODEcsServiceSecurityGroupFAEDF24F90009C124CCB": {
       "Properties": {
         "Description": "Load balancer to target",
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
-            "GuHttpsEgressSecurityGroupAmiableecs814D532A",
+            "EcsServiceSecurityGroup8FDFD52F",
             "GroupId",
           ],
         },
