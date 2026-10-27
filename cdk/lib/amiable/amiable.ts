@@ -1,11 +1,11 @@
+import type { App } from "aws-cdk-lib";
+import { Duration } from "aws-cdk-lib";
+import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
 import { AccessScope } from "@guardian/cdk/lib/constants/access";
 import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
 import { GuStack } from "@guardian/cdk/lib/constructs/core";
 import { GuCname } from "@guardian/cdk/lib/constructs/dns";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
-import type { App } from "aws-cdk-lib";
-import { Duration } from "aws-cdk-lib";
-import { ParameterDataType, ParameterTier, StringParameter } from "aws-cdk-lib/aws-ssm";
 import {
   getDefaultS3ConfigMount,
   GuLoadBalancedAppExperimental,
