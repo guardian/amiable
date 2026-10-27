@@ -61,6 +61,7 @@ export class Amiable extends GuStack {
           maximumTasks: 1,
         },
         s3Config: getDefaultS3ConfigMount(this, { app }),
+        managedInstancesProps: {},
       },
     });
 
