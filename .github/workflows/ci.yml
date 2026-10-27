@@ -46,7 +46,7 @@ jobs:
         run: ./script/ci
 
       - name: Publish Image
-        uses: guardian/actions-ecr/push@v1.0.1
+        uses: guardian/actions-ecr/push@handle-comment-errors-gracefully
         id: publish-image
         with:
           roleArn: ${{ secrets.GU_ARTIFACTS_ROLE_ARN }}
