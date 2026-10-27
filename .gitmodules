@@ -1,0 +1,4 @@
+[submodule "cdk/vendor/guardian-cdk"]
+	path = cdk/vendor/guardian-cdk
+	url = https://github.com/guardian/cdk.git
+	branch = cdk-managed-instances
