@@ -236,6 +236,73 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "Guardian::DNS::RecordSet",
     },
+    "ECSInfrastructureRoleE492121F": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForManagedInstances",
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "iam:PassRole",
+                  "Condition": {
+                    "StringLike": {
+                      "iam:PassedToService": "ec2.*",
+                    },
+                  },
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "ECSManagedInstancesRole1E652558",
+                      "Arn",
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "PassInstanceRoleToEC2",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "ECSInstanceProfileBA4A4DA9": {
       "Properties": {
         "Roles": [
@@ -350,14 +417,25 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     },
     "EcsService81FC6EF6": {
       "DependsOn": [
+        "ECSInstanceProfileBA4A4DA9",
+        "ECSManagedInstancesRole1E652558",
         "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
         "EcsTaskDefinitionTaskRoleB7B6D8DD",
         "ListenerAmiable4B1060D6",
+        "ManagedInstancesCapacityProviderC2946447",
         "S3FilesMountTarget0",
         "S3FilesMountTarget1",
         "S3FilesMountTarget2",
       ],
       "Properties": {
+        "CapacityProviderStrategy": [
+          {
+            "CapacityProvider": {
+              "Ref": "ManagedInstancesCapacityProviderC2946447",
+            },
+            "Weight": 1,
+          },
+        ],
         "Cluster": {
           "Ref": "amiableEcsClusterD69CED02",
         },
@@ -379,7 +457,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         },
         "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
-        "LaunchType": "FARGATE",
         "LoadBalancers": [
           {
             "ContainerName": "amiable",
@@ -470,8 +547,11 @@ exports[`The Amiable stack matches the snapshot 1`] = `
     },
     "EcsServiceTaskCountTarget02FCCE22": {
       "DependsOn": [
+        "ECSInstanceProfileBA4A4DA9",
+        "ECSManagedInstancesRole1E652558",
         "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
         "EcsTaskDefinitionTaskRoleB7B6D8DD",
+        "ManagedInstancesCapacityProviderC2946447",
         "S3FilesMountTarget0",
         "S3FilesMountTarget1",
         "S3FilesMountTarget2",
@@ -668,7 +748,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         "Memory": "2048",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
-          "FARGATE",
+          "MANAGED_INSTANCES",
         ],
         "RuntimePlatform": {
           "CpuArchitecture": "ARM64",
@@ -793,15 +873,6 @@ exports[`The Amiable stack matches the snapshot 1`] = `
               "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*",
-            },
-            {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-              ],
-              "Effect": "Allow",
-              "Resource": "arn:aws:ecr:eu-west-1:694911143906:repository/aws-guardduty-agent-fargate",
             },
             {
               "Action": [
@@ -1352,6 +1423,102 @@ exports[`The Amiable stack matches the snapshot 1`] = `
         "ToPort": 9000,
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
+    },
+    "ManagedInstancesCapacityProviderC2946447": {
+      "Properties": {
+        "ClusterName": {
+          "Ref": "amiableEcsClusterD69CED02",
+        },
+        "ManagedInstancesProvider": {
+          "InfrastructureRoleArn": {
+            "Fn::GetAtt": [
+              "ECSInfrastructureRoleE492121F",
+              "Arn",
+            ],
+          },
+          "InstanceLaunchTemplate": {
+            "Ec2InstanceProfileArn": {
+              "Fn::GetAtt": [
+                "ECSInstanceProfileBA4A4DA9",
+                "Arn",
+              ],
+            },
+            "InstanceRequirements": {
+              "CpuManufacturers": [
+                "amazon-web-services",
+              ],
+              "InstanceGenerations": [
+                "current",
+              ],
+              "MemoryMiB": {
+                "Min": 2048,
+              },
+              "VCpuCount": {
+                "Min": 1,
+              },
+            },
+            "NetworkConfiguration": {
+              "SecurityGroups": [
+                {
+                  "Fn::GetAtt": [
+                    "GuHttpsEgressSecurityGroupAmiableecs814D532A",
+                    "GroupId",
+                  ],
+                },
+              ],
+              "Subnets": [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Ref": "amiablePrivateSubnets",
+                    },
+                  ],
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Ref": "amiablePrivateSubnets",
+                    },
+                  ],
+                },
+                {
+                  "Fn::Select": [
+                    2,
+                    {
+                      "Ref": "amiablePrivateSubnets",
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+      },
+      "Type": "AWS::ECS::CapacityProvider",
     },
     "ParameterStoreReadAmiable24BF3AAC": {
       "Properties": {
@@ -2609,6 +2776,73 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       },
       "Type": "Guardian::DNS::RecordSet",
     },
+    "ECSInfrastructureRoleE492121F": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForManagedInstances",
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "iam:PassRole",
+                  "Condition": {
+                    "StringLike": {
+                      "iam:PassedToService": "ec2.*",
+                    },
+                  },
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "ECSManagedInstancesRole1E652558",
+                      "Arn",
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "PassInstanceRoleToEC2",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "ECSInstanceProfileBA4A4DA9": {
       "Properties": {
         "Roles": [
@@ -2723,14 +2957,25 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     },
     "EcsService81FC6EF6": {
       "DependsOn": [
+        "ECSInstanceProfileBA4A4DA9",
+        "ECSManagedInstancesRole1E652558",
         "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
         "EcsTaskDefinitionTaskRoleB7B6D8DD",
         "ListenerAmiable4B1060D6",
+        "ManagedInstancesCapacityProviderC2946447",
         "S3FilesMountTarget0",
         "S3FilesMountTarget1",
         "S3FilesMountTarget2",
       ],
       "Properties": {
+        "CapacityProviderStrategy": [
+          {
+            "CapacityProvider": {
+              "Ref": "ManagedInstancesCapacityProviderC2946447",
+            },
+            "Weight": 1,
+          },
+        ],
         "Cluster": {
           "Ref": "amiableEcsClusterD69CED02",
         },
@@ -2752,7 +2997,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         },
         "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
-        "LaunchType": "FARGATE",
         "LoadBalancers": [
           {
             "ContainerName": "amiable",
@@ -2843,8 +3087,11 @@ exports[`The Amiable stack matches the snapshot 2`] = `
     },
     "EcsServiceTaskCountTarget02FCCE22": {
       "DependsOn": [
+        "ECSInstanceProfileBA4A4DA9",
+        "ECSManagedInstancesRole1E652558",
         "EcsTaskDefinitionTaskRoleDefaultPolicy1FD2F057",
         "EcsTaskDefinitionTaskRoleB7B6D8DD",
+        "ManagedInstancesCapacityProviderC2946447",
         "S3FilesMountTarget0",
         "S3FilesMountTarget1",
         "S3FilesMountTarget2",
@@ -3041,7 +3288,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "Memory": "2048",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
-          "FARGATE",
+          "MANAGED_INSTANCES",
         ],
         "RuntimePlatform": {
           "CpuArchitecture": "ARM64",
@@ -3166,15 +3413,6 @@ exports[`The Amiable stack matches the snapshot 2`] = `
               "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*",
-            },
-            {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-              ],
-              "Effect": "Allow",
-              "Resource": "arn:aws:ecr:eu-west-1:694911143906:repository/aws-guardduty-agent-fargate",
             },
             {
               "Action": [
@@ -3850,6 +4088,102 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "ToPort": 9000,
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
+    },
+    "ManagedInstancesCapacityProviderC2946447": {
+      "Properties": {
+        "ClusterName": {
+          "Ref": "amiableEcsClusterD69CED02",
+        },
+        "ManagedInstancesProvider": {
+          "InfrastructureRoleArn": {
+            "Fn::GetAtt": [
+              "ECSInfrastructureRoleE492121F",
+              "Arn",
+            ],
+          },
+          "InstanceLaunchTemplate": {
+            "Ec2InstanceProfileArn": {
+              "Fn::GetAtt": [
+                "ECSInstanceProfileBA4A4DA9",
+                "Arn",
+              ],
+            },
+            "InstanceRequirements": {
+              "CpuManufacturers": [
+                "amazon-web-services",
+              ],
+              "InstanceGenerations": [
+                "current",
+              ],
+              "MemoryMiB": {
+                "Min": 2048,
+              },
+              "VCpuCount": {
+                "Min": 1,
+              },
+            },
+            "NetworkConfiguration": {
+              "SecurityGroups": [
+                {
+                  "Fn::GetAtt": [
+                    "GuHttpsEgressSecurityGroupAmiableecs814D532A",
+                    "GroupId",
+                  ],
+                },
+              ],
+              "Subnets": [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Ref": "amiablePrivateSubnets",
+                    },
+                  ],
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Ref": "amiablePrivateSubnets",
+                    },
+                  ],
+                },
+                {
+                  "Fn::Select": [
+                    2,
+                    {
+                      "Ref": "amiablePrivateSubnets",
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "amiable",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/amiable",
+          },
+          {
+            "Key": "Stack",
+            "Value": "deploy",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+      },
+      "Type": "AWS::ECS::CapacityProvider",
     },
     "ParameterStoreReadAmiable24BF3AAC": {
       "Properties": {
