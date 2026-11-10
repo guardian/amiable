@@ -30,6 +30,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuLambdaFunction",
       "GuHttpsEgressSecurityGroup",
       "GuCname",
+      "GuDnsRecordSet",
     ],
     "gu:cdk:version": "TEST",
   },
@@ -2040,6 +2041,18 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
+    "TxtRecord": {
+      "Properties": {
+        "Name": "amiableTxtRecord",
+        "RecordType": "TXT",
+        "ResourceRecords": [
+          "abc",
+        ],
+        "Stage": "CODE",
+        "TTL": 3600,
+      },
+      "Type": "Guardian::DNS::RecordSet",
+    },
     "amiableEcsClusterD69CED02": {
       "Properties": {
         "ClusterSettings": [
@@ -2570,6 +2583,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuHttpsEgressSecurityGroup",
       "GuAlb5xxPercentageAlarm",
       "GuCname",
+      "GuDnsRecordSet",
     ],
     "gu:cdk:version": "TEST",
   },
@@ -4704,6 +4718,18 @@ exports[`The Amiable stack matches the snapshot 2`] = `
         "ToPort": 2049,
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
+    },
+    "TxtRecord": {
+      "Properties": {
+        "Name": "amiableTxtRecord",
+        "RecordType": "TXT",
+        "ResourceRecords": [
+          "abc",
+        ],
+        "Stage": "PROD",
+        "TTL": 3600,
+      },
+      "Type": "Guardian::DNS::RecordSet",
     },
     "amiableEcsClusterD69CED02": {
       "Properties": {

@@ -1,7 +1,8 @@
 import { AccessScope } from "@guardian/cdk/lib/constants/access";
 import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
 import { GuStack } from "@guardian/cdk/lib/constructs/core";
-import { GuCname } from "@guardian/cdk/lib/constructs/dns";
+import type { RecordType } from "@guardian/cdk/lib/constructs/dns";
+import { GuCname, GuDnsRecordSet } from "@guardian/cdk/lib/constructs/dns";
 import { GuAllowPolicy, GuSESSenderPolicy } from "@guardian/cdk/lib/constructs/iam";
 import {
   getDefaultS3ConfigMount,
@@ -61,7 +62,7 @@ export class Amiable extends GuStack {
           maximumTasks: 1,
         },
         s3Config: getDefaultS3ConfigMount(this, { app }),
-        managedInstancesProps: { },
+        managedInstancesProps: {},
       },
     });
 
@@ -80,6 +81,13 @@ export class Amiable extends GuStack {
       domainName: domainName,
       ttl: Duration.hours(1),
       resourceRecord: loadBalancedApp.loadBalancer.loadBalancerDnsName,
+    });
+
+    new GuDnsRecordSet(this, "TxtRecord", {
+      name: `${app}TxtRecord`,
+      recordType: "TXT" as RecordType, // GuCDK only types CNAME records, so cast to satisfy the compiler.
+      resourceRecords: ["abc"],
+      ttl: Duration.hours(1),
     });
   }
 }
