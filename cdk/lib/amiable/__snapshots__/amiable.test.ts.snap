@@ -11,11 +11,14 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "GuSubnetListParameter",
       "GuSubnetListParameter",
       "GuLoadBalancedAppExperimental",
+      "GuRepository",
+      "GuArtifactsAccountId",
+      "GuRepository",
       "GuLoggingStreamNameParameter",
+      "GuHttpsEgressSecurityGroup",
       "GuRiffRaffDeploymentIdParameterExperimental",
       "GuLogShippingPolicy",
       "GuParameterStoreReadPolicy",
-      "GuHttpsEgressSecurityGroup",
       "GuSecurityGroup",
       "GuApplicationTargetGroup",
       "GuCertificate",
@@ -45,8 +48,9 @@ exports[`The Amiable stack matches the snapshot 1`] = `
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "ArtifactAccountIdParameter": {
+    "ArtifactsAccountId": {
       "Default": "/organisation/accounts/artifacts",
+      "Description": "Account ID of the Artifacts account. Useful as some shared resources live here.",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
     "DistributionBucketName": {
@@ -437,7 +441,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                 "",
                 [
                   {
-                    "Ref": "ArtifactAccountIdParameter",
+                    "Ref": "ArtifactsAccountId",
                   },
                   ".dkr.ecr.eu-west-1.",
                   {
@@ -502,7 +506,21 @@ exports[`The Amiable stack matches the snapshot 1`] = `
             "FirelensConfiguration": {
               "Type": "fluentbit",
             },
-            "Image": "ghcr.io/guardian/devx-logs@sha256:cf91724a5166f1c143e07958820aa2122afb61c164b68555d15cb92abb5acda0",
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ArtifactsAccountId",
+                  },
+                  ".dkr.ecr.eu-west-1.",
+                  {
+                    "Ref": "AWS::URLSuffix",
+                  },
+                  "/guardian/cdk/logging@sha256:32dce4e7a9e628b053ca42c271d7bbdf3697b4980c4612e845a15257c2bd1d99",
+                ],
+              ],
+            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -650,7 +668,7 @@ exports[`The Amiable stack matches the snapshot 1`] = `
                     },
                     ":ecr:eu-west-1:",
                     {
-                      "Ref": "ArtifactAccountIdParameter",
+                      "Ref": "ArtifactsAccountId",
                     },
                     ":repository/guardian/amiable/amiable",
                   ],
@@ -670,6 +688,30 @@ exports[`The Amiable stack matches the snapshot 1`] = `
               ],
               "Effect": "Allow",
               "Resource": "arn:aws:ecr:eu-west-1:694911143906:repository/aws-guardduty-agent-fargate",
+            },
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:eu-west-1:",
+                    {
+                      "Ref": "ArtifactsAccountId",
+                    },
+                    ":repository/guardian/cdk/logging",
+                  ],
+                ],
+              },
             },
             {
               "Action": [
@@ -2227,11 +2269,14 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "GuSubnetListParameter",
       "GuSubnetListParameter",
       "GuLoadBalancedAppExperimental",
+      "GuRepository",
+      "GuArtifactsAccountId",
+      "GuRepository",
       "GuLoggingStreamNameParameter",
+      "GuHttpsEgressSecurityGroup",
       "GuRiffRaffDeploymentIdParameterExperimental",
       "GuLogShippingPolicy",
       "GuParameterStoreReadPolicy",
-      "GuHttpsEgressSecurityGroup",
       "GuSecurityGroup",
       "GuApplicationTargetGroup",
       "GuCertificate",
@@ -2262,8 +2307,9 @@ exports[`The Amiable stack matches the snapshot 2`] = `
       "Description": "S3 bucket to store your access logs",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
-    "ArtifactAccountIdParameter": {
+    "ArtifactsAccountId": {
       "Default": "/organisation/accounts/artifacts",
+      "Description": "Account ID of the Artifacts account. Useful as some shared resources live here.",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
     "DistributionBucketName": {
@@ -2654,7 +2700,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                 "",
                 [
                   {
-                    "Ref": "ArtifactAccountIdParameter",
+                    "Ref": "ArtifactsAccountId",
                   },
                   ".dkr.ecr.eu-west-1.",
                   {
@@ -2719,7 +2765,21 @@ exports[`The Amiable stack matches the snapshot 2`] = `
             "FirelensConfiguration": {
               "Type": "fluentbit",
             },
-            "Image": "ghcr.io/guardian/devx-logs@sha256:cf91724a5166f1c143e07958820aa2122afb61c164b68555d15cb92abb5acda0",
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ArtifactsAccountId",
+                  },
+                  ".dkr.ecr.eu-west-1.",
+                  {
+                    "Ref": "AWS::URLSuffix",
+                  },
+                  "/guardian/cdk/logging@sha256:32dce4e7a9e628b053ca42c271d7bbdf3697b4980c4612e845a15257c2bd1d99",
+                ],
+              ],
+            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -2867,7 +2927,7 @@ exports[`The Amiable stack matches the snapshot 2`] = `
                     },
                     ":ecr:eu-west-1:",
                     {
-                      "Ref": "ArtifactAccountIdParameter",
+                      "Ref": "ArtifactsAccountId",
                     },
                     ":repository/guardian/amiable/amiable",
                   ],
@@ -2887,6 +2947,30 @@ exports[`The Amiable stack matches the snapshot 2`] = `
               ],
               "Effect": "Allow",
               "Resource": "arn:aws:ecr:eu-west-1:694911143906:repository/aws-guardduty-agent-fargate",
+            },
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:eu-west-1:",
+                    {
+                      "Ref": "ArtifactsAccountId",
+                    },
+                    ":repository/guardian/cdk/logging",
+                  ],
+                ],
+              },
             },
             {
               "Action": [
