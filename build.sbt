@@ -39,7 +39,7 @@ scalacOptions := Seq(
 // https://github.com/orgs/playframework/discussions/11222
 // Ensure all Amiable's Jackson dependencies use the same version for compatibility. Jackson will throw an error if the versions do not match.
 val jacksonOverrides = {
-  val jacksonVersion = "2.22.3"
+  val jacksonVersion = "2.22.4"
   Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
